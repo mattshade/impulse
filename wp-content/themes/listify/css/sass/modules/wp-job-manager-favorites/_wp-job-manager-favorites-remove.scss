@@ -1,0 +1,8 @@
+.wp-job-manager-favorites-remove {
+	display: none;
+
+	.mfp-content & {
+		display: block;
+		margin-bottom: 1em;
+	}
+}

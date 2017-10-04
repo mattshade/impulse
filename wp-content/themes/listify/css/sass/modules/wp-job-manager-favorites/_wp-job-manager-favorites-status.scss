@@ -1,0 +1,25 @@
+.wp-job-manager-favorites-status {
+	color: #ffffff;
+	line-height: normal;
+	display: inline-block;
+	vertical-align: middle;
+
+	&:before {
+		@include ionicon;
+		font-size: 26px;
+		content: $ionicon-var-heart;
+		vertical-align: middle;
+	}
+
+	&:hover {
+		color: #fff;
+
+		&:before {
+			color: #fff;
+		}
+	}
+
+	.mfp-content & {
+		display: none;
+	}
+}

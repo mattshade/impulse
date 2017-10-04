@@ -1,0 +1,11 @@
+.wp-job-manager-favorites-details {
+	display: none;
+
+	.mfp-content & {
+		display: block;
+	}
+
+	p:last-child {
+		margin-bottom: 0;
+	}
+}

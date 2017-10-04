@@ -1,0 +1,19 @@
+.wp-job-manager-favorites-count {
+	font-size: 16px;
+	margin-left: 3px;
+	display: inline-block;
+	vertical-align: middle;
+
+	em {
+		font-style: normal;
+	}
+
+	li.type-job_listing & em {
+		display: none;
+	}
+}
+
+.mfp-content .wp-job-manager-favorites-count {
+	margin-left: 0;
+	font-size: 24px;
+}

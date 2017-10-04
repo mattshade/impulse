@@ -1,0 +1,18 @@
+.wp-job-manager-favorites-form--single {
+	display: inline-block;
+	vertical-align: middle;
+
+	// Popup.
+	.mfp-content & {
+		display: block;
+	}
+}
+
+.wp-job-manager-favorites-form--archive {
+	li.type-job_listing & {
+		position: absolute;
+		z-index: 30;
+		top: 15px;
+		right: 20px;
+	}
+}

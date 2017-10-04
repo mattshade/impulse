@@ -1,0 +1,47 @@
+/*
+ * Theme Name: Listify
+ * Theme URI: https://astoundify.com/products/listify/
+ * Author: Astoundify
+ * Author URI: https://astoundify.com/
+ * Description: The last directory theme you will ever buy.
+ * Version: 1.10.0
+ * License: GNU General Public License v2 or later
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.html* Text Domain: listify
+ * Domain Path: /languages/
+ * Tags: white, two-columns, one-column, right-sidebar, left-sidebar, responsive-layout, custom-background, custom-header, theme-options, full-width-template, featured-images, flexible-header, custom-menu, translation-ready
+*/
+.job_listings-map img {max-width: none;}
+.primary-header, .site-footer-widgets, .site-footer, input[type="button"], input[type="reset"], input[type="submit"], .button, .facetwp-type-slider .noUi-connect, .ui-slider .ui-slider-range, .listing-owner, .comment-rating, .job_listing-rating-average, .map-marker.active:after, .cluster, .widget_calendar tbody a, .load_more_jobs, .listify-badge, .listing-featured-badge, button.update_results, .select2-container.select2-container--default .select2-results__option--highlighted[aria-selected], .search-overlay .primary-header {background-color: #3399CC;}
+/*#3399CC backup blue color*/
+
+
+
+body, h1, h2, h3, h4, h5, h6, div, p, ul, li, span, button, a{font-family: "museo-sans",sans-serif!important;font-style: normal;font-weight: 300;}
+.site-title{text-transform:uppercase;}
+
+input[type="button"]:hover, input[type="button"]:focus, input[type="reset"]:hover, input[type="reset"]:focus, input[type="submit"]:hover, input[type="submit"]:focus, .button:hover, .button:focus, ::selection, button.update_results:hover, button.update_results.refreshing, .load_more_jobs:hover{background-color:#118ecc;}
+.listify_widget_panel_listing_tags .tag.active:before, .job-package-includes li:before, .woocommerce-tabs .tabs .active a, body:not(.facetwp) .locate-me:before, .woocommerce .quantity input[type="button"], .claimed-ribbon span:before{color:#9bc456;}
+
+.menu-item-cart{display:none!important;}
+.fieldset-featured_image{display:none;}
+.content-single-job_listing-hero{background-image:none!important;}
+
+.listing-entry-company-image--card .listing-entry-company-image__img {border-color: transparent;}
+sup{font-size:10px;bottom:2.2ex;padding-left:1px;}
+footer#colophon{background:#2f3339;color:white;}
+.site-footer, .site-social a{color:white;}
+
+.listing-card header:not(.has-image){background-image:url(img/slate.png)}
+
+@media only screen 
+  and (min-device-width: 375px) 
+  and (max-device-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: portrait) { 
+	  
+	  .primary-header .container{padding-top:20px;}
+	  .site-branding img{width:305px;}
+
+}
+
+
