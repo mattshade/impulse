@@ -18,17 +18,16 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Memberships upgrades
+ * Memberships lifecycle upgrades.
  *
- * This class handles actions triggered upon plugin updates
- * from an earlier to the current latest version
+ * This class handles actions triggered upon plugin updates from an earlier to the current latest version.
  *
  * @since 1.6.2
  */
@@ -36,10 +35,11 @@ class WC_Memberships_Upgrade {
 
 
 	/**
-	 * Run updates
+	 * Runs updates.
 	 *
 	 * @since 1.6.2
-	 * @param string $installed_version
+	 *
+	 * @param string $installed_version semver
 	 */
 	public static function run_update_scripts( $installed_version ) {
 
@@ -49,6 +49,8 @@ class WC_Memberships_Upgrade {
 				'1.1.0' => 'update_to_1_1_0',
 				'1.4.0' => 'update_to_1_4_0',
 				'1.7.0' => 'update_to_1_7_0',
+				'1.9.0' => 'update_to_1_9_0',
+				'1.9.2' => 'update_to_1_9_2',
 			);
 
 			foreach ( $update_path as $update_to_version => $update_script ) {
@@ -63,7 +65,7 @@ class WC_Memberships_Upgrade {
 
 
 	/**
-	 * Update to v1.1.0
+	 * Updates to v1.1.0
 	 *
 	 * @since 1.6.2
 	 */
@@ -98,7 +100,7 @@ class WC_Memberships_Upgrade {
 
 
 	/**
-	 * Update to v1.4.0
+	 * Updates to v1.4.0
 	 *
 	 * @since 1.6.2
 	 */
@@ -111,16 +113,12 @@ class WC_Memberships_Upgrade {
 
 
 	/**
-	 * Update to v1.7.0
+	 * Updates to v1.7.0
 	 *
-	 * This will transition legacy Memberships expiry events set on WP Cron
-	 * to utilize the newer Action Scheduler
+	 * This will transition legacy Memberships expiry events set on WP Cron to utilize the newer Action Scheduler.
 	 *
-	 * The update won't unschedule the memberships expiration events to prevent
-	 * possible timeouts or out of memory errors on very large installs
-	 * while the wp cron array in option has to be updated several times;
-	 * however, such events won't have a callback attached anymore and
-	 * thus gracefully disappear when they are naturally due
+	 * The update won't unschedule the memberships expiration events to prevent possible timeouts or out of memory errors on very large installs while the wp cron array in option has to be updated several times.
+	 * However, such events won't have a callback attached anymore and thus gracefully disappear when they are naturally due.
 	 *
 	 * @since 1.7.0
 	 */
@@ -173,6 +171,157 @@ class WC_Memberships_Upgrade {
 		delete_option( 'wc_memberships_cron_offset' );
 
 		wc_memberships()->log( 'Completed upgrade to 1.7.0' );
+	}
+
+
+	/**
+	 * Updates to 1.9.0
+	 *
+	 * - Move all user messages into a single option array and remove obsolete option keys.
+	 * - Adds a "Details" members area section that became available in the new version.
+	 * - Compacts rules for all plans to improve plan handling and general performance.
+	 *
+	 * @since 1.9.0
+	 */
+	private static function update_to_1_9_0() {
+
+		$new_messages    = array();
+		$legacy_messages = array(
+			'member_login_message',
+			'content_restricted_message',
+			'page_content_restricted_message',
+			'post_content_restricted_message',
+			'content_restricted_message_no_products',
+			'page_content_restricted_message_no_products',
+			'post_content_restricted_message_no_products',
+			'content_delayed_message',
+			'page_content_delayed_message',
+			'post_content_delayed_message',
+			'product_discount_message',
+			'product_discount_message_no_products',
+			'product_purchasing_delayed_message',
+			'product_purchasing_restricted_message',
+			'product_purchasing_restricted_message_no_products',
+			'product_viewing_delayed_message',
+			'product_viewing_restricted_message',
+			'product_viewing_restricted_message_no_products',
+		);
+		$unused_options  = array(
+			'memberships_options',
+			'memberships_products_options',
+			'memberships_messages',
+			'memberships_other_messages',
+			'memberships_page_restriction_messages',
+			'memberships_post_restriction_messages',
+			'memberships_product_messages',
+			'memberships_restriction_messages',
+			'product_category_viewing_delayed_message',
+			'product_category_viewing_restricted_message',
+			'product_category_viewing_restricted_message_no_products',
+			'wc_memberships_subscriptions_version',
+			'wc_memberships_product_category_delayed_message',
+			'wc_memberships_product_category_restricted_message',
+			'wc_memberships_product_category_restricted_message_no_products',
+		);
+
+		foreach ( $legacy_messages as $message_code ) {
+
+			// we use one key for both product purchasing delayed and product viewing delayed cases
+			if ( 'product_purchasing_delayed_message' === $message_code ) {
+				$message_code = 'product_access_delayed_message';
+			} elseif ( 'product_viewing_delayed_message' === $message_code ) {
+				continue;
+			}
+
+			$option_key     = "wc_memberships_{$message_code}";
+			$legacy_message = get_option( $option_key, WC_Memberships_User_Messages::get_message( $message_code ) );
+
+			$new_messages[ $message_code ] = $legacy_message;
+
+			$unused_options[] = $option_key;
+		}
+
+		// update messages in a single array
+		update_option( 'wc_memberships_messages', $new_messages );
+
+		// delete legacy options
+		foreach ( $unused_options as $legacy_option ) {
+			delete_option( $legacy_option );
+		}
+
+		wc_memberships()->log( 'Moved all user messages into a single option' );
+
+		// add the new "Manage" membership members area section to existing plans
+		$plans = wc_memberships()->get_plans_instance()->get_membership_plans( array( 'post_status' => 'any' ) );
+
+		foreach ( $plans as $plan ) {
+			$plan->set_members_area_sections( array_merge( $plan->get_members_area_sections(), array( 'my-membership-details' ) ) );
+		}
+
+		wc_memberships()->log( 'Updated membership plans members area sections' );
+
+		// optimize the plan rules using the new rules compacting feature
+		wc_memberships()->get_rules_instance()->compact_rules();
+
+		wc_memberships()->log( 'Compacted membership plans rules' );
+
+		// mark upgrade to v1.9.0 complete
+		wc_memberships()->log( 'Completed upgrade to 1.9.0' );
+	}
+
+
+	/**
+	 * Updates to 1.9.2
+	 *
+	 * Repair custom taxonomy product rules that may have been corrupted after
+	 * saving in 1.9.
+	 *
+	 * @since 1.9.2
+	 */
+	private static function update_to_1_9_2() {
+
+		$raw_rules = get_option( 'wc_memberships_rules' );
+
+		// back up the rules, just in case
+		// TODO: delete this option in 1.10
+		update_option( 'wc_memberships_rules_backup', $raw_rules );
+
+		// get all product rules
+		// non-taxonomy rules are filtered out below
+		$product_rules = wc_memberships()->get_rules_instance()->get_rules( array(
+			'rule_type' => array(
+				'product_restriction',
+				'purchasing_discount',
+			),
+		) );
+
+		foreach ( $product_rules as $rule_key => $rule ) {
+
+			// sanity check, or if the rule has a taxonomy name already, there's nothing to repair
+			if ( ! $rule instanceof WC_Memberships_Membership_Plan_Rule || 'taxonomy' !== $rule->get_content_type() || $rule->get_content_type_name() ) {
+				continue;
+			}
+
+			$term_ids = $rule->get_object_ids();
+
+			// nothing we can do if there are no terms to check
+			if ( empty( $term_ids ) ) {
+				continue;
+			}
+
+			$term = get_term( current( $term_ids ) );
+
+			if ( ! is_wp_error( $term ) && $term && ! empty( $term->taxonomy ) ) {
+
+				$product_rules[ $rule_key ]->set_content_type_name( $term->taxonomy );
+				continue;
+			}
+		}
+
+		wc_memberships()->get_rules_instance()->update_rules( $product_rules );
+
+		// mark upgrade to v1.9.2 complete
+		wc_memberships()->log( 'Completed upgrade to 1.9.2' );
 	}
 
 

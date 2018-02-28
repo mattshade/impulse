@@ -1,5 +1,26 @@
 === WooCommerce Name Your Price ===
 
+2018.02.12 - version 2.7.1
+* Fix: Making NYP subscriptions purchasable again. Props @denzel100
+
+2018.02.06 - version 2.7.0
+* IMPORTANT: WooCommerce 2.X support dropped.
+* New: Add support for NYP in grouped products.
+* New: Better support for some themes using WooCommerce core's ajax add to cart script on single product pages.
+
+2017.12.09 - version 2.6.3
+* Fix: Period as thousands separator price incorrectly validated on backend.
+* Fix: Order again price incorrect when quantity > 1
+* Tweak: Use clearfix instead of overflow:hidden on NYP div element.
+* Tweak: Use Sass for compiling CSS.
+
+2017.11.27 - version 2.6.2
+* Fix: Fix update due to plugin version mismatch.
+
+2017.11.22 - version 2.6.1
+* Fix: Resolve warning - Use setter method for sale price.
+* Fix: Fix bulk actions for NYP variations.
+
 2017.08.01 - version 2.6.0
 * New: Add support for WPML
 * New: Add support for new WooCommerce.com updates

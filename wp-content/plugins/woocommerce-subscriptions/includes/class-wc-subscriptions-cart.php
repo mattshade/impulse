@@ -122,6 +122,8 @@ class WC_Subscriptions_Cart {
 		add_filter( 'woocommerce_shipping_free_shipping_is_available', __CLASS__ . '::maybe_recalculate_shipping_method_availability', 10, 2 );
 
 		add_filter( 'woocommerce_add_to_cart_handler', __CLASS__ . '::add_to_cart_handler', 10, 2 );
+
+		add_action( 'woocommerce_cart_calculate_fees', __CLASS__ . '::apply_recurring_fees', 1000, 1 );
 	}
 
 	/**
@@ -304,7 +306,12 @@ class WC_Subscriptions_Cart {
 			self::$cached_recurring_cart = $recurring_cart;
 
 			// No fees recur (yet)
-			$recurring_cart->fees = array();
+			if ( is_callable( array( $recurring_cart, 'fees_api' ) ) ) { // WC 3.2 +
+				$recurring_cart->fees_api()->remove_all_fees();
+			} else {
+				$recurring_cart->fees = array();
+			}
+
 			$recurring_cart->fee_total = 0;
 			WC()->shipping->reset_shipping();
 			self::maybe_restore_shipping_methods();
@@ -333,9 +340,21 @@ class WC_Subscriptions_Cart {
 
 		// If there is no sign-up fee and a free trial, and no products being purchased with the subscription, we need to zero the fees for the first billing period
 		if ( 0 == self::get_cart_subscription_sign_up_fee() && self::all_cart_items_have_free_trial() ) {
-			foreach ( WC()->cart->get_fees() as $fee_index => $fee ) {
-				WC()->cart->fees[ $fee_index ]->amount = 0;
-				WC()->cart->fees[ $fee_index ]->tax = 0;
+			$cart_fees = WC()->cart->get_fees();
+
+			if ( WC_Subscriptions::is_woocommerce_pre( '3.2' ) ) {
+				foreach ( $cart_fees as $fee_index => $fee ) {
+					WC()->cart->fees[ $fee_index ]->amount = 0;
+					WC()->cart->fees[ $fee_index ]->tax = 0;
+				}
+			} else {
+				foreach ( $cart_fees as $fee ) {
+					$fee->amount = 0;
+					$fee->tax    = 0;
+					$fee->total  = 0;
+				}
+
+				WC()->cart->fees_api()->set_fees( $cart_fees );
 			}
 			WC()->cart->fee_total = 0;
 		}
@@ -1242,6 +1261,29 @@ class WC_Subscriptions_Cart {
 		}
 
 		return $is_available;
+	}
+
+	/**
+	 * Allow third-parties to apply fees which apply to the cart to recurring carts.
+	 *
+	 * @param WC_Cart
+	 * @since 2.2.16
+	 */
+	public static function apply_recurring_fees( $cart ) {
+
+		if ( ! empty( $cart->recurring_cart_key ) ) {
+
+			foreach ( WC()->cart->get_fees() as $fee ) {
+
+				if ( apply_filters( 'woocommerce_subscriptions_is_recurring_fee', false, $fee, $cart ) ) {
+					if ( is_callable( array( $cart, 'fees_api' ) ) ) { // WC 3.2 +
+						$cart->fees_api()->add_fee( $fee );
+					} else {
+						$cart->add_fee( $fee->name, $fee->amount, $fee->taxable, $fee->tax_class );
+					}
+				}
+			}
+		}
 	}
 
 	/* Deprecated */

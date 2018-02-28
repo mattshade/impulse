@@ -19,7 +19,7 @@
  * @package   WC-Memberships/Admin/Meta-Boxes
  * @author    SkyVerge
  * @category  Admin
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
@@ -41,10 +41,20 @@ class WC_Memberships_Meta_Box_View_Product_Restriction_Rule extends WC_Membershi
 	 */
 	public function output( $args = array() ) {
 
-		$index = $this->get_rule_index( $args );
+		$index               = $this->get_rule_index( $args );
+		$context             = (int) $this->rule->get_membership_plan_id() === (int) $this->post->ID ? 'membership_plan' : 'product';
+		$product             = isset( $args['product'] ) ? $args['product'] : null;
+		$is_variable_product = false;
+
+		if ( 'product' === $context && $product instanceof WC_Product ) {
+			$is_variable_product = $product->is_type( 'variable' );
+		}
 
 		?>
-		<tbody class="rule product-restriction-rule product-restriction-rule-<?php echo esc_attr( $index ); ?> <?php if ( ! $this->rule->current_user_can_edit() || ! $this->rule->current_context_allows_editing() ) : ?>disabled<?php endif; ?>">
+		<tbody
+			class="rule product-restriction-rule product-restriction-rule-<?php echo esc_attr( $index ); ?>
+			<?php if ( ! $this->rule->current_user_can_edit() || ! $this->rule->current_context_allows_editing() ) : ?>disabled<?php endif; ?>"
+			<?php echo $this->rule->is_trashed() ? 'style="display: none; height: 0;"' : ''; ?>>
 
 			<tr>
 
@@ -79,7 +89,7 @@ class WC_Memberships_Meta_Box_View_Product_Restriction_Rule extends WC_Membershi
 							value=""
 						/>
 
-						<?php if ( (int) $this->rule->get_membership_plan_id() !== (int) $this->post->ID && $this->rule->has_objects() ) : ?>
+						<?php if ( 'product' === $context && $this->rule->has_objects() ) : ?>
 
 							<?php foreach ( $this->rule->get_object_ids() as $id ) : ?>
 
@@ -96,7 +106,7 @@ class WC_Memberships_Meta_Box_View_Product_Restriction_Rule extends WC_Membershi
 					</p>
 				</th>
 
-				<?php if ( (int) $this->rule->get_membership_plan_id() === (int) $this->post->ID ) : ?>
+				<?php if ( 'membership_plan' === $context ) : ?>
 
 					<td class="product-restriction-content-type content-type-column">
 						<p class="form-field">
@@ -118,7 +128,7 @@ class WC_Memberships_Meta_Box_View_Product_Restriction_Rule extends WC_Membershi
 									<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $key, $this->rule->get_content_type_key() ); ?> <?php if ( ! ( current_user_can( $taxonomy->cap->manage_terms ) && current_user_can( $taxonomy->cap->edit_terms ) ) ) : ?>disabled<?php endif; ?> ><?php echo esc_html( $taxonomy->label ); ?></option>
 								<?php endforeach; ?>
 
-								<?php if ( ! $this->rule->is_new() && ! $this->rule->content_type_exists() ) : ?>
+								<?php if ( ! $this->rule->is_new() && ! wc_memberships()->get_rules_instance()->rule_content_type_exists( $this->rule )  ) : ?>
 									<option value="<?php echo esc_attr( $this->rule->get_content_type_key() ); ?>" selected><?php echo esc_html( $this->rule->get_content_type_key() ); ?></option>
 								<?php endif; ?>
 
@@ -139,11 +149,13 @@ class WC_Memberships_Meta_Box_View_Product_Restriction_Rule extends WC_Membershi
 									style="width: 90%;"
 									multiple="multiple"
 									data-placeholder="<?php esc_attr_e( 'Search&hellip; or leave blank to apply to all', 'woocommerce-memberships' ); ?>"
-									data-action="<?php echo esc_attr( $this->rule->get_object_search_action_name() ); ?>"
+									data-action="<?php echo esc_attr( WC_Memberships_Admin_Membership_Plan_Rules::get_rule_object_search_action( $this->rule ) ); ?>"
 									<?php if ( ! $this->rule->current_user_can_edit() ) : ?>disabled<?php endif; ?>>
 									<?php if ( $this->rule->has_objects() ) : ?>
 										<?php foreach ( $this->rule->get_object_ids() as $object_id ) : ?>
-											<option value="<?php echo esc_attr( $object_id ); ?>" selected><?php echo esc_html( $this->rule->get_object_label( $object_id ) ); ?></option>
+											<?php if ( $object_label = WC_Memberships_Admin_Membership_Plan_Rules::get_rule_object_label( $this->rule, $object_id ) ) : ?>
+												<option value="<?php echo esc_attr( $object_id ); ?>" selected><?php echo esc_html( $object_label ); ?></option>
+											<?php endif; ?>
 										<?php endforeach; ?>
 									<?php endif; ?>
 								</select>
@@ -157,17 +169,15 @@ class WC_Memberships_Meta_Box_View_Product_Restriction_Rule extends WC_Membershi
 									class="wc-memberships-object-search js-object-ids"
 									style="width: 90%;"
 									data-placeholder="<?php esc_attr_e( 'Search&hellip; or leave blank to apply to all', 'woocommerce-memberships' ); ?>"
-									data-action="<?php echo esc_attr( $this->rule->get_object_search_action_name() ); ?>"
+									data-action="<?php echo esc_attr( WC_Memberships_Admin_Membership_Plan_Rules::get_rule_object_search_action( $this->rule ) ); ?>"
 									data-multiple="true"
 									data-selected="<?php
 										$json_ids = array();
 
 										if ( $this->rule->has_objects() ) {
-
 											foreach ( $this->rule->get_object_ids() as $object_id ) {
-
-												if ( $this->rule->get_object_label( $object_id ) ) {
-													$json_ids[ $object_id ] = wp_kses_post( html_entity_decode( $this->rule->get_object_label( $object_id ) ) );
+												if ( $object_label = WC_Memberships_Admin_Membership_Plan_Rules::get_rule_object_label( $this->rule, $object_id ) ) {
+													$json_ids[ $object_id ] = wp_kses_post( html_entity_decode( $object_label ) );
 												}
 											}
 										}
@@ -183,6 +193,14 @@ class WC_Memberships_Meta_Box_View_Product_Restriction_Rule extends WC_Membershi
 					</td>
 
 				<?php else : ?>
+
+					<?php if ( $is_variable_product ) : ?>
+
+						<td class="purchasing-discount-applies-to product-variation-column">
+							<p class="form-field"><?php esc_html_e( 'Any variation', 'woocommerce-memberships' ); ?></p>
+						</td>
+
+					<?php endif; ?>
 
 					<td class="product-restriction-membership-plan membership-plan-column">
 						<p class="form-field">
@@ -234,7 +252,8 @@ class WC_Memberships_Meta_Box_View_Product_Restriction_Rule extends WC_Membershi
 										name="_product_restriction_rules[<?php echo esc_attr( $index ); ?>][access_schedule]"
 										class="js-access-schedule-period-selector js-schedule-type"
 										value="<?php echo esc_attr( $value ); ?>"
-										<?php checked( $value, $current_access_period ); ?> <?php if ( ! $this->rule->current_user_can_edit() || ! $this->rule->current_context_allows_editing() ) : ?>disabled<?php endif; ?>
+										<?php checked( $value, $current_access_period ); ?>
+										<?php if ( ! $this->rule->current_user_can_edit() || ! $this->rule->current_context_allows_editing() ) : ?>disabled<?php endif; ?>
 									/>
 									<?php echo esc_html( $label ); ?>
 								</label>
@@ -303,11 +322,11 @@ class WC_Memberships_Meta_Box_View_Product_Restriction_Rule extends WC_Membershi
 
 			<?php if ( ! $this->rule->current_user_can_edit() || ! $this->rule->current_context_allows_editing() ) : ?>
 
-				<tr class="disabled-notice">
+				<tr class="disabled-notice" <?php echo $this->rule->is_trashed() ? 'style="display: none; height: 0;"' : ''; ?>>
 					<td class="check-column"></td>
-					<td colspan="<?php echo ( 'wc_membership_plan' === $this->post->post_type ) ? 4 : 3; ?>">
+					<td colspan="<?php echo 'membership_plan' === $context || $is_variable_product ? 4 : 3; ?>">
 
-						<?php if ( ! $this->rule->is_new() && ! $this->rule->content_type_exists() ) : ?>
+						<?php if ( ! $this->rule->is_new() && ! wc_memberships()->get_rules_instance()->rule_content_type_exists( $this->rule )  ) : ?>
 
 							<span class="description"><?php esc_html_e( 'This rule applies to content generated by a plugin or theme that has been deactivated or deleted.', 'woocommerce-memberships' ); ?></span>
 

@@ -18,14 +18,16 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Integration class for bbPress plugin
+ * Integration class for bbPress plugin.
+ *
+ * TODO this isn't truly a full fledged integration yet {FN 2017-11-13}
  *
  * @since 1.8.5
  */
@@ -33,13 +35,70 @@ class WC_Memberships_Integration_Bbpress {
 
 
 	/**
-	 * Load bbPress integration.
+	 * Loads bbPress integration.
 	 *
 	 * @since 1.8.5
 	 */
 	public function __construct() {
 
+		// handles a bbPress-induced bug: when hidden or private forums exists, no posts shows in the members area content
 		add_action( 'init', array( $this, 'bbpress_init' ), 40 );
+
+		// workaround for an issue where multiple plans might kept locked the main topic in a restricted discussion
+		add_filter( 'user_has_cap', array( $this, 'member_can_view_topic' ), 10, 3 );
+	}
+
+
+	/**
+	 * Allows members to view the initial topic in a discussion thread.
+	 *
+	 * When "Hide Completely" is used, and there are multiple plans restricting different forums, the initial topic of a discussion thread is not visible to a member that should have access.
+	 * This is a workaround that extends 'wc_memberships_access_all_restricted_content' in a very specific context to the current user while viewing a bbPress topic.
+	 *
+	 * NOTE: This callback method will be removed once bbPress is fully integrated into Memberships.
+	 *
+	 * @internal
+	 *
+	 * @since 1.9.4
+	 *
+	 * @param array $all_caps all capabilities
+	 * @param array $caps capabilities
+	 * @param array $args additional arguments
+	 * @return array
+	 */
+	public function member_can_view_topic( $all_caps, $caps, $args ) {
+		global $post;
+
+		if (      $post
+		     &&  'topic' === $post->post_type
+		     && ! empty( $caps )
+		     &&   wc_memberships()->get_restrictions_instance()->is_restriction_mode( 'hide' ) ) {
+
+			foreach ( $caps as $cap ) {
+
+				if (    'wc_memberships_access_all_restricted_content' === $cap
+				     && empty( $all_caps[ $cap ] ) ) {
+
+					// for sanity remove our own filter
+					remove_filter( 'user_has_cap', array( $this, 'member_can_view_topic' ), 10 );
+
+					$can_view_topic = current_user_can( 'wc_memberships_view_restricted_post_content', $post->ID );
+
+					// check for force public flag
+					if ( ! $can_view_topic ) {
+						/* this filter is first used in includes/wc-memberships-capabilities.php */
+						$can_view_topic = (bool) apply_filters( 'wc_memberships_is_post_public', 'yes' === wc_memberships_get_content_meta( $post->ID, '_wc_memberships_force_public' ), $post->ID );
+					}
+
+					$all_caps[ $cap ] = $can_view_topic;
+
+					// re-add back the current filter
+					add_filter( 'user_has_cap', array( $this, 'member_can_view_topic' ), 10, 3 );
+				}
+			}
+		}
+
+		return $all_caps;
 	}
 
 
@@ -49,6 +108,8 @@ class WC_Memberships_Integration_Bbpress {
 	 * This is due to a bug in bbPress where the meta_query it adds via pre_get_posts excludes Hidden or Private forums for all queries that include the forum post type.
 	 * Memberships is affected as it checks for posts of all post types when querying for a plan's restricted content.
 	 * Our workaround merely consists of suppressing bbPress pre_get_posts filtering.
+	 *
+	 * NOTE: This method may be removed once the workaround will no longer be needed.
 	 *
 	 * TODO version 2.6 of bbPress might fix this, making this workaround useful only in bbPress versions 2.5.x and earlier {FN 2017-05-19}
 	 *
@@ -71,7 +132,7 @@ class WC_Memberships_Integration_Bbpress {
 
 
 	/**
-	 * Check if the current page is the members area.
+	 * Checks if the current page is the members area.
 	 *
 	 * Note: this is not the best way to determine if we are on the members area, but bbPress itself with pre_get_posts filtering may prevent determining it via query vars.
 	 * @see \WC_Memberships_Integration_Bbpress::bbpress_init()

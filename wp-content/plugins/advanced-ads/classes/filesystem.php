@@ -87,6 +87,7 @@ class Advanced_Ads_Filesystem {
 
 	/**
 	 * Replace the 'direct' absolute path with the Filesystem API path. Useful only when the 'direct' method is not used.
+	 * Works only with folders.
 	 * Check https://codex.wordpress.org/Filesystem_API for info
 	 *
 	 * @param    string  existing path
@@ -94,7 +95,46 @@ class Advanced_Ads_Filesystem {
 	 */
 	public function normalize_path( $path ) {
 		global $wp_filesystem;
-		return str_replace( ABSPATH, $wp_filesystem->abspath(), $path );
+		return $wp_filesystem->find_folder( $path );
+	}
+
+	/**
+	 * Recursive directory creation based on full path.
+	 *
+	 * @param string $target Full path to attempt to create.
+	 * @return bool Whether the path was created. True if path already exists.
+	 */
+	public function mkdir_p( $target ) {
+		global $wp_filesystem;
+
+		if ( $wp_filesystem instanceof WP_Filesystem_Direct ) {
+			return wp_mkdir_p( $target );
+		}
+
+		$target = rtrim($target, '/');
+		if ( empty($target) ) {
+			$target = '/';
+		}
+
+		if ( $wp_filesystem->exists( $target ) ) {
+			return $wp_filesystem->is_dir( $target );
+		}
+
+		$target_parent = dirname( $target );
+		while ( '.' != $target_parent && ! $wp_filesystem->is_dir( $target_parent ) ) {
+			$target_parent = dirname( $target_parent );
+		}
+
+		$folder_parts = explode( '/', substr( $target, strlen( $target_parent ) + 1 ) );
+		for ( $i = 1, $c = count( $folder_parts ); $i <= $c; $i++ ) {
+			$dir = $target_parent . '/' . implode( '/', array_slice( $folder_parts, 0, $i ) );
+			if ( $wp_filesystem->exists( $dir ) ) { continue; }
+
+			if ( ! $wp_filesystem->mkdir( $dir ) ) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

@@ -18,7 +18,7 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
@@ -33,7 +33,7 @@ class WC_Memberships_Integration_Measurement_Price_Calculator {
 
 
 	/**
-	 * Filter Measurement Price Calculator products to apply member discounts.
+	 * Filters Measurement Price Calculator products to apply member discounts.
 	 *
 	 * @since 1.8.8
 	 */
@@ -45,7 +45,7 @@ class WC_Memberships_Integration_Measurement_Price_Calculator {
 
 
 	/**
-	 * Init Measurement Price Calculator product discounts.
+	 * Initializes Measurement Price Calculator product discounts.
 	 *
 	 * @see \WC_Memberships_Member_Discounts::init()
 	 *
@@ -62,10 +62,10 @@ class WC_Memberships_Integration_Measurement_Price_Calculator {
 			// handle the correct cart and checkout product subtotal according to filter in different WC versions
 			if ( SV_WC_Plugin_Compatibility::is_wc_version_lt_3_0() ) {
 				add_filter( 'woocommerce_get_price',                          array( $this, 'handle_product_cart_item_subtotal_price' ), 999, 2 );
-				add_filter( 'woocommerce_cart_item_price',                    array( $this, 'handle_product_cart_item_subtotal_price' ), 999, 2 );
 			} else {
 				add_filter( 'woocommerce_product_get_price',                  array( $this, 'handle_product_cart_item_subtotal_price' ), 999, 2 );
 			}
+			add_filter( 'woocommerce_cart_item_price',                        array( $this, 'handle_product_cart_item_subtotal_price' ), 999, 2 );
 		}
 	}
 
@@ -144,13 +144,32 @@ class WC_Memberships_Integration_Measurement_Price_Calculator {
 		     && $settings->is_pricing_calculator_enabled()
 		     && $discounts->user_has_member_discount( $product ) ) {
 
-			if ( 'woocommerce_cart_item_price' === $filter && 'dimensions' !== $settings->get_calculator_type() ) {
-				$price = $raw_price;
+			if ( SV_WC_Plugin_Compatibility::is_wc_version_gte_3_0() ) {
+
+				if ( 'woocommerce_cart_item_price' === $filter && 'dimensions' !== $settings->get_calculator_type() ) {
+					$price = $settings->pricing_rules_enabled() ? $raw_price : $discounts->get_discounted_price( $raw_price, $product );
+				} elseif ( $settings->pricing_rules_enabled() ) {
+					$price = $discounts->get_original_price( $raw_price, $product );
+				}
+
 			} else {
-				$price = $discounts->get_original_price( $raw_price, $product );
+
+				if ( 'woocommerce_cart_item_price' === $filter && 'dimensions' !== $settings->get_calculator_type() ) {
+
+					$price = $settings->pricing_rules_enabled() ? $discounts->get_original_price( $raw_price, $product ) : $raw_price;
+
+				} elseif ( is_cart() || is_checkout() ) {
+
+					if ( $settings->pricing_rules_enabled() ) {
+						do_action( 'wc_memberships_discounts_disable_price_adjustments' );
+						do_action( 'wc_memberships_discounts_disable_price_html_adjustments' );
+					}
+
+					$price = $discounts->get_original_price( $raw_price, $product );
+				}
 			}
 
-			// when filtering in WC <= 2.6 we need to return a string
+			// when filtering cart item price we need to return a string
 			if ( 'woocommerce_cart_item_price' === $filter ) {
 				$price = wc_price( $price );
 			}
@@ -194,9 +213,6 @@ class WC_Memberships_Integration_Measurement_Price_Calculator {
 				$price = $min_price = $discounts->get_discounted_price( $mpc_settings->get_pricing_rules_minimum_price(),         $product );
 				$min_regular_price  = $discounts->get_discounted_price( $mpc_settings->get_pricing_rules_minimum_regular_price(), $product );
 				$max_price          = $discounts->get_discounted_price( $mpc_settings->get_pricing_rules_maximum_price(),         $product );
-
-				// put our filter back
-				add_filter( 'wc_measurement_price_calculator_settings_rule', array( $this, 'apply_discounts_to_settings_rule_prices' ), 999, 2 );
 
 				if ( $price > 0 ) {
 
@@ -252,7 +268,7 @@ class WC_Memberships_Integration_Measurement_Price_Calculator {
 
 
 	/**
-	 * Return the HTML price range for sale and discount prices.
+	 * Returns the HTML price range for sale and discount prices.
 	 *
 	 * @since 1.8.8
 	 *

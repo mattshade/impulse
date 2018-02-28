@@ -23,10 +23,13 @@ get_header(); ?>
 			<main id="main" class="site-main col-xs-12 <?php if ( 'none' !== esc_attr( listify_theme_mod( 'content-sidebar-position', 'right' ) ) && is_active_sidebar( 'widget-area-sidebar-1' ) ) : ?>col-sm-7 col-md-8<?php endif; ?>" role="main">
 
 				<?php while ( have_posts() ) : the_post(); ?>
-
+<?php the_meta(); ?>
 					<?php get_template_part( 'content' ); ?>
 
+					<?php if ( is_user_logged_in() ): ?>
+
 					<?php comments_template(); ?>
+					<?php endif; ?>
 
 				<?php endwhile; ?>
 

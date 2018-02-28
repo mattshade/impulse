@@ -159,21 +159,27 @@ class Advanced_Ads_Admin_Notices {
 		$options = $this->options();
 		$closed = isset($options['closed']) ? $options['closed'] : array();
 		$queue = isset($options['queue']) ? $options['queue'] : array();
+		$paused = isset($options['paused']) ? $options['paused'] : array();
 		
 		// register intro message
 		if( $options === array() && ! in_array( 'nl_intro', $queue ) && ! isset( $closed['nl_intro'] ) ){
 			$this->notices[] = 'nl_intro';
 		}
 		// offer free add-ons if not yet subscribed
-		if ( ! $this->is_subscribed() && ! in_array( 'nl_free_addons', $queue ) && ! isset( $closed['nl_free_addons'] )) {
+		if ( $this->user_can_subscribe(  ) && ! in_array( 'nl_free_addons', $queue ) && ! isset( $closed['nl_free_addons'] )) {
 			// get number of ads
 			if( Advanced_Ads::get_number_of_ads() ){
 				$this->notices[] = 'nl_free_addons';
 			}
 		}
-		// ask for a review after 5 days
-		if ( 432000 < ( time() - $activation) && ! in_array( 'review', $queue ) && ! isset( $closed['review'] )) {
-			$this->notices[] = 'review';
+		// ask for a review after 5 days and when 3 ads were created and when not paused
+		if ( ! in_array( 'review', $queue ) 
+                        && ! isset( $closed['review'] )
+                        && ( ! isset( $paused['review'] ) || $paused['review'] <= time() )
+                        && 432000 < ( time() - $activation)
+			&& 3 <= Advanced_Ads::get_number_of_ads()
+                            ) {
+                            $this->notices[] = 'review';
 		}
 	}
 
@@ -196,15 +202,6 @@ class Advanced_Ads_Admin_Notices {
 		    }
 		} else {
 		    $this->remove_from_queue( 'license_invalid' );
-		}
-
-		// check expired licenses
-		if ( Advanced_Ads_Checks::licenses_expired() ){
-		    if( ! in_array( 'license_expired', $queue )) {
-			$this->notices[] = 'license_expired';
-		    }
-		} else {
-			$this->remove_from_queue( 'license_expired' );
 		}
 	}
 
@@ -282,6 +279,7 @@ class Advanced_Ads_Admin_Notices {
 		}
 		$queue = (array) $options['queue'];
 		$closed = isset($options['closed']) ? $options['closed'] : array();
+		$paused = isset($options['paused']) ? $options['paused'] : array();
 
 		$key = array_search( $notice, $queue );
 		if ( $key !== false ) {
@@ -292,11 +290,58 @@ class Advanced_Ads_Admin_Notices {
 		if( ! isset( $closed[$notice] )){
 		    $closed[$notice] = time();
 		}
+		// remove from pause
+		if( isset( $paused[$notice] ) ){
+		    unset( $paused[$notice] );
+		}
 		
 		// update db
 		$options['queue'] = $queue;
 		$options['closed'] = $closed;
+		$options['paused'] = $paused;
 		
+		
+		// only update if changed
+		if( $options_before !== $options ){
+		    $this->update_options( $options );
+		    // update already registered notices
+		    $this->load_notices();
+		}
+	}
+	
+	/**
+	 *  hide any notice for a given time
+	 *  move notice into "paused" with notice as key and timestamp as value
+	 *
+	 * @since 1.8-17
+	 * @param str $notice notice to be paused
+	 */
+	public function hide_notice($notice) {
+		if ( ! isset($notice) ) {
+			return;
+		}
+
+		// get queue from options
+		$options_before = $options = $this->options();
+		if ( ! isset($options['queue']) ) {
+			return;
+		}
+		$queue = (array) $options['queue'];
+		$paused = isset($options['paused']) ? $options['paused'] : array();
+
+		$key = array_search( $notice, $queue );
+		if ( $key !== false ) {
+			unset($queue[$key]);
+		}
+		// close message with timestamp in 7 days
+		// don’t close again twice
+		if( ! isset( $paused[$notice] )){
+		    $paused[$notice] = time() + WEEK_IN_SECONDS;
+		}
+		
+		// update db
+		$options['queue'] = $queue;
+		$options['paused'] = $paused;
 		
 		// only update if changed
 		if( $options_before !== $options ){
@@ -457,6 +502,38 @@ class Advanced_Ads_Admin_Notices {
 
 		$subscribed = get_user_meta($user_id, 'advanced-ads-subscribed', true);
 		return $subscribed;
+	}
+	
+	/**
+	 * check if a usesr can be subscribed to our newsletter
+	 * check if is already subscribed or email is invalid
+	 * 
+	 * @return bool true if user can subscribe
+	 */
+	public function user_can_subscribe( ){
+	    
+		/**
+		 * respect previous settings
+		 */
+		$options = $this->options();
+		if ( isset($options['is_subscribed'] ) ) {
+		    return true;
+		}
+
+		$current_user = wp_get_current_user();
+		
+		if( empty( $current_user->ID ) || empty( $current_user->user_email ) ) {
+		    return false;
+		}
+
+		$subscribed = get_user_meta( $current_user->ID, 'advanced-ads-subscribed', true);
+		
+		// secureserver.net email address belong to GoDaddy (?) and have very, very low open rates. Seems like only temporary setup
+		return ( ! $subscribed 
+			&& is_email( $current_user->user_email ) 
+			&& false === strpos( $current_user->user_email, 'secureserver.net' ) ) 
+			? true : false;
+		
 	}
 
 	/**

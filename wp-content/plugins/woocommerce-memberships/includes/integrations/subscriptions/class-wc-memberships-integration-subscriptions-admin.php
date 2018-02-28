@@ -18,14 +18,14 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Admin integration class for WooCommerce Subscriptions
+ * Admin integration class for WooCommerce Subscriptions.
  *
  * @since 1.6.0
  */
@@ -33,14 +33,14 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 
 
 	/**
-	 * Add admin hooks
+	 * Adds admin hooks.
 	 *
 	 * @since 1.6.0
 	 */
 	public function __construct() {
 
 		// display subscription or membership details accordingly
-		add_action( 'wc_memberships_after_user_membership_billing_details',    array( $this, 'output_subscription_details' ), 10, 1 );
+		add_filter( 'wc_memberships_user_membership_billing_details',          array( $this, 'add_subscription_details' ), 10, 2 );
 		add_action( 'wc_membership_plan_options_membership_plan_data_general', array( $this, 'output_subscription_options' ) );
 		add_action( 'wc_memberships_restriction_rule_access_schedule_field',   array( $this, 'output_exclude_trial_option' ), 10, 2 );
 
@@ -65,11 +65,12 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 
 
 	/**
-	 * Add a subscription_id column to CSV export headers
+	 * Adds a subscription_id column to CSV export headers
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param array $headers
 	 * @return array
 	 */
@@ -88,14 +89,15 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 
 
 	/**
-	 * Export the subscription id in CSV
+	 * Exports the subscription ID in Memberships CSV Export.
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.0
-	 * @param string $value The value for the CSV column in output
-	 * @param string $column The matching CSV column
-	 * @param \WC_Memberships_User_Membership $user_membership The User Membership being exported
+	 *
+	 * @param string $value the value for the CSV column in output
+	 * @param string $column the matching CSV column
+	 * @param \WC_Memberships_User_Membership $user_membership the User Membership being exported
 	 * @return string
 	 */
 	public function export_user_membership_subscription_id( $value = '', $column, $user_membership ) {
@@ -113,16 +115,17 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 
 
 	/**
-	 * Adds a subscription id to be added to the data to be processed on a import
+	 * Adds a Subscription ID to be added to the data to be processed on a import with Memberships Import.
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.0
-	 * @param array $import_data Data to import to create or update a membership
-	 * @param string $action Create or merge a membership
-	 * @param array $columns The CSV columns
-	 * @param array $row The CSV row being processed
-	 * @return array
+	 *
+	 * @param array $import_data data to import to create or update a membership
+	 * @param string $action create or merge a membership
+	 * @param array $columns the CSV columns
+	 * @param array $row the CSV row being processed
+	 * @return array data
 	 */
 	public function import_user_membership_data( array $import_data, $action, array $columns, array $row ) {
 
@@ -143,14 +146,14 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 
 
 	/**
-	 * Import the subscription id for a user membership
+	 * Imports the subscription ID for a User Membership when using Memberships Import.
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.0
-	 * @param \WC_Memberships_User_Membership $user_membership The user membership
-	 * @param string $action Either 'create' or 'renew'
-	 * @param array $data Import data
+	 * @param \WC_Memberships_User_Membership $user_membership the user membership
+	 * @param string $action either 'create' or 'renew'
+	 * @param array $data import data
 	 */
 	public function import_user_membership_subscription_id( $user_membership, $action, $data ) {
 
@@ -189,12 +192,13 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 
 
 	/**
-	 * Get subscription expiry date
+	 * Returns a subscription's expiry date.
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.0
-	 * @param \WC_Subscription|null $subscription A subscription object
+	 *
+	 * @param \WC_Subscription|null $subscription a subscription object
 	 * @return string
 	 */
 	private function get_subscription_expiration( $subscription = null ) {
@@ -203,13 +207,14 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 
 
 	/**
-	 * Get the edit subscription input HTML
+	 * Returns the edit subscription input HTML.
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.0
-	 * @param \WC_Memberships_User_Membership $user_membership The membership object
-	 * @param \WC_Subscription|null $subscription The subscription object
+	 *
+	 * @param \WC_Memberships_User_Membership $user_membership the membership object
+	 * @param \WC_Subscription|null $subscription the subscription object
 	 * @return string HTML
 	 */
 	private function get_edit_subscription_input( $user_membership, $subscription = null ) {
@@ -224,7 +229,7 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 		} else {
 			$selected        = array();
 			$subscription_id = '';
-			$subscription_link = esc_html__( 'Membership not linked to a Subscription', 'woocommerce-subscription' );
+			$subscription_link = esc_html__( 'Membership not linked to a Subscription', 'woocommerce-memberships' );
 		}
 
 		/* translators: Placeholders: %1$s - link to a Subscription, %2$s - opening <a> HTML tag, %3%s - closing </a> HTML tag */
@@ -237,7 +242,7 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 		ob_start();
 
 		?><br>
-		<span class="wc-memberships-edit-subscription-link-field" style="display: none;">
+		<span class="wc-memberships-edit-subscription-link-field">
 
 			<?php if ( SV_WC_Plugin_Compatibility::is_wc_version_gte_3_0() ) : ?>
 
@@ -245,7 +250,6 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 					class="sv-wc-enhanced-search"
 					id="_subscription_id"
 					name="_subscription_id"
-					style="min-width: 300px; max-width: 400px;"
 					data-action="wc_memberships_edit_membership_subscription_link"
 					data-nonce="<?php echo wp_create_nonce( 'edit-membership-subscription-link' ); ?>"
 					data-placeholder="<?php esc_attr_e( 'Link to a Subscription or keep empty to leave unlinked', 'woocommerce-memberships' ); ?>"
@@ -262,7 +266,6 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 					class="sv-wc-enhanced-search"
 					id="_subscription_id"
 					name="_subscription_id"
-					style="min-width: 300px; max-width: 400px;"
 					data-action="wc_memberships_edit_membership_subscription_link"
 					data-nonce="<?php echo wp_create_nonce( 'edit-membership-subscription-link' ); ?>"
 					data-placeholder="<?php esc_attr_e( 'Link to a Subscription or keep empty to leave unlinked', 'woocommerce-memberships' ); ?>"
@@ -282,7 +285,7 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 
 		// toggle editing of subscription id link
 		wc_enqueue_js( '
-			$( ".js-edit-subscription-link-toggle" ).on( "click", function() { $( ".wc-memberships-edit-subscription-link-field" ).toggle(); } );
+			$( ".js-edit-subscription-link-toggle" ).on( "click", function( e ) { e.preventDefault(); $( ".wc-memberships-edit-subscription-link-field" ).toggle(); } ).click();
 		' );
 
 		return $input;
@@ -290,17 +293,20 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 
 
 	/**
-	 * Display subscription details in edit membership screen
+	 * Adds subscription details to the edit membership screen billing details section.
 	 *
 	 * @internal
 	 *
-	 * @since 1.6.0
-	 * @param \WC_Memberships_User_Membership $user_membership Post object
+	 * @since 1.9.0
+	 *
+	 * @param array $fields an associative array of billing detail fields, in format label => field html
+	 * @param \WC_Memberships_User_Membership $user_membership post object
+	 * @return array
 	 */
-	public function output_subscription_details( $user_membership ) {
+	public function add_subscription_details( $fields, $user_membership ) {
 
 		if ( ! $user_membership instanceof WC_Memberships_User_Membership ) {
-			return;
+			return $fields;
 		}
 
 		$integration     = wc_memberships()->get_integrations_instance()->get_subscriptions_instance();
@@ -314,16 +320,8 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 
 		$edit_subscription_input = $this->get_edit_subscription_input( $user_membership, $subscription );
 
-		?>
-		<p class="form-field billing-detail">
-			<label><?php esc_html_e( 'Subscription:', 'woocommerce-memberships' ); ?></label>
-			<?php echo $edit_subscription_input; ?>
-		</p>
-		<p class="form-field billing-detail">
-			<label><?php esc_html_e( 'Next Bill On:', 'woocommerce-memberships' ); ?></label>
-			<?php echo $next_payment ? date_i18n( wc_date_format(), $next_payment ) : esc_html__( 'N/A', 'woocommerce-memberships' ); ?>
-		</p>
-		<?php
+		$fields[ __( 'Subscription:', 'woocommerce-memberships' ) ] = $edit_subscription_input;
+		$fields[ __( 'Next Bill On:', 'woocommerce-memberships' ) ] = $next_payment ? date_i18n( wc_date_format(), $next_payment ) : esc_html__( 'N/A', 'woocommerce-memberships' );
 
 		// maybe replace the expiration date input
 		if ( $subscription && $user_membership->get_plan_id() && ! $integration->get_plans_instance()->grant_access_while_subscription_active( $user_membership->get_plan_id() ) ) {
@@ -335,11 +333,13 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 				$( "._end_date_field" ).append( "<span>' . esc_html( $subscription_expires ) . '</span>" );
 			' );
 		}
+
+		return $fields;
 	}
 
 
 	/**
-	 * Display subscriptions options and JS in the membership plan edit screen
+	 * Displays subscriptions options and JS in the membership plan edit screen.
 	 *
 	 * @internal
 	 *
@@ -488,27 +488,26 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 		<?php
 
 		// check if a membership plan has subscription(s):
-		// if the current membership plan has at least one subscription product
-		// that grants access, enable the subscription-specific controls
+		// if the current membership plan has at least one subscription product that grants access, enable the subscription-specific controls
 		wc_enqueue_js( '
-			
+
 			var checkIfPlanHasPurchaseAccess = function() {
-			
+
 				var $access_method_options = $( ".plan-access-method-selectors" ).find( \'input[name="_access_method"]\' );
 
 				$access_method_options.on( "change", function( e ) {
-					
+
 					if ( "purchase" !== $( this ).val() ) {
 						$( ".plan-access-length-field" ).show();
-						$( ".plan-subscription-access-length-field" ).hide();						
-						checkIfPlanHasSubscription(); 
+						$( ".plan-subscription-access-length-field" ).hide();
+						checkIfPlanHasSubscription();
 					} else {
 						$( ".plan-subscription-access-length-field" ).show();
-						checkIfPlanHasSubscription(); 
+						checkIfPlanHasSubscription();
 					}
 				} );
 			}
-			
+
 			var checkIfPlanHasSubscription = function() {
 
 				var product_ids = $( "#_product_ids" ).val() || [];
@@ -541,7 +540,7 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 				checkIfPlanHasPurchaseAccess();
 				checkIfPlanHasSubscription();
 			} );
-			
+
 			var $access_length_input     = $( ".plan-subscription-access-length-selectors" ),
 			    $access_length_options   = $access_length_input.find( \'input[name="_subscription_access_length"]\' ),
 			    $access_length_field     = $access_length_input.closest( "p.form-field" ),
@@ -553,33 +552,33 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 			$access_length_options.on( "change", function( e ) {
 
 				var access_length = $( this ).val();
-				
+
 				$subscription_length_tip.hide();
 				$unlimited_length_tip.hide();
-				
+
 				$fixed_length_input.addClass( "hide" );
 				$specific_length_input.addClass( "hide" );
-				
+
 				switch ( access_length ) {
-					
+
 					case "specific" :
 						$specific_length_input.removeClass( "hide" );
 					break;
-					
+
 					case "fixed" :
 						$fixed_length_input.removeClass( "hide" );
 					break;
-		
+
 					case "subscription" :
 					default :
 						$subscription_length_tip.show();
 					break;
-					
+
 					case "unlimited" :
 						$unlimited_length_tip.show();
-					break;	
-				
-				} 
+					break;
+
+				}
 			} );
 		' );
 
@@ -596,15 +595,15 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 
 
 	/**
-	 * Display subscriptions options for a restriction rule
+	 * Displays subscriptions options for a restriction rule.
 	 *
-	 * This method will be called both in the membership plan screen
-	 * as well as on any individual product screens
+	 * This method will be called both in the membership plan screen, as well as on any individual product screens.
 	 *
 	 * @internal
 	 *
 	 * @since 1.6.0
-	 * @param \WC_Memberships_Membership_Plan_Rule $rule Rule object
+	 *
+	 * @param \WC_Memberships_Membership_Plan_Rule $rule rule object
 	 * @param int|string $index
 	 */
 	public function output_exclude_trial_option( $rule, $index ) {
@@ -619,7 +618,7 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 			<input type="checkbox"
 				   name="_<?php echo esc_attr( $type ); ?>_rules[<?php echo $index; ?>][access_schedule_exclude_trial]"
 				   id="_<?php echo esc_attr( $type ); ?>_rules_<?php echo $index; ?>_access_schedule_exclude_trial"
-				   value="yes" <?php checked( $rule->get_access_schedule_exclude_trial(), 'yes' ); ?>
+				   value="yes" <?php checked( $rule->is_access_schedule_excluding_trial(), true ); ?>
 				   class="access_schedule-exclude-trial"
 				   <?php if ( ! $rule->current_user_can_edit() ) : ?>disabled<?php endif; ?> />
 
@@ -633,13 +632,14 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 
 
 	/**
-	 * User membership admin post row actions
+	 * Adds User Membership admin post row actions.
 	 *
-	 * Filters the post row actions in the user memberships edit screen
+	 * Filters the post row actions in the user memberships edit screen.
 	 *
 	 * @internal
 	 *
 	 * @since 1.6.0
+	 *
 	 * @param array $actions
 	 * @param \WP_Post $post \WC_Memberships_User_Membership post object
 	 * @return array
@@ -667,14 +667,16 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 
 
 	/**
-	 * Customize the access length in membership plans edit screen
-	 * to display the access length for subscription-based plans
+	 * Customizes the access length in membership plans edit screen.
+	 *
+	 * Displays the access length for subscription-based plans.
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.0
-	 * @param string $column
-	 * @param int $post_id
+	 *
+	 * @param string $column column slug
+	 * @param int $post_id the current post ID
 	 */
 	public function membership_plan_screen_columns( $column, $post_id ) {
 		global $post;
@@ -705,15 +707,16 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 
 
 	/**
-	 * User membership meta box actions
+	 * Adds User Membership meta box actions.
 	 *
-	 * Filters the user membership meta box actions in admin
+	 * Filters the user membership meta box actions in admin.
 	 *
 	 * @internal
 	 *
 	 * @since 1.6.0
-	 * @param array $actions
-	 * @param int $user_membership_id \WC_Membership_User_Membership post id
+	 *
+	 * @param array $actions associative array
+	 * @param int $user_membership_id \WC_Membership_User_Membership post ID
 	 * @return array
 	 */
 	public function user_membership_meta_box_actions( $actions, $user_membership_id ) {
@@ -745,22 +748,22 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 
 
 	/**
-	 * Update User Membership data
+	 * Updates User Membership data when saving.
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param array $posted_data $_POST data
-	 * @param string $meta_box_id The id of the meta box being saved
-	 * @param int $post_id The Membership Plan id
+	 * @param string $meta_box_id the id of the meta box being saved
+	 * @param int $post_id the Membership Plan id
 	 */
 	public function update_user_membership_data( $posted_data, $meta_box_id, $post_id ) {
 
-		// Note: we need to instantiate plan object via post object
-		// and not simply the id in this metabox context.
+		// note: we need to instantiate plan object via post object and not simply the id in this metabox context
 		$membership_post = get_post( $post_id );
 
-		// Bail out if we are in the wrong meta box or for some reason post is invalid.
+		// bail out if we are in the wrong meta box or for some reason post is invalid
 		if ( 'wc-memberships-user-membership-data' !== $meta_box_id || ! $membership_post instanceof WP_Post ) {
 			return;
 		}
@@ -770,19 +773,19 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 		$subscription            = ! empty( $new_subscription_id ) ? wcs_get_subscription( $new_subscription_id ) : null;
 		$integration             = wc_memberships()->get_integrations_instance()->get_subscriptions_instance();
 
-		// The membership is already linked to a subscription.
+		// the membership is already linked to a subscription
 		if ( $integration->is_membership_linked_to_subscription( $subscription_membership ) ) {
 
 			$old_subscription_id = $subscription_membership->get_subscription_id();
 
 			if ( empty( $new_subscription_id ) ) {
 
-				// new id is void, unlink the membership from the subscription
+				// new ID is void, unlink the membership from the subscription
 				$integration->unlink_membership( $subscription_membership->get_id(), $old_subscription_id );
 
 			} elseif ( $new_subscription_id !== $old_subscription_id && $subscription ) {
 
-				// the two ids differ, link the membership to a new subscription
+				// the two IDs differ, link the membership to a new subscription
 				$subscription_membership->set_subscription_id( $new_subscription_id );
 
 				// maybe update the trial end date
@@ -806,14 +809,15 @@ class WC_Memberships_Integration_Subscriptions_Admin {
 
 
 	/**
-	 * Update Membership Plan data
+	 * Updates the Membership Plan data when saving.
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param array $posted_data $_POST data
-	 * @param string $meta_box_id The id of the meta box being saved
-	 * @param int $post_id The Membership Plan id
+	 * @param string $meta_box_id the ID of the meta box being saved
+	 * @param int $post_id the Membership Plan ID
 	 */
 	public function update_membership_plan_data( $posted_data, $meta_box_id, $post_id ) {
 

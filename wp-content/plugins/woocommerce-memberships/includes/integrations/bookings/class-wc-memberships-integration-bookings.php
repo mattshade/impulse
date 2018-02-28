@@ -18,7 +18,7 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
@@ -33,7 +33,7 @@ class WC_Memberships_Integration_Bookings {
 
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 */
@@ -51,9 +51,10 @@ class WC_Memberships_Integration_Bookings {
 
 
 	/**
-	 * Adjust booking cost
+	 * Adjusts booking cost.
 	 *
 	 * @since 1.3.0
+	 *
 	 * @param float $cost
 	 * @param \WC_Booking_Form $form
 	 * @param array $posted
@@ -73,7 +74,7 @@ class WC_Memberships_Integration_Bookings {
 
 
 	/**
-	 * Remove add to cart button for nun-purchasable booking products
+	 * Removes add to cart button for nun-purchasable booking products.
 	 *
 	 * TODO: remove this once WC Bookings fixes their is_purchasable implementation {FN 2016-06-20}
 	 *
@@ -83,9 +84,9 @@ class WC_Memberships_Integration_Bookings {
 		global $wp_filter, $product;
 
 		// get the restrictions class
-		$restrictions = wc_memberships()->get_frontend_instance()->get_restrictions_instance();
+		$restrictions = wc_memberships()->get_restrictions_instance();
 
-		if ( $restrictions && ! $restrictions->product_is_purchasable( true, $product ) ) {
+		if ( $restrictions && ! $restrictions->get_products_restrictions_instance()->product_is_purchasable( true, $product ) ) {
 
 			$tag = 'woocommerce_booking_add_to_cart';
 

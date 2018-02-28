@@ -6,6 +6,13 @@
  * @since 1.6.9
  */
 class Advanced_Ads_Checks {
+    
+	/**
+	 * show the list of potential issues
+	 */
+	public static function show_issues(){
+		include_once ADVADS_BASE_PATH . '/admin/views/checks.php';
+	}
 
 	/**
 	 * php version minimum 5.3
@@ -76,10 +83,11 @@ class Advanced_Ads_Checks {
 	 }
 
 	 /**
-	  * check if license keys are missing or invalid
+	  * check if license keys are missing or invalid or expired
 	  *
 	  * @since 1.6.6
 	  * @update 1.6.9 moved from Advanced_Ads_Plugin
+	  * @update 1.8.21 also check for expired licenses
 	  * @return true if there are missing licenses
 	  */
 	public static function licenses_invalid(){
@@ -92,6 +100,13 @@ class Advanced_Ads_Checks {
 
 	    foreach( $add_ons as $_add_on_key => $_add_on ){
 		    $status = Advanced_Ads_Admin_Licenses::get_instance()->get_license_status( $_add_on['options_slug'] );
+		    
+		    // check expiry date
+		    $expiry_date = Advanced_Ads_Admin_Licenses::get_instance()->get_license_expires( $_add_on['options_slug'] );
+
+		    if( $expiry_date && 'lifetime' !== $expiry_date && strtotime( $expiry_date ) < time() ){
+			    return true;
+		    }
 		    
 		    // don’t check if license is valid
 		    if( $status === 'valid' ) {
@@ -110,79 +125,7 @@ class Advanced_Ads_Checks {
 
 	    return false;
 	}
-
-	/**
-	 * check if license keys are going to expire within next 14 days
-	 *
-	 * @since 1.6.6
-	 * @update 1.6.9 moved from Advanced_Ads_Plugin
-	 * @return true if there are expiring licenses
-	 */
-	public static function licenses_expire(){
-
-	    $add_ons = apply_filters( 'advanced-ads-add-ons', array() );
-
-	    if( $add_ons === array() ) {
-		    return false;
-	    }
-
-	    $now = time();
-
-	    foreach( $add_ons as $_add_on_key => $_add_on ){
-		    // don’t display error for invalid licenses
-		    if(Advanced_Ads_Admin_Licenses::get_instance()->get_license_status( $_add_on['options_slug'] ) === 'invalid' ) {
-			    continue;
-		    }
-
-		    $expiry_date = Advanced_Ads_Admin_Licenses::get_instance()->get_license_expires( $_add_on['options_slug'] );
-
-		    if( $expiry_date && 'lifetime' !== $expiry_date ){
-			    $expiry_date_t = strtotime( $expiry_date );
-			    $in_two_weeks = time() + ( WEEK_IN_SECONDS * 2) ;
-			    // check if expiry date is within next comming 2 weeks
-			    if( $expiry_date_t < $in_two_weeks && $expiry_date_t >= $now ){
-				    return true;
-			    }
-
-		    }
-	    }
-
-	    return false;
-	}
-
-	/**
-	 * check if license keys are already expired
-	 *
-	 * @since 1.6.6
-	 * @update 1.6.9 moved from Advanced_Ads_Plugin
-	 * @return true if there are expired licenses
-	 */
-	public static function licenses_expired(){
-
-	    $add_ons = apply_filters( 'advanced-ads-add-ons', array() );
-
-	    if( $add_ons === array() ) {
-		    return false;
-	    }
-
-	    $now = time();
-
-	    foreach( $add_ons as $_add_on_key => $_add_on ){
-		    // don’t display error for invalid licenses
-		    if(Advanced_Ads_Admin_Licenses::get_instance()->get_license_status( $_add_on['options_slug'] ) === 'invalid' ) {
-			    continue;
-		    }
-
-		    $expiry_date = Advanced_Ads_Admin_Licenses::get_instance()->get_license_expires( $_add_on['options_slug'] );
-
-		    if( $expiry_date && 'lifetime' !== $expiry_date && strtotime( $expiry_date ) < $now ){
-			    return true;
-		    }
-	    }
-
-	    return false;
-	}
-
+	
 	/**
 	 * Autoptimize plugin installed
 	 *   can change ad tags, especially inline css and scripts
@@ -208,8 +151,20 @@ class Advanced_Ads_Checks {
 
 		$conflicting_plugins = array();
 
-		if( defined( 'Publicize_Base' )){ // JetPack Publicize module
+		if( defined( 'Publicize_Base' ) ){ // JetPack Publicize module
 			$conflicting_plugins[] = 'Jetpack – Publicize';
+		}
+		if( defined( 'PF__PLUGIN_DIR' ) ){ // Facebook Instant Articles & Google AMP Pages by PageFrog
+			$conflicting_plugins[] = 'Facebook Instant Articles & Google AMP Pages by PageFrog';
+		}
+		if( defined( 'GT_VERSION' ) ){ // GT ShortCodes
+			$conflicting_plugins[] = 'GT ShortCodes';
+		}
+		if( class_exists( 'ITSEC_Core', false ) && defined ( 'AAP_VERSION' ) ){ // iThemes Security, but only if Pro is enabled
+			$conflicting_plugins[] = 'iThemes Security';
+		}
+		if( class_exists('q2w3_fixed_widget', false) ){ // Q2W3 Fixed Widget
+			$conflicting_plugins[] = 'Q2W3 Fixed Widget';
 		}
 
 		return $conflicting_plugins;
@@ -217,6 +172,7 @@ class Advanced_Ads_Checks {
 	
 	/**
 	 * check if any of the global hide ads options is set
+	 * ignore feed setting, because it is standard
 	 * 
 	 * @since 1.7.10
 	 * @return bool
@@ -224,13 +180,35 @@ class Advanced_Ads_Checks {
 	public static function ads_disabled(){
 		$options = Advanced_Ads::get_instance()->options();
 		if( isset( $options['disabled-ads'] ) && is_array( $options['disabled-ads'] ) ){
-			foreach( $options['disabled-ads'] as $_value ){
-				if( !empty( $_value ) ){
+			foreach( $options['disabled-ads'] as $_key => $_value ){
+				// don’t warn if "feed" and "404" option are enabled, because they are normally not critical
+				if( !empty( $_value ) && !in_array($_key, array( 'feed', '404') ) ){
 					return true;
 				}
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * check for required php extensions
+	 * 
+	 * @since 1.8.21
+	 * @return bool
+	 */
+	public static function php_extensions(){
+		
+		$missing_extensions = array();
+		
+		if( !extension_loaded('dom') ){
+		    $missing_extensions[] = 'dom';
+		}
+		
+		if( !extension_loaded('xml') ){
+		    $missing_extensions[] = 'xml';
+		}
+		
+		return $missing_extensions;
 	}
 	
 	

@@ -1,133 +1,107 @@
-# Copyright (C) 2017 Kathy Darling
+# Copyright (C) 2018 Kathy Darling
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: WooCommerce Name Your Price 2.6.0\n"
+"Project-Id-Version: WooCommerce Name Your Price 2.7.1\n"
 "Report-Msgid-Bugs-To: https://woocommerce.com/my-account/tickets/\n"
-"POT-Creation-Date: 2017-08-02 20:07:28+00:00\n"
+"POT-Creation-Date: 2018-02-11 17:45:57+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2017-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2018-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"X-Generator: grunt-wp-i18n1.0.0\n"
+"X-Generator: grunt-wp-i18n1.0.1\n"
 
-#: includes/admin/class-name-your-price-admin.php:84
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:464
+#: includes/admin/class-name-your-price-admin.php:87
 msgid "Enter a value"
 msgstr ""
 
-#: includes/admin/class-name-your-price-admin.php:85
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:465
+#: includes/admin/class-name-your-price-admin.php:88
 msgid "Enter a value (fixed or %)"
 msgstr ""
 
-#: includes/admin/class-name-your-price-admin.php:112
 #: includes/admin/class-name-your-price-admin.php:115
-#: includes/admin/class-name-your-price-admin.php:187
-#: includes/admin/class-name-your-price-admin.php:295
+#: includes/admin/class-name-your-price-admin.php:118
+#: includes/admin/class-name-your-price-admin.php:190
+#: includes/admin/class-name-your-price-admin.php:298
 #: includes/admin/class-wc-settings-nyp.php:25
 #: includes/admin/class-wc-settings-nyp.php:69
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:83
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:236
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:353
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:492
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:495
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:567
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:675
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:61
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:234
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:334
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:64
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:251
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:351
 #: templates/single-product/price-input.php:18
 msgid "Name Your Price"
 msgstr ""
 
-#: includes/admin/class-name-your-price-admin.php:117
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:497
+#: includes/admin/class-name-your-price-admin.php:120
 msgid ""
 "In the \"Product Meta\" metabox, check the Name Your Price checkbox to "
 "allow your customers to enter their own price."
 msgstr ""
 
-#: includes/admin/class-name-your-price-admin.php:119
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:499
+#: includes/admin/class-name-your-price-admin.php:122
 msgid ""
 "As of Name Your Price version 2.0, this ability is available for "
 "\"Simple\", \"Subscription\", \"Bundled\", \"Variable\" and \"Variable "
 "Subscriptions\" Products."
 msgstr ""
 
-#: includes/admin/class-name-your-price-admin.php:121
-#: includes/admin/class-name-your-price-admin.php:299
-#: includes/admin/class-name-your-price-admin.php:301
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:120
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:501
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:679
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:681
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:100
+#: includes/admin/class-name-your-price-admin.php:124
+#: includes/admin/class-name-your-price-admin.php:302
+#: includes/admin/class-name-your-price-admin.php:304
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:103
 msgid "Suggested Price"
 msgstr ""
 
-#: includes/admin/class-name-your-price-admin.php:123
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:503
+#: includes/admin/class-name-your-price-admin.php:126
 msgid ""
 "This is the price you'd like to suggest to your customers.  The Name Your "
 "Price input will be prefilled with this value.  To not suggest a price at "
 "all, you may leave this field blank."
 msgstr ""
 
-#: includes/admin/class-name-your-price-admin.php:125
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:505
+#: includes/admin/class-name-your-price-admin.php:128
 msgid "This value must be a positive number."
 msgstr ""
 
-#: includes/admin/class-name-your-price-admin.php:127
-#: includes/admin/class-name-your-price-admin.php:305
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:141
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:507
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:685
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:121
+#: includes/admin/class-name-your-price-admin.php:130
+#: includes/admin/class-name-your-price-admin.php:308
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:125
 msgid "Minimum Price"
 msgstr ""
 
-#: includes/admin/class-name-your-price-admin.php:129
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:509
+#: includes/admin/class-name-your-price-admin.php:132
 msgid ""
 "This is the lowest price you are willing to accept for this product.  To "
 "not enforce a minimum (ie: to accept any price, including zero), you may "
 "leave this field blank."
 msgstr ""
 
-#: includes/admin/class-name-your-price-admin.php:131
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:511
+#: includes/admin/class-name-your-price-admin.php:134
 msgid ""
 "This value must be a positive number that is less than or equal to the set "
 "suggested price."
 msgstr ""
 
-#: includes/admin/class-name-your-price-admin.php:133
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:513
+#: includes/admin/class-name-your-price-admin.php:136
 msgid "Subscriptions"
 msgstr ""
 
-#: includes/admin/class-name-your-price-admin.php:135
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:515
+#: includes/admin/class-name-your-price-admin.php:138
 msgid ""
 "If you have a name your price subscription product, the subscription time "
 "period fields are still needed, but the price will be disabled in lieu of "
 "the Name Your Price suggested and minimum prices."
 msgstr ""
 
-#: includes/admin/class-name-your-price-admin.php:137
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:517
+#: includes/admin/class-name-your-price-admin.php:140
 msgid ""
 "As of Name Your Price version 2.0, you can now allow variable billing "
 "periods."
 msgstr ""
 
-#: includes/admin/class-name-your-price-admin.php:307
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:687
+#: includes/admin/class-name-your-price-admin.php:310
 msgid "Minimum price"
 msgstr ""
 
@@ -172,7 +146,7 @@ msgid "This is the text that appears on the Add to Cart buttons on the Shop Page
 msgstr ""
 
 #: includes/admin/class-wc-settings-nyp.php:79
-#: includes/class-wc-name-your-price-display.php:270
+#: includes/class-wc-name-your-price-display.php:283
 msgid "Set Price"
 msgstr ""
 
@@ -187,7 +161,7 @@ msgid ""
 msgstr ""
 
 #: includes/admin/class-wc-settings-nyp.php:89
-#: includes/class-wc-name-your-price-display.php:201
+#: includes/class-wc-name-your-price-display.php:215
 msgid "Add to Cart"
 msgstr ""
 
@@ -199,139 +173,127 @@ msgstr ""
 msgid "Disable Name Your Price Stylesheet"
 msgstr ""
 
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:84
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:236
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:62
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:234
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:65
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:251
 msgid "Customers are allowed to determine their own price."
 msgstr ""
 
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:112
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:92
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:95
 msgid "Variable Billing Period"
 msgstr ""
 
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:113
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:93
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:96
 msgid "Allow the customer to set the billing period."
 msgstr ""
 
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:122
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:102
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:105
 msgid "Price to pre-fill for customers.  Leave blank to not suggest a price."
 msgstr ""
 
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:131
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:151
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:111
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:131
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:114
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:135
 msgid "per"
 msgstr ""
 
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:143
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:123
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:127
 msgid ""
 "Lowest acceptable price for product. Leave blank to not enforce a minimum. "
 "Must be less than or equal to the set suggested price."
 msgstr ""
 
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:259
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:274
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:259
-#: includes/class-wc-name-your-price-helpers.php:368
-#: includes/legacy/class-wc-name-your-price-helpers.php:464
-msgid "Suggested Price:"
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:146
+msgid "Hide the minimum price"
 msgstr ""
 
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:263
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:278
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:263
-#: includes/class-wc-name-your-price-helpers.php:329
-#: includes/legacy/class-wc-name-your-price-helpers.php:425
-msgid "Minimum Price:"
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:147
+msgid "Option to not show the minimum price on the front end."
 msgstr ""
 
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:354
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:335
-msgid "Toggle &quot;Name Your Price&quot;"
-msgstr ""
-
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:355
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:336
-msgid "Set suggested prices"
-msgstr ""
-
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:356
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:337
-msgid "Increase suggested prices (fixed amount or %)"
-msgstr ""
-
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:357
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:338
-msgid "Decrease suggested prices (fixed amount or %)"
-msgstr ""
-
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:358
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:339
-msgid "Set minimum prices"
-msgstr ""
-
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:359
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:340
-msgid "Increase minimum prices (fixed amount or %)"
-msgstr ""
-
-#: includes/admin/legacy/class-name-your-price-admin-legacy.php:360
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:341
-msgid "Decrease minimum prices (fixed amount or %)"
-msgstr ""
-
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:188
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:201
 msgid ""
 "The minimum price should not be higher than the suggested price for Name "
 "Your Price products. Please review your prices."
 msgstr ""
 
-#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:315
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:276
+#: includes/class-wc-name-your-price-helpers.php:370
+msgid "Suggested Price:"
+msgstr ""
+
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:280
+#: includes/class-wc-name-your-price-helpers.php:329
+msgid "Minimum Price:"
+msgstr ""
+
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:332
 msgid ""
 "The minimum price should not be higher than the suggested price for Name "
 "Your Price variations. Please review your prices."
 msgstr ""
 
-#: includes/class-wc-name-your-price-helpers.php:699
-#: includes/legacy/class-wc-name-your-price-helpers.php:853
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:352
+msgid "Toggle &quot;Name Your Price&quot;"
+msgstr ""
+
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:353
+msgid "Set suggested prices"
+msgstr ""
+
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:354
+msgid "Increase suggested prices (fixed amount or %)"
+msgstr ""
+
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:355
+msgid "Decrease suggested prices (fixed amount or %)"
+msgstr ""
+
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:356
+msgid "Set minimum prices"
+msgstr ""
+
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:357
+msgid "Increase minimum prices (fixed amount or %)"
+msgstr ""
+
+#: includes/admin/meta-boxes/class-wc-nyp-meta-box-product-data.php:358
+msgid "Decrease minimum prices (fixed amount or %)"
+msgstr ""
+
+#: includes/class-wc-name-your-price-helpers.php:773
 msgid ""
 "&quot;%%TITLE%%&quot; could not be added to the cart: Please enter a valid, "
 "positive number."
 msgstr ""
 
-#: includes/class-wc-name-your-price-helpers.php:700
-#: includes/legacy/class-wc-name-your-price-helpers.php:854
+#: includes/class-wc-name-your-price-helpers.php:774
 msgid ""
 "&quot;%%TITLE%%&quot; could not be added to the cart: Please enter at least "
 "%%MINIMUM%%."
 msgstr ""
 
-#: includes/class-wc-name-your-price-helpers.php:701
-#: includes/legacy/class-wc-name-your-price-helpers.php:855
+#: includes/class-wc-name-your-price-helpers.php:775
 msgid "Please enter at least %%MINIMUM%%"
 msgstr ""
 
-#: woocommerce-name-your-price.php:90 woocommerce-name-your-price.php:99
-msgid "Cheatin&#8217; huh?"
+#: woocommerce-name-your-price.php:86
+msgid "Cloning this object is forbidden."
 msgstr ""
 
-#: woocommerce-name-your-price.php:210
+#: woocommerce-name-your-price.php:95
+msgid "Unserializing instances of this class is forbidden."
+msgstr ""
+
+#: woocommerce-name-your-price.php:202
 msgid ""
 "WooCommerce Name Your Price requires at least WooCommerce %s in order to "
 "function. Please upgrade WooCommerce."
 msgstr ""
 
-#: woocommerce-name-your-price.php:267
+#: woocommerce-name-your-price.php:255
 msgid "Go to the settings page"
 msgstr ""
 
-#: woocommerce-name-your-price.php:267
+#: woocommerce-name-your-price.php:255
 msgid "Settings"
 msgstr ""
 
@@ -340,7 +302,7 @@ msgid "WooCommerce Name Your Price"
 msgstr ""
 
 #. Plugin URI of the plugin/theme
-msgid "http://www.woothemes.com/products/name-your-price/"
+msgid "http://www.woocommerce.com/products/name-your-price/"
 msgstr ""
 
 #. Description of the plugin/theme
@@ -365,12 +327,6 @@ msgstr ""
 #: includes/admin/class-wc-settings-nyp.php:59
 msgctxt "minimum price"
 msgid "Minimum Price:"
-msgstr ""
-
-#: includes/class-wc-name-your-price-helpers.php:441
-#: includes/legacy/class-wc-name-your-price-helpers.php:536
-msgctxt "Variable subscription price, ex: $10 / day"
-msgid " %s / %s"
 msgstr ""
 
 #: templates/single-product/price-input.php:18

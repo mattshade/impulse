@@ -1,69 +1,66 @@
 jQuery( document ).ready( function($) {
 
-	/*
+	/**
 	 * woocommerce_nyp_update function
-	 * wraps all important nyp callbacks for plugins that maybe don't have elements available on load
+	 * Wraps all important nyp callbacks for plugins that maybe don't have elements available on load
 	 * ie: quickview, bundles, etc
 	 */
-
 	$.fn.woocommerce_nyp_update = function() {
 
-		/*
+		/**
 		 * Name Your Price Handler for individual items
 		 */
-
 		$( this ).on( 'woocommerce-nyp-update', function() {
 
-			// some important objects
+			// Some important objects.
 			var $cart 			= $( this );
 			var $nyp 			= $cart.find( '.nyp' );
 			var $nyp_input 		= $cart.find( '.nyp-input' );
 			var $submit 		= $cart.find(':submit');
+			var $ajax_cart_button 	= $cart.find('.ajax_add_to_cart');
 
-			// the current price
+			// The current price.
 			var form_price 	= $nyp_input.val();
 
-			// add a div to hold the error message
+			// Add a div to hold the error message.
 			var $error = $cart.find( '.woocommerce-nyp-message' );
 
 			if ( ! $error.length ){
-				$nyp.prepend( '<div class="woocommerce-nyp-message woocommerce-error" style="display:none"></div>' );
+				$('<div class="woocommerce-nyp-message woocommerce-error"></div>').hide().prependTo($nyp);
 			}
 
-			// the default error message
+			// The default error message.
 			var error_message = woocommerce_nyp_params.minimum_error;
 			var error = false;
-			var error_price = ''; // this will hold the formatted price for the error message
+			var error_price = ''; // This will hold the formatted price for the error message.
 
-			// convert price to default decimal setting for calculations
+			// Convert price to default decimal setting for calculations.
 			var form_price_num 	= woocommerce_nyp_unformat_price( form_price );
 
 			var min_price 			= parseFloat( $nyp.data( 'min-price' ) );
 			var annual_minimum	= parseFloat( $nyp.data( 'annual-minimum' ) );
 
-			// get variable billing period data
+			// Get variable billing period data.
 			var $nyp_period		= $cart.find( '.nyp-period' );
 			var form_period		= $nyp_period.val();
 
-			// if has variable billing period AND a minimum then we need to annulalize min price for comparison
+			// If has variable billing period AND a minimum then we need to annulalize min price for comparison.
 			if ( annual_minimum > 0 ){
 
-				// calculate the price over the course of a year for comparison
+				// Calculate the price over the course of a year for comparison.
 				form_annulualized_price = form_price_num * woocommerce_nyp_params.annual_price_factors[form_period];
 
-				// if the calculated annual price is less than the annual minimum
+				// If the calculated annual price is less than the annual minimum.
 				if( form_annulualized_price < annual_minimum ){
 
 					error = annual_minimum / woocommerce_nyp_params.annual_price_factors[form_period];
 
-					// in the case of variable period we need to adjust the error message a bit
+					// In the case of variable period we need to adjust the error message a bit.
 					error_price = woocommerce_nyp_format_price( error, woocommerce_nyp_params.currency_format_symbol ) + ' / ' + $nyp_period.find('option[value="' + form_period + '"]').text();
-
 
 				}
 
-			// otherwise a regular product or subscription with non-variable periods
-			// compare price directly
+			// Otherwise a regular product or subscription with non-variable periods, compare price directly.
 			} else if ( form_price_num < min_price ) {
 
 				error = min_price;
@@ -71,63 +68,69 @@ jQuery( document ).ready( function($) {
 
 			}
 
-			// maybe auto-format the input
+			// Maybe auto-format the input.
 			if( $.trim( form_price ) != '' ){
 				$nyp_input.val( woocommerce_nyp_format_price( form_price_num ) );
 			}
 
-			// if we've set an error, show message and prevent submit
+			// Add the price to the button as data for AJAX add to cart.
+			if( $ajax_cart_button.length ) {
+				$ajax_cart_button.data( $nyp_input.attr('name'), woocommerce_nyp_format_price( form_price_num ) );
+			}
+
+			// If we've set an error, show message and prevent submit.
 			if ( error ){
 
-				// disable submit
+				// Disable submit.
 				$submit.prop( 'disabled', true );
 
-				// show error
+				// Show error.
 				error_message = error_message.replace( "%%MINIMUM%%", error_price );
 
-				$error.html(error_message).slideDown();
+				// For some reason slideDown doesn't happen on page load, so we can use that to not focus the input right away,
+				// which is useful if someone nulls out the initial input and therefore loads in error state.
+				$error.html( error_message ).slideDown( function() {
+				    $nyp_input.focus();
+				});
 
-				// focus on the input
-				$nyp_input.focus();
-
-			// otherwise allow submit and update
+			// Otherwise allow submit and update.
 			} else {
 
-				// allow submit
+				// Allow submit.
 				$submit.prop( 'disabled', false );
 
-				// remove error
+				// Remove error.
 				$error.slideUp();
 
-				// product add ons compatibility
+				// Product add ons compatibility.
 				$(this).find( '#product-addons-total' ).data( 'price', form_price_num );
 				$cart.trigger( 'woocommerce-product-addons-update' );
 
-				// bundles compatibility
+				// Bundles compatibility.
 				$nyp.data( 'price', form_price_num );
 				$cart.trigger( 'woocommerce-nyp-updated-item' );
 				$( 'body' ).trigger( 'woocommerce-nyp-updated' );
 
 			}
 
-		} ); // end woocommerce-nyp-update handler
+		} ); // End woocommerce-nyp-update handler.
 
-		// nyp update on change to any nyp input
-		$( this ).on( 'change', '.nyp-input, .nyp-period', function() {
-			var $cart = $(this).closest( '.cart' );
+		// NYP update on change to any nyp input.
+		$( this ).on( 'change', '.nyp-input, .nyp-period', function() { 
+			var $cart = $(this).closest( '.cart, .nyp-product' );
 			$cart.trigger( 'woocommerce-nyp-update' );
 		} );
 
-		// trigger right away
-		$( this ).find( 'input.nyp-input' ).trigger( 'change' );
+		// Trigger right away.
+		$( this ).find( '.nyp-input' ).trigger( 'change' );
 
-		/*
+		/**
 		 * Handle NYP Variations
 		 */
 
 		if ( $( this ).hasClass( 'variations_form' ) ) {
 
-			// some important objects
+			// Some important objects.
 			var $variation_form 	= $(this);
 			var $add_to_cart 		= $(this).find( 'button.single_add_to_cart_button' );
 			var $nyp 				= $(this).find( '.nyp' );
@@ -135,36 +138,36 @@ jQuery( document ).ready( function($) {
 			var $minimum 			= $nyp.find( '.minimum-price' );
 			var $subscription_terms = $nyp.find( '.subscription-details' );
 
-			// the add to cart text
+			// The add to cart text.
 			var default_add_to_cart_text 	= $add_to_cart.html();
 
-			// hide the nyp form by default
+			// Hide the nyp form by default.
 			$nyp.hide();
 			$minimum.hide();
 
 			// Listeners
 
-			// when variation is found, decide if it is NYP or not
+			// When variation is found, decide if it is NYP or not.
 			$variation_form
 
 			.on( 'found_variation', function( event, variation ) {
 
-				// if NYP show the price input and tweak the data attributes
+				// If NYP show the price input and tweak the data attributes.
 				if ( typeof variation.is_nyp != undefined && variation.is_nyp == true ) {
 
-					// switch add to cart button text if variation is NYP
+					// Switch add to cart button text if variation is NYP.
 					$add_to_cart.html( variation.add_to_cart_text );
 
-					// get the posted value out of data attributes
+					// Get the posted value out of data attributes.
 					posted_price = variation.posted_price;
 
-					// get the initial value out of data attributes
+					// Get the initial value out of data attributes.
 					initial_price = variation.initial_price;
 
-					// get the minimum price
+					// Get the minimum price.
 					minimum_price = variation.minimum_price;
 
-					// maybe auto-format the input
+					// Maybe auto-format the input.
 					if( $.trim( posted_price ) != '' ){
 						$nyp_input.val( woocommerce_nyp_format_price( posted_price ) );
 					} else if( $.trim( initial_price ) != '' ){
@@ -173,33 +176,33 @@ jQuery( document ).ready( function($) {
 						$nyp_input.val( '' );
 					}
 
-					// maybe show subscription terms
+					// Maybe show subscription terms.
 					if( $subscription_terms.length && variation.subscription_terms ){
 						$subscription_terms.html( variation.subscription_terms );
 					}
 
-					// maybe show minimum price html
+					// Maybe show minimum price html.
 					if( variation.minimum_price_html ){
 						$minimum.html ( variation.minimum_price_html ).show();
 					} else {
 						$minimum.hide();
 					}
 
-					// set the NYP data attributes for JS validation on submit
-					$nyp.data( 'min-price', minimum_price ).slideDown('200');
+					// Set the NYP data attributes for JS validation on submit.
+					$nyp.data( 'min-price', minimum_price ).slideDown();
 
-					// product add ons compatibility
+					// Product add ons compatibility.
 					$(this).find( '#product-addons-total' ).data( 'price', minimum_price );
 					$(this).trigger( 'woocommerce-product-addons-update' );
 
-				// if not NYP, hide the price input
+				// If not NYP, hide the price input.
 				} else {
 
-					// use default add to cart button text if variation is not NYP
+					// Use default add to cart button text if variation is not NYP.
 					$add_to_cart.html( default_add_to_cart_text );
 
-					// hide
-					$nyp.slideUp( '200' );
+					// Hide.
+					$nyp.slideUp();
 
 				}
 
@@ -208,28 +211,28 @@ jQuery( document ).ready( function($) {
 			.on( 'reset_image', function( event ) {
 
 				$add_to_cart.html( default_add_to_cart_text );
-				$nyp.slideUp('200');
+				$nyp.slideUp();
 
 			} )
 
-			// hide the price input when reset is clicked
+			// Hide the price input when reset is clicked.
 			.on( 'click', '.reset_variations', function( event ) {
 
 				$add_to_cart.html( default_add_to_cart_text );
-				$nyp.slideUp( '200' );
+				$nyp.slideUp();
 
 			} );
 
 
-			// need to re-trigger some things on load since Woo unbinds the found_variation event
+			// Need to re-trigger some things on load since Woo unbinds the found_variation event.
 			$( this ).find( '.variations select' ).trigger( 'change' );
 		}
 
 
-	} // end woocommerce_nyp_update()
+	} // End fn.woocommerce_nyp_update().
 
-	/*
-	 * run when Quick view item is launched
+	/**
+	 * Run when Quick view item is launched.
 	 */
 	$( 'body' ).on( 'quick-view-displayed', function() {
 		$( 'body' ).find( '.cart:not(.cart_group)' ).each( function() {
@@ -237,8 +240,8 @@ jQuery( document ).ready( function($) {
 		} );
 	} );
 
-	/*
-	 * run when a Composite component is re-loaded
+	/**
+	 * Run when a Composite component is re-loaded.
 	 */
 	$( 'body .component' ).on( 'wc-composite-component-loaded', function() {
 		$( this ).find( '.cart:not(.cart_group)' ).each( function() {
@@ -246,17 +249,24 @@ jQuery( document ).ready( function($) {
 		} );
 	} );
 
-	/*
-	 * run on load
+	/**
+	 * Run on load.
 	 */
-	$( 'body' ).find( '.cart:not(.cart_group)' ).each( function() {
+	$( 'body' ).find( '.cart:not(.cart_group, .grouped_form)' ).each( function() {
 		$( this ).woocommerce_nyp_update();
 	} );
 
-	/*
-	 * helper functions
+	/**
+	 * Run on load for grouped products.
 	 */
-	// format the price with accounting
+	$( 'body .grouped_form' ).find( '.nyp-product' ).each( function() {
+		$( this ).woocommerce_nyp_update();
+	} );
+
+	/**
+	 * Helper functions
+	 */
+	// Format the price with accounting.js.
 	function woocommerce_nyp_format_price( price, currency_symbol ){
 
 		if ( typeof currency_symbol === 'undefined' )
@@ -272,11 +282,9 @@ jQuery( document ).ready( function($) {
 
 	}
 
-	// get absolute value of price and turn price into float decimal
+	// Get absolute value of price and turn price into float decimal.
 	function woocommerce_nyp_unformat_price( price ){
-
 		return Math.abs( parseFloat( accounting.unformat( price, woocommerce_nyp_params.currency_format_decimal_sep ) ) );
-
 	}
 
 } );

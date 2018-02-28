@@ -160,8 +160,8 @@ class Advanced_Ads_Admin_Licenses {
 		    }
 		} else {
 		    // reset license_expires admin notification
-		    Advanced_Ads_Admin_Notices::get_instance()->remove_from_queue( 'license_expires' );
-		    Advanced_Ads_Admin_Notices::get_instance()->remove_from_queue( 'license_expired' );
+		    Advanced_Ads_Admin_Notices::get_instance()->remove_from_queue( 'license_expires' ); // this one is no longer added, but we keep the check here in case it is still in the queue for some users
+		    Advanced_Ads_Admin_Notices::get_instance()->remove_from_queue( 'license_expired' ); // this one is no longer added, but we keep the check here in case it is still in the queue for some users
 		    Advanced_Ads_Admin_Notices::get_instance()->remove_from_queue( 'license_invalid' );
 		    // save license key
 		    $licenses = $this->get_licenses();		    
@@ -254,7 +254,6 @@ class Advanced_Ads_Admin_Licenses {
 		if( 'deactivated' === $license_data->license ) {
 		    delete_option( $options_slug . '-license-status' );
 		    delete_option( $options_slug . '-license-expires' );
-		    Advanced_Ads_Admin_Notices::get_instance()->remove_from_queue( 'license_expires' );
 		} elseif( 'failed' === $license_data->license ) {
 		    update_option($options_slug . '-license-expires', $license_data->expires, false);
 		    update_option($options_slug . '-license-status', $license_data->license, false);

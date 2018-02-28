@@ -19,14 +19,14 @@
  * @package   WC-Memberships/Admin
  * @author    SkyVerge
  * @category  Admin
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Export Members CSV
+ * Export Members CSV.
  *
  * @since 1.6.0
  */
@@ -36,27 +36,27 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 	/** @var array User Memberships ids to export, used in bulk actions */
 	public $export_ids = array();
 
-	/** @var bool Whether to export User Memberships additional meta data */
+	/** @var bool whether to export User Memberships additional meta data */
 	public $export_meta_data = false;
 
-	/** @var bool Export dates in UTC format or adjusted by WordPress timezone */
+	/** @var bool export dates in UTC format or adjusted by WordPress timezone */
 	public $export_dates_in_utc = false;
 
-	/** @var int Counter for number of exported User Memberships in a batch */
+	/** @var int counter for number of exported User Memberships in a batch */
 	public $exported = 0;
 
-	/** @var string The CSV file name to export */
+	/** @var string the CSV file name to export */
 	public $file_name = '';
 
-	/** @var array Associative array with CSV header fields */
+	/** @var array associative array with CSV header fields */
 	public $headers = array();
 
-	/** @var resource Output stream containing CSV data */
+	/** @var resource output stream containing CSV data */
 	private $stream;
 
 
 	/**
-	 * Export admin page setup
+	 * Sets up the Export admin page.
 	 *
 	 * @since 1.6.0
 	 */
@@ -72,20 +72,22 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 		$this->headers = $this->get_headers();
 
 		/**
-		 * Filter the CSV export enclosure
+		 * Filter the CSV export enclosure.
 		 *
 		 * @since 1.6.0
-		 * @param string $enclosure Default double quote `"`
-		 * @param \WC_Memberships_CSV_Export_User_Memberships $export_instance Instance of the export class
+		 *
+		 * @param string $enclosure default double quote `"`
+		 * @param \WC_Memberships_CSV_Export_User_Memberships $export_instance instance of the export class
 		 */
 		$this->enclosure = apply_filters( 'wc_memberships_csv_export_enclosure', '"', $this );
 
 		/**
-		 * Filter exporting dates in UTC
+		 * Filter exporting dates in UTC.
 		 *
 		 * @since 1.6.0
-		 * @param bool $dates_in_utc Default false
-		 * @param \WC_Memberships_CSV_Export_User_Memberships $export_instance Instance of the export class
+		 *
+		 * @param bool $dates_in_utc default false
+		 * @param \WC_Memberships_CSV_Export_User_Memberships $export_instance instance of the export class
 		 */
 		$this->export_dates_in_utc = apply_filters( 'wc_memberships_csv_export_user_memberships_dates_in_utc', false, $this );
 
@@ -93,11 +95,12 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 		$file_name = str_replace( '-', '_', sanitize_file_name( strtolower( get_bloginfo( 'name' ) . '_user_memberships_' . date_i18n( 'Y_m_d', time() ) . '.csv' ) ) );
 
 		/**
-		 * Filter the User Memberships CSV export file name
+		 * Filter the User Memberships CSV export file name.
 		 *
 		 * @since 1.6.0
+		 *
 		 * @param string $file_name
-		 * @param \WC_Memberships_CSV_Export_User_Memberships $export_instance Instance of the export class
+		 * @param \WC_Memberships_CSV_Export_User_Memberships $export_instance instance of the export class
 		 */
 		$this->file_name = apply_filters( 'wc_memberships_csv_export_user_memberships_file_name', $file_name, $this );
 
@@ -106,11 +109,12 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Set the admin page title
+	 * Sets the admin page title.
 	 *
 	 * @since 1.6.2
-	 * @param string $admin_title The page title, with extra context added
-	 * @param string $title The original page title
+	 *
+	 * @param string $admin_title the page title, with extra context added
+	 * @param string $title the original page title
 	 * @return string
 	 */
 	public function set_admin_page_title( $admin_title, $title ) {
@@ -124,13 +128,14 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Set User Membership IDs to export
+	 * Sets User Membership IDs to export.
 	 *
 	 * @see \WC_Memberships_Admin_Import_Export_Handler::process_bulk_export()
 	 * @see \WC_Memberships_CSV_Export_User_Memberships::get_user_memberships_ids()
 	 *
 	 * @since 1.6.0
-	 * @param int[] $user_membership_ids Array of \WC_Memberships_User_Membership IDs
+	 *
+	 * @param int[] $user_membership_ids array of \WC_Memberships_User_Membership IDs
 	 */
 	public function set_export_ids( $user_membership_ids ) {
 		$this->export_ids = array_map( 'absint', $user_membership_ids );
@@ -138,10 +143,11 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Get CSV file headers
+	 * Returns the CSV file headers.
 	 *
 	 * @since 1.6.0
-	 * @return array()
+	 *
+	 * @return array associative array
 	 */
 	private function get_headers() {
 
@@ -164,20 +170,22 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 		);
 
 		/**
-		 * Filter the User Memberships CSV export file row headers
+		 * Filter the User Memberships CSV export file row headers.
 		 *
 		 * @since 1.6.0
-		 * @param array $csv_headers Associative array
-		 * @param \WC_Memberships_CSV_Export_User_Memberships $export_instance Instance of the export class
+		 *
+		 * @param array $csv_headers associative array
+		 * @param \WC_Memberships_CSV_Export_User_Memberships $export_instance instance of the export class
 		 */
 		return (array) apply_filters( 'wc_memberships_csv_export_user_memberships_headers', $headers, $this );
 	}
 
 
 	/**
-	 * Get Membership Plans for exporting
+	 * Returns Membership Plans for exporting.
 	 *
 	 * @since 1.6.0
+	 *
 	 * @return array
 	 */
 	private function get_plans() {
@@ -198,10 +206,11 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Get User Membership statuses for exporting
+	 * Returns User Membership statuses for exporting.
 	 *
 	 * @since 1.6.0
-	 * @return array
+	 *
+	 * @return array associative array of statuses and labels
 	 */
 	private function get_statuses() {
 
@@ -224,9 +233,10 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Get export options input fields
+	 * Returns export options input fields.
 	 *
 	 * @since 1.6.0
+	 *
 	 * @return array
 	 */
 	protected function get_fields() {
@@ -351,23 +361,24 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 		);
 
 		/**
-		 * Filter CSV Export User Memberships options
+		 * Filter CSV Export User Memberships options.
 		 *
 		 * @since 1.6.0
-		 * @para array $options Associative array
+		 *
+		 * @para array $options associative array
 		 */
 		return apply_filters( 'wc_memberships_csv_export_user_memberships_options', $options );
 	}
 
 
 	/**
-	 * Get User Memberships to export
+	 * Returns User Memberships to export.
 	 *
-	 * A wrapper for `get_posts()` that uses the export form
-	 * $_POST inputs to handle query arguments
+	 * A wrapper for `get_posts()` that uses the export form $_POST inputs to handle query arguments.
 	 *
 	 * @since 1.6.0
-	 * @return int[] User Memberships ids or empty array if none found
+	 *
+	 * @return int[] User Memberships IDs or empty array if none found
 	 */
 	private function get_user_memberships_ids() {
 
@@ -415,9 +426,10 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 		}
 
 		/**
-		 * Filter CSV Export User Memberships query args
+		 * Filter CSV Export User Memberships query args.
 		 *
 		 * @since 1.6.0
+		 *
 		 * @param array $query_args
 		 */
 		$query_args = apply_filters( 'wc_memberships_csv_export_user_memberships_query_args', $query_args );
@@ -427,15 +439,16 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Get date range arguments for a WordPress meta query
+	 * Returns date range arguments for a WordPress meta query.
 	 *
-	 * Converts user input dates into UTC to compare with DB values
-	 * If at least one of the dates is set but invalid it will return empty array
+	 * Converts user input dates into UTC to compare with DB values.
+	 * If at least one of the dates is set but invalid it will return empty array.
 	 *
 	 * @since 1.6.0
-	 * @param string $meta_key Meta key to look for datetime values
-	 * @param string|bool $from_date Start date in YYYY-MM-DD format or false to ignore range end
-	 * @param string|bool $to_date End date in YYYY-MM-DD format or false to ignore range end
+	 *
+	 * @param string $meta_key meta key to look for datetime values
+	 * @param string|bool $from_date start date in YYYY-MM-DD format or false to ignore range end
+	 * @param string|bool $to_date end date in YYYY-MM-DD format or false to ignore range end
 	 * @return array
 	 */
 	protected function get_date_range_meta_query_args( $meta_key, $from_date = false, $to_date = false ) {
@@ -498,13 +511,15 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Bump a date to the beginning or the end of a day
-	 * for dates strings with unspecified time (e.g. just YYYY-MM-DD)
-	 * (useful in datetime queries, when querying between dates)
+	 * Bumps a date to the beginning or the end of a day.
+	 *
+	 * Does so for dates strings with unspecified time (e.g. just YYYY-MM-DD).
+	 * Useful in datetime queries, when querying between dates.
 	 *
 	 * @since 1.6.0
-	 * @param string $date A date in YYYY-MM-DD format without time
-	 * @param string $edge Beginning of end of the day (start or end)
+	 *
+	 * @param string $date a date in YYYY-MM-DD format without time
+	 * @param string $edge beginning of end of the day (start or end)
 	 * @return string YYYY-MM-DD HH:MM:SS
 	 */
 	protected function adjust_query_date( $date, $edge = 'start' ) {
@@ -521,7 +536,7 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Process input form submission to export a CSV file
+	 * Processes input form submission to export a CSV file.
 	 *
 	 * @since 1.6.0
 	 */
@@ -545,11 +560,12 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Downloads the CSV via the browser
+	 * Downloads the CSV via the browser.
 	 *
 	 * @since 1.6.0
-	 * @param string $filename The file name
-	 * @param string $csv The CSV data to download as a file
+	 *
+	 * @param string $filename the file name.
+	 * @param string $csv the CSV data to download as a file
 	 */
 	protected function download( $filename, $csv ) {
 
@@ -577,9 +593,10 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Get the CSV data
+	 * Returns the CSV data.
 	 *
 	 * @since 1.6.0
+	 *
 	 * @param int[] $user_membership_ids Array of \WC_Memberships_User_Membership post object ids
 	 * @return string
 	 */
@@ -590,13 +607,14 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 		ob_start();
 
 		/**
-		 * Add CSV BOM (Byte order mark)
+		 * Adds CSV BOM (Byte order mark).
 		 *
-		 * Enable adding a BOM to the exported CSV
+		 * Enable adding a BOM to the exported CSV.
 		 *
 		 * @since 1.6.0
+		 *
 		 * @param bool $enable_bom true to add the BOM, false otherwise (default)
-		 * @param \WC_Memberships_CSV_Export_User_Memberships $export_instance An instance of the export class
+		 * @param \WC_Memberships_CSV_Export_User_Memberships $export_instance an instance of the export class
 		 */
 		if ( true === apply_filters( 'wc_memberships_csv_export_enable_bom', false, $this ) ) {
 
@@ -620,11 +638,12 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 			if ( $user_membership->get_id() > 0 ) {
 
 				/**
-				 * Filter run before exporting a User Membership as a CSV row
+				 * Filter run before exporting a User Membership as a CSV row.
 				 *
 				 * @since 1.6.0
+				 *
 				 * @param \WC_Memberships_User_Membership $user_membership User Membership being exported
-				 * @param \WC_Memberships_CSV_Export_User_Memberships $export_instance The instance of the export class
+				 * @param \WC_Memberships_CSV_Export_User_Memberships $export_instance the instance of the export class
 				 */
 				$user_membership = apply_filters( 'wc_memberships_before_csv_export_user_membership', $user_membership, $this );
 
@@ -638,11 +657,12 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 				}
 
 				/**
-				 * Action run after exporting a User Membership as a CSV row
+				 * Action run after exporting a User Membership as a CSV row.
 				 *
 				 * @since 1.6.0
+				 *
 				 * @param \WC_Memberships_User_Membership $user_membership User Membership being exported
-				 * @param \WC_Memberships_CSV_Export_User_Memberships $export_instance The instance of the export class
+				 * @param \WC_Memberships_CSV_Export_User_Memberships $export_instance the instance of the export class
 				 */
 				 do_action( 'wc_memberships_after_csv_export_user_membership', $user_membership, $this );
 			}
@@ -659,9 +679,10 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Get User Membership CSV row data
+	 * Returns User Membership CSV row data.
 	 *
 	 * @since 1.6.0
+	 *
 	 * @param \WC_Memberships_User_Membership $user_membership User Membership object
 	 * @return array
 	 */
@@ -755,14 +776,14 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 					default :
 
 						/**
-						 * Filter a User Membership CSV data custom column
+						 * Filter a User Membership CSV data custom column.
 						 *
 						 * @since 1.6.0
 						 *
-						 * @param string $value The value that should be returned for this column, default empty string
-						 * @param string $key The matching key of this column
+						 * @param string $value the value that should be returned for this column, default empty string
+						 * @param string $key the matching key of this column
 						 * @param \WC_Memberships_User_Membership $user_membership User Membership object
-						 * @param \WC_Memberships_CSV_Export_User_Memberships $export_instance An instance of the export class
+						 * @param \WC_Memberships_CSV_Export_User_Memberships $export_instance an instance of the export class
 						 */
 						 $value = apply_filters( "wc_memberships_csv_export_user_memberships_{$column_name}_column", '', $column_name, $user_membership, $this );
 
@@ -775,21 +796,23 @@ class WC_Memberships_CSV_Export_User_Memberships extends WC_Memberships_Import_E
 		}
 
 		/**
-		 * Filter a User Membership CSV row data
+		 * Filters a User Membership CSV row data.
 		 *
 		 * @since 1.6.0
+		 *
 		 * @param array $row User Membership data in associative array format for CSV output
 		 * @param \WC_Memberships_User_Membership $user_membership User Membership object
-		 * @param \WC_Memberships_CSV_Export_User_Memberships $export_instance An instance of the export class
+		 * @param \WC_Memberships_CSV_Export_User_Memberships $export_instance an instance of the export class
 		 */
 		return apply_filters( 'wc_memberships_csv_export_user_memberships_row', $row, $user_membership, $this );
 	}
 
 
 	/**
-	 * Write the given row to the CSV
+	 * Writes the given row to the CSV.
 	 *
 	 * @since 1.6.0
+	 *
 	 * @param array $headers
 	 * @param array $row
 	 */

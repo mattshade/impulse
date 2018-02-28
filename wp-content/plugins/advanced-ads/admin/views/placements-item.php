@@ -15,3 +15,19 @@
 	</optgroup>
 	<?php endif; ?>
 </select>
+<?php // link to item
+if ( isset($_placement['item']) ) :
+    $currently_linked_item = explode( '_', $_placement['item'] );
+    $link_to_item = false;
+    switch( $currently_linked_item[0] ) :
+	case 'ad' :
+	    $link_to_item = get_edit_post_link( $currently_linked_item[1] );
+	    break;
+	case 'group' :
+	    $link_to_item = admin_url( 'admin.php?page=advanced-ads-groups' ); //( $currently_linked_item[1] );
+	    break;
+    endswitch;
+    if( $link_to_item ) :
+	?><a href="<?php echo $link_to_item; ?>"><span class="dashicons dashicons-external"></span></span></a><?php
+    endif;
+endif;

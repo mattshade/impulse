@@ -19,15 +19,16 @@
  * @package   WC-Memberships/Frontend/Checkout
  * @author    SkyVerge
  * @category  Frontend
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Checkout class, mainly handles forcing account creation or login when
- * purchasing a product that grants access to a membership
+ * Checkout handler.
+ *
+ * Mainly handles forcing account creation or login when purchasing a product that grants access to a membership.*
  *
  * Inspired from the similar checkout code in WC Subscriptions, thanks Prospress :)
  *
@@ -44,21 +45,25 @@ class WC_Memberships_Checkout {
 
 
 	/**
-	 * Constructor
+	 * Checkout handler constructor.
 	 *
 	 * @since 1.0.0
 	 */
 	public function __construct() {
 
 		// users must be able to register on checkout
-		// note this runs at -1 priority to ensure this is set before any other hooks
+		// note: this runs at -1 priority to ensure this is set before any other hooks
 		add_action( 'woocommerce_before_checkout_form', array( $this, 'maybe_enable_registration' ), -1 );
 
 		// mark checkout registration fields as required
 		add_action( 'woocommerce_checkout_fields', array( $this, 'maybe_require_registration_fields' ) );
 
 		// remove guest checkout param from WC checkout JS
-		add_filter( 'wc_checkout_params', array( $this, 'remove_guest_checkout_js_param' ) );
+		if ( SV_WC_Plugin_Compatibility::is_wc_version_gte( '3.3' ) ) {
+			add_filter( 'woocommerce_get_script_data', array( $this, 'remove_guest_checkout_js_param' ) );
+		} else {
+			add_filter( 'wc_checkout_params',          array( $this, 'remove_guest_checkout_js_param' ) );
+		}
 
 		// force registration during checkout process
 		add_action( 'woocommerce_before_checkout_process', array( $this, 'maybe_force_registration_during_checkout' ) );
@@ -66,11 +71,12 @@ class WC_Memberships_Checkout {
 
 
 	/**
-	 * If shopping cart contains subscriptions, make sure a user can register on the checkout page
+	 * If shopping cart contains subscriptions, makes sure a user can register on the checkout page
 	 *
 	 * TODO since WC 3.0 many of the properties in this method are soft deprecated, they may need an update to checkout methods in the near future {FN 2017-03-10}
 	 *
 	 * @since 1.0.0
+	 *
 	 * @param null|\WC_Checkout $checkout instance
 	 */
 	public function maybe_enable_registration( $checkout = null ) {
@@ -79,14 +85,18 @@ class WC_Memberships_Checkout {
 
 			// enable signups
 			if ( false === $checkout->enable_signup ) {
-				$checkout->enable_signup = true;
+
+				$checkout->enable_signup     = true;
+
 				$this->enable_signup_changed = true;
 			}
 
 			// disable guest checkout
 			if ( true === $checkout->enable_guest_checkout ) {
-				$checkout->enable_guest_checkout = false;
-				$checkout->must_create_account = true;
+
+				$checkout->enable_guest_checkout     = false;
+				$checkout->must_create_account       = true;
+
 				$this->enable_guest_checkout_changed = true;
 			}
 
@@ -99,11 +109,12 @@ class WC_Memberships_Checkout {
 
 
 	/**
-	 * Restore the original checkout registration settings after checkout has loaded
+	 * Restores the original checkout registration settings after checkout has loaded
 	 *
 	 * TODO since WC 3.0 many of the properties in this method are soft deprecated, they may need an update to checkout methods in the near future {FN 2017-03-10}
 	 *
 	 * @since 1.0.0
+	 *
 	 * @param null|\WC_Checkout $checkout instance
 	 */
 	public function restore_registration_settings( $checkout = null ) {
@@ -116,15 +127,16 @@ class WC_Memberships_Checkout {
 		// re-enable guest checkouts
 		if ( $this->enable_guest_checkout_changed ) {
 			$checkout->enable_guest_checkout = true;
-			$checkout->must_create_account = false;
+			$checkout->must_create_account   = false;
 		}
 	}
 
 
 	/**
-	 * Mark the account fields as required
+	 * Marks account fields as required.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @param array $fields
 	 * @return array
 	 */
@@ -144,10 +156,10 @@ class WC_Memberships_Checkout {
 
 
 	/**
-	 * Remove the guest checkout param from WC checkout JS so the registration
-	 * form isn't hidden
+	 * Removes the guest checkout param from WC checkout JS so the registration form isn't hidden.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @param array $params checkout JS params
 	 * @return array
 	 */
@@ -165,7 +177,7 @@ class WC_Memberships_Checkout {
 
 
 	/**
-	 * Force registration during the checkout process
+	 * Forces registration during the checkout process.
 	 *
 	 * @since 1.0.0
 	 */
@@ -178,12 +190,15 @@ class WC_Memberships_Checkout {
 
 
 	/**
-	 * Check if registration should be forced if all of the following are true:
+	 * Checks if registration should be forced.
 	 *
-	 * 1) user is not logged in
-	 * 2) an item in the cart contains a product that grants access to a membership
+	 * This will happen if all of the following are true:
+	 *
+	 * 1. user is not logged in
+	 * 2. an item in the cart contains a product that grants access to a membership
 	 *
 	 * @since 1.0.0
+	 *
 	 * @return bool
 	 */
 	protected function force_registration() {
@@ -242,9 +257,21 @@ class WC_Memberships_Checkout {
 			}
 
 			$force = true;
+			break;
 		}
 
-		return $force;
+		/**
+		 * Filters whether registration should be forced at checkout ot not.
+		 *
+		 * This hook is mainly provided to allow add-ons and custom code to force registration when Memberships itself normally wouldn't.
+		 * It is not advisable to disable forced registration if there are membership granting products in cart, as memberships cannot be granted to guests.
+		 *
+		 * @since 1.9.4
+		 *
+		 * @param bool $force whether to force checkout registration or not
+		 * @param \WC_Memberships_Membership_Plan[] $membership_plans an array of all the available membership plans, provided for context
+		 */
+		return (bool) apply_filters( 'wc_memberships_force_checkout_registration', $force, $membership_plans );
 	}
 
 

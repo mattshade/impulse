@@ -18,16 +18,16 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Membership Emails class
+ * Membership Emails handler.
  *
- * This class handles all email-related functionality in Memberships
+ * This class handles all email-related functionality in Memberships.
  *
  * @since 1.0.0
  */
@@ -35,7 +35,7 @@ class WC_Memberships_Emails {
 
 
 	/**
-	 * Set up membership emails
+	 * Sets up membership emails.
 	 *
 	 * @since 1.0.0
 	 */
@@ -55,11 +55,12 @@ class WC_Memberships_Emails {
 
 
 	/**
-	 * Get Memberships emails classes
+	 * Returns Memberships emails classes.
 	 *
 	 * @since 1.7.0
-	 * @param bool $include_paths Whether to return an associative array with class paths
-	 * @return array Indexed or Associative array
+	 *
+	 * @param bool $include_paths whether to return an associative array with class paths
+	 * @return array indexed or associative array
 	 */
 	public function get_email_class_names( $include_paths = false )  {
 
@@ -75,11 +76,12 @@ class WC_Memberships_Emails {
 
 
 	/**
-	 * Add custom memberships emails to WC emails
+	 * Adds custom memberships emails to WC emails.
 	 *
 	 * @since 1.7.0
-	 * @param array $emails Optional, associative array of email objects
-	 * @return \WC_Email[]|\WC_Memberships_Emails[] Associative array with email objects as values
+	 *
+	 * @param array $emails optional, associative array of email objects
+	 * @return \WC_Email[]|\WC_Memberships_Emails[] associative array with email objects as values
 	 */
 	public function get_email_classes( $emails = array() ) {
 
@@ -110,11 +112,12 @@ class WC_Memberships_Emails {
 
 
 	/**
-	 * Get a membership email default content
+	 * Returns a membership email's default content.
 	 *
 	 * @since 1.7.0
-	 * @param string $email
-	 * @return string May contain HTML
+	 *
+	 * @param string $email the email
+	 * @return string may contain HTML
 	 */
 	public function get_email_default_content( $email ) {
 
@@ -132,11 +135,12 @@ class WC_Memberships_Emails {
 
 
 	/**
-	 * Send a user membership email
+	 * Sends a user membership email.
 	 *
 	 * @since 1.7.0
-	 * @param string $email The type of membership email to send
-	 * @param mixed $args The param to pass to the email to be sent
+	 *
+	 * @param string $email the type of membership email to send
+	 * @param mixed $args the param to pass to the email to be sent
 	 */
 	public function send_email( $email, $args ) {
 
@@ -153,65 +157,72 @@ class WC_Memberships_Emails {
 
 
 	/**
-	 * Send expiring soon email for a user membership
+	 * Sends an expiring soon email for a user membership.
 	 *
 	 * @see \WC_Memberships_Membership_Ending_Soon_Email
 	 *
 	 * @since 1.7.0
-	 * @param int $user_membership_id Id of the expiring membership
+	 *
+	 * @param int $user_membership_id ID of the expiring membership
 	 */
 	public function send_membership_ending_soon_email( $user_membership_id ) {
+
 		$this->send_email( 'WC_Memberships_User_Membership_Ending_Soon_Email', $user_membership_id );
 	}
 
 
 	/**
-	 * Send ended email for a user membership
+	 * Sends a membership ended email for a user membership.
 	 *
 	 * @see \WC_Memberships_Membership_Ended_Email
 	 *
 	 * @since 1.7.0
-	 * @param int $user_membership_id Id of the expired membership
+	 *
+	 * @param int $user_membership_id ID of the expired membership
 	 */
 	public function send_membership_ended_email( $user_membership_id ) {
+
 		$this->send_email( 'WC_Memberships_User_Membership_Ended_Email', $user_membership_id );
 	}
 
 
 	/**
-	 * Send renewal reminder email for a user membership
+	 * Sends a renewal reminder email for a user membership.
 	 *
 	 * @see \WC_Memberships_Membership_Renewal_Reminder_Email
 	 *
 	 * @since 1.7.0
-	 * @param int $user_membership_id Id of the expired membership
+	 *
+	 * @param int $user_membership_id ID of the expired membership
 	 */
 	public function send_membership_renewal_reminder_email( $user_membership_id ) {
+
 		$this->send_email( 'WC_Memberships_User_Membership_Renewal_Reminder_Email', $user_membership_id );
 	}
 
 
 	/**
-	 * Send a new user membership note notification for the member
+	 * Send a new user membership note notification for the member.
 	 *
 	 * @since 1.7.0
-	 * @param array $args {
-	 *     Array of arguments passed to the email object:
 	 *
-	 *     @type int $user_membership_id The user membership the email is for
-	 *     @type string $membership_note The contents of the note to send
+	 * @param array $args array of arguments passed to the email object {	 *
+	 *     @type int $user_membership_id the user membership the email is for
+	 *     @type string $membership_note the contents of the note to send
 	 * }
 	 */
 	public function send_new_membership_note_email( array $args ) {
+
 		$this->send_email( 'WC_Memberships_User_Membership_Note_Email', $args );
 	}
 
 
 	/**
-	 * Get merge tags help strings
+	 * Return merge tags help strings.
 	 *
 	 * @since 1.7.0
-	 * @return string[] Array of text strings
+	 *
+	 * @return string[] array of text strings
 	 */
 	public function get_emails_merge_tags_help() {
 

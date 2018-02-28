@@ -18,7 +18,7 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
@@ -490,8 +490,10 @@ class WC_Memberships_CLI extends WP_CLI_Command {}
 
 include_once __DIR__ . '/cli/class-wc-memberships-cli-command.php';
 include_once __DIR__ . '/cli/class-wc-memberships-cli-membership-plan.php';
+include_once __DIR__ . '/cli/class-wc-memberships-cli-membership-plan-rule.php';
 include_once __DIR__ . '/cli/class-wc-memberships-cli-user-membership.php';
 
 WP_CLI::add_command( 'wc memberships',            'WC_Memberships_CLI' );
 WP_CLI::add_command( 'wc memberships membership', 'WC_Memberships_CLI_User_Membership' );
 WP_CLI::add_command( 'wc memberships plan',       'WC_Memberships_CLI_Membership_Plan' );
+WP_CLI::add_command( 'wc memberships plan rule',  'WC_Memberships_CLI_Membership_Plan_Rule' );

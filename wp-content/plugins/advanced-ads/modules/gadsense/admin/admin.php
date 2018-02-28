@@ -41,9 +41,15 @@ class Advanced_Ads_AdSense_Admin {
 			<script type="text/javascript">
 				var gadsenseData = {
 					pubId : '<?php echo $pub_id; ?>',
+					pageLevelEnabled: '<?php echo $db->is_page_level_enabled(); ?>',
 					msg : {
 						unknownAd : '<?php esc_attr_e( "The ad details couldn't be retrieved from the ad code", 'advanced-ads' ); ?>',
-						pubIdMismatch : '<?php _e( 'Warning : The AdSense account from this code does not match the one set with the Advanced Ads Plugin. This ad might cause troubles when used in the front end.', 'advanced-ads' ); ?>'
+						pubIdMismatch : '<?php _e( 'Warning : The AdSense account from this code does not match the one set with the Advanced Ads Plugin. This ad might cause troubles when used in the front end.', 'advanced-ads' ); ?>',
+						pageLevelEnabled: '<?php _e( sprintf(__( 'Page-Level ads are already activated in the <a href="%s">AdSense settings</a>. No need to add them manually.', 'advanced-ads' ), admin_url( 'admin.php?page=advanced-ads-settings#top#adsense' ) ) ); ?>',
+						pageLevelDisabled: '<?php
+							printf( '%s <button id="adsense_enable_pla" type="button" class="button">%s</button>',
+								esc_attr__( 'This type of ad code is set up in the AdSense settings. Click on the following button to enable it now.', 'advanced-ads' ),
+								esc_attr__( 'Activate', 'advanced-ads' ) ); ?>'
 					}
 				};
 			</script>
@@ -121,7 +127,7 @@ class Advanced_Ads_AdSense_Admin {
 		// add new section
 		add_settings_section(
                         'advanced_ads_adsense_setting_section',
-                        __( 'AdSense', 'advanced-ads' ),
+                        '', //__( 'AdSense', 'advanced-ads' ),
                         array($this, 'render_settings_section_callback'),
                         $hook
 		);
@@ -149,6 +155,23 @@ class Advanced_Ads_AdSense_Admin {
 			'adsense-page-level',
 			__( 'Activate Page-Level ads', 'advanced-ads' ),
 			array($this, 'render_settings_adsense_page_level'),
+			$hook,
+			'advanced_ads_adsense_setting_section'
+		);
+		
+		// disable AdSense violation warnings
+		add_settings_field(
+			'adsense-warnings-disable',
+			__( 'Disable violation warnings', 'advanced-ads' ),
+			array($this, 'render_settings_adsense_warnings_disable'),
+			$hook,
+			'advanced_ads_adsense_setting_section'
+		);
+
+		add_settings_field(
+			'adsense-background',
+			__( 'Transparent background', 'advanced-ads' ),
+			array( $this, 'render_settings_adsense_background' ),
 			$hook,
 			'advanced_ads_adsense_setting_section'
 		);
@@ -218,6 +241,31 @@ class Advanced_Ads_AdSense_Admin {
 		<?php _e( 'Insert Page-Level ads code on all pages.', 'advanced-ads' ); ?></label>
                 <p class="description"><?php _e( 'You still need to enable Page-Level ads in your AdSense account. See <a href="https://support.google.com/adsense/answer/6245304" target="_blank">AdSense Help</a> (requires AdSense-login) for more information.', 'advanced-ads' ); ?></p>
                 <p class="description"><?php printf(__( 'Please notice that this code might also activate QuickStart ads. Please read <a href="%s" target="_blank">this article</a> if <strong>ads appear in random places</strong>.', 'advanced-ads' ), ADVADS_URL . 'adsense-in-random-positions-quickstart/#utm_source=advanced-ads&utm_medium=link&utm_campaign=backend-quickstart-ads' ); ?></p><?php
+	}
+
+	/**
+	 * render AdSense violation warnings setting
+	 *
+	 * @since 1.6.9
+	 */
+	public function render_settings_adsense_warnings_disable(){
+                $options = $this->data->get_options();
+                $disable_violation_warnings = isset( $options['violation-warnings-disable'] ) ? 1 : 0;
+
+                ?><label><input type="checkbox" name="<?php echo GADSENSE_OPT_NAME; ?>[violation-warnings-disable]" value="1" <?php checked( 1, $disable_violation_warnings ); ?> />
+		<?php _e( 'Disable warnings about potential violations of the AdSense terms.', 'advanced-ads' ); ?></label>
+		<p class="description"><?php printf(__( 'Our <a href="%s" target="_blank">Ad Health</a> feature monitors if AdSense is implemented correctly on your site. It also considers ads not managed with Advanced Ads. Enable this option to remove these checks', 'advanced-ads' ), ADVADS_URL . 'adsense-in-random-positions-quickstart/#utm_source=advanced-ads&utm_medium=link&utm_campaign=backend-quickstart-ads' ); ?></p><?php
+	}
+
+	/**
+	 * Render transparent background setting.
+	 */
+	public function render_settings_adsense_background() {
+		$options = $this->data->get_options();
+		$background = $options['background'];
+
+		?><label><input type="checkbox" name="<?php echo GADSENSE_OPT_NAME; ?>[background]" value="1" <?php checked( $background ); ?> />
+		<?php _e( 'Enable this option in case your theme adds an unfortunate background color to AdSense ads.', 'advanced-ads' ); ?></label><?php
 	}
 
         /**
@@ -312,6 +360,21 @@ class Advanced_Ads_AdSense_Admin {
 				'text' => sprintf(__( 'Responsive AdSense ads don’t work reliably with <em>Position</em> set to left or right. Either switch the <em>Type</em> to "normal" or follow <a href="%s" target="_blank">this tutorial</a> if you want the ad to be wrapped in text.', 'advanced-ads' ), ADVADS_URL . 'adsense-responsive-custom-sizes/#utm_source=advanced-ads&utm_medium=link&utm_campaign=adsense-custom-sizes-tutorial' ),
 				'class' => 'advads-ad-notice-responsive-position error hidden',
 			);
+			// show hint about AdSense In-feed add-on
+			if( ! class_exists( 'Advanced_Ads_In_Feed', false ) ){
+				$notices[] = array(
+					'text' => sprintf(__( '<a href="%s" target="_blank">Install the free AdSense In-feed add-on</a> in order to place ads between posts.', 'advanced-ads' ), wp_nonce_url(self_admin_url('update.php?action=install-plugin&plugin=' . 'advanced-ads-adsense-in-feed'), 'install-plugin_' . 'advanced-ads-adsense-in-feed') ),
+					'class' => 'advads-ad-notice-in-feed-add-on hidden',
+				);
+			}
+			// show message about Responsive add-on
+			if ( ! defined( 'AAR_SLUG' ) ) {
+			    $notices[] = array(
+				'text' => sprintf( __( 'Use the <a href="%s" target="_blank">Responsive add-on</a> in order to define the exact size for each browser width or choose between horizontal, vertical, or rectangle formats.', 'advanced-ads' ), ADVADS_URL . 'add-ons/responsive-ads/#utm_source=advanced-ads&utm_medium=link&utm_campaign=edit-adsense' ),
+				'class' => 'advads-ad-notice-responsive-add-on',
+			    );
+			}
+			
 			// show hint about Content ad, Link unit or Matched content being defined in AdSense account
 			// disabled since it might no longer be needed with the new ad types
 			/* if( 'adsense' === $ad->type ){

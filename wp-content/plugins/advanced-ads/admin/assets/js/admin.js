@@ -13,7 +13,8 @@ jQuery( document ).ready(function ($) {
 			data: {
 				'action': 'load_ad_parameters_metabox',
 				'ad_type': ad_type,
-				'ad_id': $( '#post_ID' ).val()
+				'ad_id': $( '#post_ID' ).val(),
+				'nonce': advadsglobal.ajax_nonce
 			},
 			success: function (data, textStatus, XMLHttpRequest) {
 				// toggle main content field
@@ -65,7 +66,8 @@ jQuery( document ).ready(function ($) {
 		    placement_type: placement_type,
 		    placement_slug: placement_slug,
 		    ad_id: $( '#post_ID' ).val(),
-		    options: options
+		    options: options,
+		    nonce: advadsglobal.ajax_nonce
 		},
 		success: function (r, textStatus, XMLHttpRequest) {
 		    $( '#advads-ad-injection-box *' ).hide();
@@ -190,10 +192,10 @@ jQuery( document ).ready(function ($) {
 	// dynamically change label
 	$(document).on('click', '.advads-conditions-connector input', function(){
 	    if( $( this ).is(':checked' ) ){
-		$( this ).button( "option", "label", advadstxt.condition_or );
+		$( this ).advads_button( "option", "label", advadstxt.condition_or );
 		$( this ).parents( '.advads-conditions-connector' ).addClass('advads-conditions-connector-or').removeClass('advads-conditions-connector-and');
 	    } else {
-		$( this ).button( "option", "label", advadstxt.condition_and );
+		$( this ).advads_button( "option", "label", advadstxt.condition_and );
 		$( this ).parents( '.advads-conditions-connector' ).addClass('advads-conditions-connector-and').removeClass('advads-conditions-connector-or');
 	    }
 	});
@@ -219,7 +221,6 @@ jQuery( document ).ready(function ($) {
 			$('#advads-last-edited-group').val('');
 		} else {
 			advadsgroupformrow.show();
-			// attach current group id to url to open it later again
 			var group_id = $( this ).parents( '.advads-group-row' ).find('.advads-group-id').val();
 			$('#advads-last-edited-group').val( group_id );
 			
@@ -233,6 +234,21 @@ jQuery( document ).ready(function ($) {
 			usagediv.hide();
 		} else {
 			usagediv.show();
+		}
+	});
+	// display placement settings form
+	$( '.advads-placements-table a.advads-placement-options-link' ).click(function(e){
+		e.preventDefault();
+		var advadsplacementformrow = $( this ).next( '.advads-placements-advanced-options' );
+		if( advadsplacementformrow.is( ':visible' ) ){
+			advadsplacementformrow.hide();
+			// clear last edited id
+			$('#advads-last-edited-placement').val('');
+		} else {
+			advadsplacementformrow.show();
+			var placement_id = $( this ).parents( '.advads-placements-table-options' ).find('.advads-placement-slug').val();
+			$('#advads-last-edited-placement').val( placement_id );
+			
 		}
 	});
 	// display manual placement usage
@@ -289,12 +305,18 @@ jQuery( document ).ready(function ($) {
 	});
 	function advads_show_group_options( el ){
 		// first, hide all options except title and type
-		el.parents('.advads-ad-group-form').find('.advads-option:not(.static)').hide();
-		var current_type = el.val();
-		
-		// now, show only the ones corresponding with the group type
-		el.parents('.advads-ad-group-form').find( '.advads-group-type-' + current_type  ).show();
+		// iterate through all elements
+		el.each( function(){
+			var _this = jQuery( this );
+			_this.parents('.advads-ad-group-form').find('.advads-option:not(.static)').hide();
+			var current_type = _this.val();
+
+			// now, show only the ones corresponding with the group type
+			_this.parents('.advads-ad-group-form').find( '.advads-group-type-' + current_type  ).show();
+		});
 	}
+	// set default group options for earch group
+	
 	advads_show_group_options( $( '.advads-ad-group-type input:checked' ) );
 	// group page: hide ads if more than 4 – than only show 3
 	$('.advads-ad-group-list-ads').each( function(){
@@ -496,6 +518,7 @@ jQuery( document ).ready(function ($) {
 		var args = {
 			data: {
 				action: 'advads-adblock-rebuild-assets',
+				nonce: advadsglobal.ajax_nonce,
 			},
 			done: function( data, textStatus, jqXHR ) {
 				var $advads_adblocker_wrapper = $( '#advads-adblocker-wrapper' );
@@ -594,6 +617,7 @@ function advads_term_search(field, callback) {
 	// return ['post', 'poster'];
 	var query = {
 		action: 'advads-terms-search',
+		nonce: advadsglobal.ajax_nonce
 	};
 	
 	query.search = field.val();
@@ -630,7 +654,8 @@ function advads_post_search( searchParam, callback ) {
 	var query = {
 		action: 'advads-post-search',
 		_ajax_linking_nonce: jQuery( '#_ajax_linking_nonce' ).val(),
-		'search': searchParam
+		'search': searchParam,
+		nonce: advadsglobal.ajax_nonce
 	};
 
 	var querying = true;
@@ -918,7 +943,9 @@ advanced_ads_admin.filesystem = {
 				hostname:        jQuery( '#hostname' ).val(),
 				connection_type: jQuery( 'input[name="connection_type"]:checked' ).val(),
 				public_key:      jQuery( '#public_key' ).val(),
-				private_key:     jQuery( '#private_key' ).val()
+				private_key:     jQuery( '#private_key' ).val(),
+				_fs_nonce:       jQuery( '#_fs_nonce' ).val()
+
 			}
 		};
 

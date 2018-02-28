@@ -227,8 +227,9 @@ function get_the_job_application_method( $post = null ) {
 	$method = new stdClass();
 	$apply  = $post->_application;
 
-	if ( empty( $apply ) )
-		return false;
+	if ( empty( $apply ) ) {
+		return apply_filters( 'the_job_application_method', false, $post );
+	}
 
 	if ( strstr( $apply, '@' ) && is_email( $apply ) ) {
 		$method->type      = 'email';
@@ -578,6 +579,10 @@ function wpjm_get_the_job_types( $post = null ) {
 	}
 
 	$types = get_the_terms( $post->ID, 'job_listing_type' );
+
+	if ( empty( $types ) || is_wp_error( $types ) ) {
+		$types = array();
+	}
 
 	// Return single if not enabled.
 	if ( ! empty( $types ) && ! job_manager_multi_job_type() ) {

@@ -24,11 +24,11 @@ class WP_Job_Manager_REST_Data_Store_Option extends WP_Job_Manager_REST_Data_Sto
 	/**
 	 * WP_Job_Manager_REST_Data_Store_Option constructor.
 	 *
-	 * @param WP_Job_Manager_REST_Model_Factory $model_factory Def.
-	 * @param array            $args Args.
+	 * @param WP_Job_Manager_REST_Model $model_prototype Def.
+	 * @param array    $args Args.
 	 */
-	public function __construct( $model_factory, $args = array() ) {
-		parent::__construct( $model_factory, $args );
+	public function __construct( $model_prototype, $args = array() ) {
+		parent::__construct( $model_prototype, $args );
 		$this->does_not_exist_guard = new stdClass();
 	}
 
@@ -50,7 +50,7 @@ class WP_Job_Manager_REST_Data_Store_Option extends WP_Job_Manager_REST_Data_Sto
 	 * @return WP_Job_Manager_REST_Interfaces_Model
 	 */
 	public function get_entity( $id ) {
-		$field_declarations = $this->get_model_factory()->get_fields();
+		$field_declarations = $this->get_model_prototype()->get_fields();
 		$raw_data = array();
 		foreach ( $field_declarations as $field_declaration ) {
 			/**
@@ -64,7 +64,7 @@ class WP_Job_Manager_REST_Data_Store_Option extends WP_Job_Manager_REST_Data_Sto
 			}
 		}
 
-		return $this->get_model_factory()->create( $raw_data, array(
+		return $this->get_model_prototype()->create( $raw_data, array(
 			'deserialize' => true,
 		) );
 	}

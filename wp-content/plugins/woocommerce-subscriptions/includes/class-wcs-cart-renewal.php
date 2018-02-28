@@ -204,7 +204,7 @@ class WCS_Cart_Renewal {
 					wc_add_notice( __( 'Complete checkout to renew your subscription.', 'woocommerce-subscriptions' ), 'success' );
 				}
 
-				wp_safe_redirect( WC()->cart->get_checkout_url() );
+				wp_safe_redirect( wc_get_checkout_url() );
 				exit;
 			}
 		}
@@ -482,7 +482,7 @@ class WCS_Cart_Renewal {
 
 				$price = $item_to_renew['line_subtotal'];
 
-				if ( wc_prices_include_tax() ) {
+				if ( $_product->is_taxable() && wc_prices_include_tax() ) {
 
 					if ( apply_filters( 'woocommerce_adjust_non_base_location_prices', true ) ) {
 						$base_tax_rates = WC_Tax::get_base_tax_rates( wcs_get_objects_property( $_product, 'tax_class' ) );

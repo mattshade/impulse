@@ -100,7 +100,7 @@ advads = {
 	 */
 	set_cookie: function (name, value, exdays, path, domain, secure) {
 		// days in seconds	
-		var expiry = exdays * 24 * 60 * 60;
+		var expiry = ( exdays == null ) ? null : exdays * 24 * 60 * 60;
 		this.set_cookie_sec( name, value, expiry, path, domain, secure );
 	},
 	/**

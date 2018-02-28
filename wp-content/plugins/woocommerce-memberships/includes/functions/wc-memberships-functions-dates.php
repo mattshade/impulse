@@ -18,7 +18,7 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
@@ -26,7 +26,9 @@ defined( 'ABSPATH' ) or exit;
 
 
 /**
- * Workaround the last day of month quirk in PHP's strtotime function
+ * Adds months to a timestamp.
+ *
+ * Workaround the last day of month quirk in PHP's strtotime function.
  *
  * Adding +1 month to the last day of the month can yield unexpected results with strtotime()
  * For example:
@@ -35,11 +37,12 @@ defined( 'ABSPATH' ) or exit;
  *
  * What humans usually want is for the charge to continue on the last day of the month.
  *
- * Copied from WooCommerce Subscriptions
+ * Copied from WooCommerce Subscriptions.
  *
  * @since 1.6.0
- * @param int $from_timestamp Original timestamp to add months to
- * @param int $months_to_add Number of months to add to the timestamp
+ *
+ * @param int $from_timestamp original timestamp to add months to
+ * @param int $months_to_add number of months to add to the timestamp
  * @return int corrected timestamp
  */
 function wc_memberships_add_months_to_timestamp( $from_timestamp, $months_to_add ) {
@@ -79,33 +82,26 @@ function wc_memberships_add_months_to_timestamp( $from_timestamp, $months_to_add
 
 
 /**
- * Loosely parse a date for Memberships date usages
+ * Loosely parses a date for Memberships date usages.
  *
- * (This is not an absolutely fool-proof check due to PHP 5.2 compatibility constraints)
+ * This is not an absolutely fool-proof check due to PHP 5.2 compatibility constraints.
  *
  * @since 1.7.0
- * @param string|int $date A date in timestamp or string format
- * @param string $format Optional, the format to validate: either 'mysql' (default) or 'timestamp'
- * @return false|string|int The date parsed in the chosen format or false if not a valid date
+ *
+ * @param string|int $date a date in timestamp or string format
+ * @param string $format optional, the format to validate: either 'mysql' (default) or 'timestamp'
+ * @return false|string|int the date parsed in the chosen format or false if not a valid date
  */
 function wc_memberships_parse_date( $date, $format = 'mysql' ) {
 
 	$parsed_date  = false;
 	$is_timestamp = 'timestamp' === $format;
 
-	if ( $is_timestamp && is_numeric( $date ) && (int) $date > 0 ) {
-
+	if ( $is_timestamp && is_numeric( $date ) ) {
 		$parsed_date = (int) $date;
-
-	} elseif ( ! $is_timestamp && is_string( $date ) ) {
-
-		$date = strtotime( $date );
-
-		if ( $date > 0 ) {
-
-			$format      = 'mysql' === $format ? 'Y-m-d H:i:s' : $format;
-			$parsed_date = date( $format, $date );
-		}
+	} elseif ( ! $is_timestamp && is_string( $date ) && ( $time = strtotime( $date ) ) ) {
+		$format      = 'mysql' === $format ? 'Y-m-d H:i:s' : $format;
+		$parsed_date = date( $format, $time );
 	}
 
 	return $parsed_date;
@@ -113,15 +109,15 @@ function wc_memberships_parse_date( $date, $format = 'mysql' ) {
 
 
 /**
- * Parse a temporal period length
+ * Parses a temporal period length.
  *
- * For example: 1 month, 3 weeks, 5 days, 1 year, etc.
- * which should be a string that can be successfully passed to `strtotime()`
+ * For example: 1 month, 3 weeks, 5 days, 1 year, etc. which should be a string that can be successfully passed to `strtotime()`.
  *
  * @since 1.7.0
- * @param string $length The period length
- * @param string $return Optional, part of period length to return (amount, period or, default, the whole parsed length)
- * @return int|string Empty string if length is not valid, int for amount, string for period or parsed length
+ *
+ * @param string $length the period length
+ * @param string $return optional, part of period length to return (amount, period or, default, the whole parsed length)
+ * @return int|string empty string if length is not valid, int for amount, string for period or parsed length
  */
 function wc_memberships_parse_period_length( $length, $return = '' ) {
 
@@ -155,39 +151,37 @@ function wc_memberships_parse_period_length( $length, $return = '' ) {
 
 
 /**
- * Format date in a requested format
+ * Formats a date in a requested format.
  *
  * @since 1.7.0
- * @param string|int $date Date string, in 'mysql' format, or timestamp
- * @param string $format Optional, format to use: 'mysql' (default), 'timestamp' or valid PHP date format
- * @return string|int Formatted date as a timestamp or mysql format
+ *
+ * @param string|int $date date string, in 'mysql' format, or timestamp
+ * @param string $format optional, format to use: 'mysql' (default), 'timestamp' or valid PHP date format
+ * @return string|int formatted date as a timestamp or MySQL format
  */
 function wc_memberships_format_date( $date, $format = 'mysql' ) {
 
 	switch ( $format ) {
-
 		case 'mysql':
 			return is_numeric( $date ) ? date( 'Y-m-d H:i:s', $date ) : $date;
-
 		case 'timestamp':
 			return is_numeric( $date ) ? (int) $date : strtotime( $date );
-
 		default:
 			return date( $format, is_numeric( $date ) ? (int) $date : strtotime( $date ) );
-
 	}
 }
 
 
 /**
- * Adjust dates in UTC format
+ * Adjusts dates in UTC format.
  *
- * Converts a UTC date to the corresponding date in another timezone
+ * Converts a UTC date to the corresponding date in another timezone.
  *
  * @since 1.6.0
- * @param int|string $date Date in string or timestamp format
- * @param string $format Format to use in output
- * @param string $timezone Timezone to convert from
+ *
+ * @param int|string $date date in string or timestamp format
+ * @param string $format format to use in output
+ * @param string $timezone timezone to convert from
  * @return int|string
  */
 function wc_memberships_adjust_date_by_timezone( $date, $format = 'mysql', $timezone = 'UTC' ) {

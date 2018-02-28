@@ -75,7 +75,7 @@ class Advanced_Ads {
 	 * @since 1.4.9
 	 * @var array list of bots
 	 */
-	protected $bots = array('bot','spider','crawler','scraper','parser','008','Accoona-AI-Agent','ADmantX','alexa','appie','Apple-PubSub','Arachmo','Ask Jeeves','avira\.com','B-l-i-t-z-B-O-T','boitho\.com-dc','BUbiNG','Cerberian Drtrs','Charlotte','cosmos','Covario IDS','curl','DataparkSearch','DDG-Android','expo9','facebookexternalhit','Feedfetcher-Google','FindLinks','Firefly','froogle','Genieo','heritrix','Holmes','htdig','https://developers\.google\.com','ia_archiver','ichiro','igdeSpyder','InfoSeek','inktomi','Kraken','L\.webis','Larbin','Linguee','LinkWalker','looksmart','lwp-trivial','mabontland','Mediapartners-Google','Mnogosearch','mogimogi','Morning Paper','MVAClient','NationalDirectory','NetResearchServer','NewsGator','NG-Search','Nusearch','NutchCVS','Nymesis','oegp','Orbiter','Peew','Pompos','PostPost','proximic','PycURL','Qseero','rabaz','Radian6','Reeder', 'savetheworldheritage','SBIder','Scooter','ScoutJet','Scrubby','SearchSight','semanticdiscovery','Sensis','ShopWiki','silk','Snappy','Spade','Sqworm','StackRambler','TechnoratiSnoop','TECNOSEEK','Teoma','Thumbnail\.CZ','TinEye','truwoGPS','updated','Vagabondo','voltron','Vortex','voyager','VYU2','WebBug','webcollage','WebIndex','Websquash\.com','WeSEE:Ads','wf84','Wget','WomlpeFactory','WordPress','yacy','Yahoo! Slurp','Yahoo! Slurp China','YahooSeeker','YahooSeeker-Testing','YandexImages','Yeti','yoogliFetchAgent','Zao','ZyBorg','okhttp','ips-agent','ltx71','Optimizer','Daum','Qwantify');
+	protected $bots = array('bot','spider','crawler','scraper','parser','008','Accoona-AI-Agent','ADmantX','alexa','appie','Apple-PubSub','Arachmo','Ask Jeeves','avira\.com','B-l-i-t-z-B-O-T','boitho\.com-dc','BUbiNG','Cerberian Drtrs','Charlotte','cosmos','Covario IDS','curl','DataparkSearch','DDG-Android','expo9','facebookexternalhit','Feedfetcher-Google','FindLinks','Firefly','froogle','Genieo','heritrix','Holmes','htdig','https://developers\.google\.com','ia_archiver','ichiro','igdeSpyder','InfoSeek','inktomi','Kraken','L\.webis','Larbin','Linguee','LinkWalker','looksmart','lwp-trivial','mabontland','Mnogosearch','mogimogi','Morning Paper','MVAClient','NationalDirectory','NetResearchServer','NewsGator','NG-Search','Nusearch','NutchCVS','Nymesis','oegp','Orbiter','Peew','Pompos','PostPost','proximic','PycURL','Qseero','rabaz','Radian6','Reeder', 'savetheworldheritage','SBIder','Scooter','ScoutJet','Scrubby','SearchSight','semanticdiscovery','Sensis','ShopWiki','silk','Snappy','Spade','Sqworm','StackRambler','TechnoratiSnoop','TECNOSEEK','Teoma','Thumbnail\.CZ','TinEye','truwoGPS','updated','Vagabondo','voltron','Vortex','voyager','VYU2','WebBug','webcollage','WebIndex','Websquash\.com','WeSEE:Ads','wf84','Wget','WomlpeFactory','WordPress','yacy','Yahoo! Slurp','Yahoo! Slurp China','YahooSeeker','YahooSeeker-Testing','YandexBot','YandexMedia','YandexBlogs','YandexNews','YandexCalendar','YandexImages','Yeti','yoogliFetchAgent','Zao','ZyBorg','okhttp','ips-agent','ltx71','Optimizer','Daum','Qwantify');
 
 	/**
 	 *
@@ -278,6 +278,18 @@ class Advanced_Ads {
 				define( 'ADVADS_ADS_DISABLED', true );
 			}
 		};
+		
+		/**
+		 * check if ads are disabled on WooCommerce shop page (and currently on shop page)
+		 * since WooCommerce changes the post ID of the static page selected to be the product overview page, we need to get the original page id from the WC options
+		 */
+		if ( function_exists( 'is_shop' ) && is_shop() ) {
+			$shop_id = get_option( 'woocommerce_shop_page_id' );
+			$shop_ad_options = get_post_meta( absint( $shop_id ), '_advads_ad_settings', true );
+			if ( ! empty( $shop_ad_options['disable_ads'] ) ) {
+				define( 'ADVADS_ADS_DISABLED', true );
+			}
+		}
 	}
 
 	/**
@@ -377,6 +389,11 @@ class Advanced_Ads {
 	public function inject_content($content = ''){
 		$options = $this->plugin->options();
 
+		// do not inject in content when on a BuddyPress profile upload page (avatar & cover image)
+		if ( ( function_exists( 'bp_is_user_change_avatar' ) && bp_is_user_change_avatar() ) || ( function_exists( 'bp_is_user_change_cover_image' ) && bp_is_user_change_cover_image() ) ) {
+			return $content;
+		}
+		
 		// check if ads are disabled in secondary queries and this function was called by ajax (in secondary query)
 		if ( ! empty( $options['disabled-ads']['secondary'] ) && ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 			return $content;

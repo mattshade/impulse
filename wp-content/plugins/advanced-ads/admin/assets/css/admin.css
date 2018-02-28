@@ -19,7 +19,7 @@
 #advads-overview .postbox.position-full { clear: both; float: none; }
 #advads-overview .postbox h2 { border-bottom: 1px solid #eee; font-size: 14px; padding: 8px 12px; margin: 0; line-height: 1.4; }
 #advads-overview #advads_overview_addons ul, #advads-overview #advads_overview_addons ul li { list-style: disc inside; }
-#advads-overview #advads_overview_addons table th { vertical-align: top; font-weight: bold; max-width: 150px; position: relative; top: 0; }
+#advads-overview #advads_overview_addons table th { vertical-align: top; font-weight: bold; max-width: 300px; position: relative; top: 0; }
 #advads-overview #advads_overview_addons table tr.recommended th:before { position:absolute; top: 2px; left: 10px; font-size: .9em; content: 'Recommended'; color: green; font-weight: normal; }
 #advads-overview #advads_overview_addons table tr.free th:before { position:absolute; top: 2px; left: 10px; font-size: .9em; content: 'Free'; color: green; }
 #advads-overview #advads_overview_addons table tr.recommended th, 
@@ -289,7 +289,10 @@ tr:hover .on-hover { display: block; }
 /**
 - TABS + SETTINGS
 -*/
-.advads-tab { display: none; }
+#advads-tabs .nav-tab-active { background: #fff; border-bottom: 0; margin-top: 1px; }
+.advads-tab { display: none; padding: 5px 15px; overflow: hidden; background-color: #fff; border: 1px solid #ccc; border-top: none; }
+.advads-tab input[type="checkbox"] { margin-right: 8px; }
+.advads-tab .form-table th, .advads-tab, .advads-tab .form-table td { padding-bottom: 30px; }
 .advads-tab.active { display: block; }
 .advads-license-activate-active { color: green; }
 .advads-license-activate-error { color: red; }
@@ -335,6 +338,7 @@ tr:hover .on-hover { display: block; }
 - GENERAL
 -*/
 .advads-error-message { color: red !important; }
+.advads-error-message a { color: red; text-decoration: underline; }
 .advads-success-message { color: green !important; }
 .advads-hidden { display: none; }
 .advads-loader { display: block; width: 43px; height: 11px; background: url(../img/loader.gif) no-repeat; }
@@ -370,3 +374,8 @@ tr:hover .on-hover { display: block; }
   width: 0;
   margin: 0;
 }
+
+/* Pro Pitch List */
+.advads-pro-pitch { max-width: 500px; float: left; padding: 1em; margin-right: 1em; line-height: 2em; font-size: 14px; text-transform: capitalize; }
+.advads-pro-pitch .dashicons { line-height: 1.4em; }
+#advads-tracking-pitch .advads-pro-pitch { float: none; }

@@ -37,11 +37,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<fieldset>
 		<label><?php _e( 'Have an account?', 'wp-job-manager' ); ?></label>
 		<div class="field account-sign-in">
-			<a class="button" href="<?php echo apply_filters( 'submit_job_form_login_url', wp_login_url( get_permalink() ) ); ?>"><?php _e( 'Sign in', 'wp-job-manager' ); ?></a>
+			<a class="button" href="https://www.impulsesurvey.com/myaccount/"><?php _e( 'Sign in', 'wp-job-manager' ); ?></a>
 
 			<?php if ( $registration_enabled ) : ?>
 
-				<?php printf( __( 'If you don&rsquo;t have an account you can %screate one below by entering your email address/username. Your account details will be confirmed via email.', 'wp-job-manager' ), $account_required ? '' : __( 'optionally', 'wp-job-manager' ) . ' ' ); ?>
+				<?php printf( __( 'If you don&rsquo;t have an account you can %screate one below by entering your email address/username.', 'wp-job-manager' ), $account_required ? '' : __( 'optionally', 'wp-job-manager' ) . ' ' ); ?>
 
 			<?php elseif ( $account_required ) : ?>
 

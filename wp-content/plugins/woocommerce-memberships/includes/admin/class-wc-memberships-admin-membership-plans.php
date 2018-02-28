@@ -19,20 +19,16 @@
  * @package   WC-Memberships/Admin
  * @author    SkyVerge
  * @category  Admin
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Admin Membership Plans class
+ * Admin Membership Plans handler.
  *
- * This class handles all the admin-related functionality
- * for membership plans, like the list screen, meta boxes, etc.
- *
- * Note: it's not necessary to check for the post type, or `$typenow`
- * in this class, as this is already handled in WC_Memberships_Admin->init()
+ * This class handles all the admin-related functionality for membership plans, like the list screen, meta boxes, etc.
  *
  * @since 1.0.0
  */
@@ -40,7 +36,7 @@ class WC_Memberships_Admin_Membership_Plans {
 
 
 	/**
-	 * Constructor
+	 * Handler constructor.
 	 *
 	 * @since 1.0.0
 	 */
@@ -69,11 +65,12 @@ class WC_Memberships_Admin_Membership_Plans {
 
 
 	/**
-	 * Customize membership plan columns
+	 * Customizes membership plan columns.
 	 *
 	 * @internal
 	 *
 	 * @since 1.0.0
+	 *
 	 * @param array $columns
 	 * @return array
 	 */
@@ -96,11 +93,12 @@ class WC_Memberships_Admin_Membership_Plans {
 
 
 	/**
-	 * Output custom column content
+	 * Outputs custom column content.
 	 *
 	 * @internal
 	 *
 	 * @since 1.0.0
+	 *
 	 * @param string $column
 	 * @param int $post_id
 	 */
@@ -187,9 +185,10 @@ class WC_Memberships_Admin_Membership_Plans {
 
 
 	/**
-	 * List products that grant access to a Membership Plan
+	 * Lists products that grant access to a Membership Plan
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param WC_Memberships_Membership_Plan $membership_plan The membership plan
 	 */
 	private function list_products_granting_access( $membership_plan ) {
@@ -204,10 +203,17 @@ class WC_Memberships_Admin_Membership_Plans {
 
 				if ( $product = wc_get_product( $product_id ) )  {
 
+					// by using Subscriptions method we can account for custom subscription product types
+					if ( is_callable( 'WC_Subscriptions_Product::is_subscription' ) ) {
+						$is_subscription = WC_Subscriptions_Product::is_subscription( $product );
+					} else {
+						$is_subscription = $product->is_type( array( 'subscription', 'variable-subscription', 'subscription_variation' ) );
+					}
+
 					printf(
 						'<li>%1$s%2$s</li>',
 						$this->get_edit_product_link( $product ),
-						$product->is_type( array( 'subscription', 'variable-subscription' ) ) ? ' <small>(' . strtolower( __( 'Subscription', 'woocommerce-memberships' ) ) . ')</small> ' : ''
+						$is_subscription ? ' <small>(' . strtolower( __( 'Subscription', 'woocommerce-memberships' ) ) . ')</small> ' : ''
 					);
 				}
 			}
@@ -218,73 +224,86 @@ class WC_Memberships_Admin_Membership_Plans {
 
 
 	/**
-	 * Output a link to edit a product in admin
+	 * Outputs a link to edit a product in admin.
 	 *
 	 * @since 1.7.0
-	 * @param \WC_Product|\WC_Product_Variation $product A product or variation
+	 *
+	 * @param \WC_Product|\WC_Product_Variation $product a product or variation
 	 * @return string
 	 */
 	private function get_edit_product_link( $product ) {
 
-		if ( $product->is_type( 'variation' ) ) {
-			$product = $product instanceof WC_Product ? SV_WC_Product_Compatibility::get_parent( $product ) : null;
+		$product_link = '';
+
+		if ( $product instanceof WC_Product ) {
+
+			$product_name = sprintf( '%1$s (#%2$s)', SV_WC_Plugin_Compatibility::is_wc_version_gte_3_0() ?  $product->get_name() : $product->get_title(), $product->get_id() );
+
+			if ( $product->is_type( 'variation' ) ) {
+				$product_link = get_edit_post_link( SV_WC_Product_Compatibility::get_parent( $product ) );
+			} else {
+				$product_link = get_edit_post_link( $product->get_id() );
+			}
+
+			$product_link = sprintf( '<a href="%1$s">%2$s</a>', $product_link, $product_name );
 		}
 
-		$product_id   = $product instanceof WC_Product ? $product->get_id() : null;
-		$product_link = $product_id ? get_edit_post_link( $product_id ) : null;
-
-		return $product_link ? sprintf( '<a href="%1$s">%2$s</a>', $product_link, $product->get_formatted_name() ) : '';
+		return $product_link;
 	}
 
 
 	/**
-	 * Customize membership plan row actions
+	 * Customizes membership plan row actions.
+	 *
+	 * TODO: perhaps add an action to view members of the plan (redirects to user membership screen query) {FN 2016-07-20}
 	 *
 	 * @internal
 	 *
 	 * @since 1.0.0
+	 *
 	 * @param array $actions
 	 * @param \WP_Post $post
 	 * @return array
 	 */
 	public function customize_row_actions( $actions, WP_Post $post ) {
 
-		// remove quick edit action
-		unset( $actions['inline hide-if-no-js'] );
+		if ( 'wc_membership_plan' === $post->post_type ) {
 
-		$plan = wc_memberships_get_membership_plan( $post );
+			// remove quick edit, permanently delete actions
+			unset( $actions['inline hide-if-no-js'], $actions['delete'] );
 
-		if ( $plan && isset( $actions['trash'] ) && $plan->has_active_memberships() ) {
+			$plan = wc_memberships_get_membership_plan( $post );
 
-			$tip = '';
+			if ( $plan && isset( $actions['trash'] ) && $plan->has_active_memberships() ) {
 
-			if ( 'trash' === $post->post_status ) {
-				$tip = esc_attr__( 'This item cannot be restored because it has active members.', 'woocommerce-memberships' );
-			} elseif ( EMPTY_TRASH_DAYS ) {
-				$tip = esc_attr__( 'This item cannot be moved to trash because it has active members.', 'woocommerce-memberships' );
+				$tip = '';
+
+				if ( 'trash' === $post->post_status ) {
+					$tip = esc_attr__( 'This item cannot be restored because it has active members.', 'woocommerce-memberships' );
+				} elseif ( EMPTY_TRASH_DAYS ) {
+					$tip = esc_attr__( 'This item cannot be moved to trash because it has active members.', 'woocommerce-memberships' );
+				}
+
+				if ( 'trash' === $post->post_status || ! EMPTY_TRASH_DAYS ) {
+					$tip = esc_attr__( 'This item cannot be permanently deleted because it has active members.', 'woocommerce-memberships' );
+				}
+
+				$actions['trash'] = '<span title="' . $tip . '" style="cursor: help;">' . strip_tags( $actions['trash'] ) . '</span>';
 			}
 
-			if ( 'trash' === $post->post_status || ! EMPTY_TRASH_DAYS ) {
-				$tip = esc_attr__( 'This item cannot be permanently deleted because it has active members.', 'woocommerce-memberships' );
-			}
+			$duplicate_link_open  = '<a href="' . wp_nonce_url( admin_url( 'edit.php?post_type=wc_membership_plan&action=duplicate_plan&amp;post=' . $post->ID ), 'wc-memberships-duplicate-plan_' . $post->ID ) . '" title="' . __( 'Make a duplicate from this membership plan', 'woocommerce-memberships' ) . '" rel="permalink">';
+			$duplicate_link_close = '</a>';
 
-			$actions['trash'] = '<span title="' . $tip . '" style="cursor: help;">' . strip_tags( $actions['trash'] ) . '</span>';
-
-			// TODO: perhaps add an action to view members of the plan (redirects to user membership screen query) {FN 2016-07-20}
+			// add duplicate plan action
+			$actions['duplicate'] = $duplicate_link_open . _x( 'Duplicate', 'Duplicate a Membership Plan', 'woocommerce-memberships' ) . $duplicate_link_close;
 		}
-
-		$duplicate_link_open  = '<a href="' . wp_nonce_url( admin_url( 'edit.php?post_type=wc_membership_plan&action=duplicate_plan&amp;post=' . $post->ID ), 'wc-memberships-duplicate-plan_' . $post->ID ) . '" title="' . __( 'Make a duplicate from this membership plan', 'woocommerce-memberships' ) . '" rel="permalink">';
-		$duplicate_link_close = '</a>';
-
-		// add duplicate plan action
-		$actions['duplicate'] = $duplicate_link_open . _x( 'Duplicate', 'Duplicate a Membership Plan', 'woocommerce-memberships' ) . $duplicate_link_close;
 
 		return $actions;
 	}
 
 
 	/**
-	 * Membership plan submit box actions
+	 * Handles Membership Plan submit box actions.
 	 *
 	 * @internal
 	 *
@@ -326,7 +345,7 @@ class WC_Memberships_Admin_Membership_Plans {
 
 
 	/**
-	 * Add meta boxes to the membership plan edit page
+	 * Adds meta boxes to the membership plan edit page.
 	 *
 	 * @internal
 	 *
@@ -340,15 +359,15 @@ class WC_Memberships_Admin_Membership_Plans {
 
 
 	/**
-	 * Whether a user should be granted access to a free membership
-	 * from a previous account sign up
+	 * Whether a user should be granted access to a free membership from a previous account sign up.
 	 *
 	 * @see \WC_Memberships_Admin_Membership_Plans::grant_access_to_membership()
 	 *
 	 * @since 1.7.0
-	 * @param int $user_id User id to grant access to
-	 * @param int $plan_id Membership Plan id the user would access to
-	 * @return bool Default true, filter in method may set to false
+	 *
+	 * @param int $user_id user ID to grant access to
+	 * @param int $plan_id Membership Plan ID the user would access to
+	 * @return bool default true, filter in method may set to false
 	 */
 	private function grant_free_access_to_existing_user( $user_id, $plan_id ) {
 
@@ -369,8 +388,7 @@ class WC_Memberships_Admin_Membership_Plans {
 
 
 	/**
-	 * Grant access to a free membership plan
-	 * to users which have not been already part of
+	 * Grants access to a free membership plan to users which have not been already part of.
 	 *
 	 * @see \WC_Memberships_Admin_Membership_Plans::grant_access_to_membership()
 	 * TODO make sure this private method is used when we have background processing {FN 2016-08-09}
@@ -407,11 +425,12 @@ class WC_Memberships_Admin_Membership_Plans {
 
 
 	/**
-	 * Whether a user should be granted access from an existing purchase
+	 * Checks whether a user should be granted access from an existing purchase
 	 *
 	 * @see \WC_Memberships_Admin_Membership_Plans::grant_access_to_membership()
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param int $user_id User id to grant access to
 	 * @param int $product_id Id of product that would be granting access
 	 * @param int $order_id Id of order that contains the product
@@ -435,15 +454,14 @@ class WC_Memberships_Admin_Membership_Plans {
 		}
 
 		/**
-		 * Filter whether an existing purchase of the product should grant access
-		 * to the membership plan or not
+		 * Filters whether an existing purchase of the product should grant access to the membership plan or not.
 		 *
-		 * Allows third party code to override if a previously purchased product
-		 * should retroactively grant access to a membership plan or not
+		 * Allows third party code to override if a previously purchased product should retroactively grant access to a membership plan or not.
 		 *
 		 * @since 1.0.0
-		 * @param bool $grant_access Default true, grant access from existing purchase
-		 * @param array $args Array of arguments connected with the access request
+		 *
+		 * @param bool $grant_access default true, grant access from existing purchase
+		 * @param array $args array of arguments connected with the access request
 		 */
 		$grant_access = apply_filters( 'wc_memberships_grant_access_from_existing_purchase', $grant_access, array(
 			'user_id'    => $user_id,
@@ -457,14 +475,14 @@ class WC_Memberships_Admin_Membership_Plans {
 
 
 	/**
-	 * Grant access to a non-free membership plan
-	 * to users which have previously purchased a product that grants access
+	 * Grants access to a non-free membership plan to users which have previously purchased a product that grants access.
 	 *
 	 * TODO this method uses a direct DB query to fetch orders, it should be converted to use WC Data stores introduced in WC 3.0 {FN 2017-02-24}
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param \WC_Memberships_Membership_Plan $plan Membership Plan to grant users access to
-	 * @return int The user memberships created or 0 if none or fail
+	 * @return int the user memberships created or 0 if none or fail
 	 */
 	private function grant_access_to_existing_purchases( $plan ) {
 
@@ -508,7 +526,7 @@ class WC_Memberships_Admin_Membership_Plans {
 					$user_id = $order->get_user_id();
 
 					// skip if no user id or existing purchase can't grant access or extension
-					if (    ! $user_id > 0
+					if (      $user_id <= 0
 					     || ! $this->grant_access_from_existing_purchase( $user_id, $product_id, $order_id, $plan->get_id() ) ) {
 
 						continue;
@@ -528,12 +546,12 @@ class WC_Memberships_Admin_Membership_Plans {
 
 
 	/**
-	 * Get valid order statuses that allow granting access retroactively
-	 * to a membership plan of product purchase access type
+	 * Returns valid order statuses that allow granting access retroactively to a membership plan of product purchase access type.
 	 *
 	 * @since 1.7.0
-	 * @param \WC_Memberships_Membership_Plan $plan A membership plan object
-	 * @return array
+	 *
+	 * @param \WC_Memberships_Membership_Plan $plan a membership plan object
+	 * @return string[]
 	 */
 	private function get_valid_order_statuses_for_granting_access( $plan ) {
 
@@ -544,13 +562,12 @@ class WC_Memberships_Admin_Membership_Plans {
 		}
 
 		/**
-		 * Filter the array of valid order statuses that grant access
+		 * Filters the array of valid order statuses that grant access.
 		 *
-		 * Allows to include additional custom order statuses
-		 * that should grant access when the admin uses
-		 * the "grant previous purchases access" action
+		 * Allows to include additional custom order statuses that should grant access when the admin uses the "grant previous purchases access" action.
 		 *
 		 * @since 1.0.0
+		 *
 		 * @param array $valid_order_statuses_for_grant array of order statuses
 		 * @param \WC_Memberships_Membership_Plan $plan the associated membership plan object
 		 */
@@ -559,7 +576,7 @@ class WC_Memberships_Admin_Membership_Plans {
 
 
 	/**
-	 * Grant access to a membership plan
+	 * Grants access to a membership plan.
 	 *
 	 * @internal
 	 *
@@ -612,10 +629,11 @@ class WC_Memberships_Admin_Membership_Plans {
 
 
 	/**
-	 * Get a membership plan from the database to duplicate
+	 * Returns a membership plan from the database to duplicate.
 	 *
 	 * @since 1.0.0
-	 * @param mixed $id
+	 *
+	 * @param int $id
 	 * @return \WP_Post|bool
 	 */
 	private function get_plan_to_duplicate( $id ) {
@@ -640,7 +658,7 @@ class WC_Memberships_Admin_Membership_Plans {
 
 
 	/**
-	 * Show the duplicate plan link in admin edit screen
+	 * Shows the duplicate plan link in admin edit screen.
 	 *
 	 * @internal
 	 *
@@ -667,7 +685,7 @@ class WC_Memberships_Admin_Membership_Plans {
 
 
 	/**
-	 * Duplicate a membership plan
+	 * Duplicates a membership plan.
 	 *
 	 * @internal
 	 *
@@ -694,14 +712,14 @@ class WC_Memberships_Admin_Membership_Plans {
 			if ( $new_id > 0 ) {
 
 				/**
-				 * Fires after a membership plan has been duplicated
+				 * Fires after a membership plan has been duplicated.
 				 *
-				 * If you have written a plugin which uses non-WP database tables to save
-				 * information about a page you can hook this action to duplicate that data.
+				 * If you have written a plugin which uses non-WP database tables to save information about a page you can hook this action to duplicate that data.
 				 *
 				 * @since 1.0.0
-				 * @param int $new_id New plan ID
-				 * @param \WP_Post $post Original plan object
+				 *
+				 * @param int $new_id new plan ID
+				 * @param \WP_Post $post original plan object
 				 */
 				do_action( 'wc_memberships_duplicate_membership_plan', $new_id, $post );
 
@@ -719,12 +737,13 @@ class WC_Memberships_Admin_Membership_Plans {
 
 
 	/**
-	 * Create a duplicate membership plan.
+	 * Creates a duplicate membership plan.
 	 *
 	 * @internal
 	 *
 	 * @since 1.0.0
-	 * @param mixed $post
+	 *
+	 * @param mixed|object $post
 	 * @param int $parent (default: 0)
 	 * @param string $post_status (default: 'publish')
 	 * @return int
@@ -787,11 +806,12 @@ class WC_Memberships_Admin_Membership_Plans {
 
 
 	/**
-	 * Copy the meta information of a plan to another plan
+	 * Copies the meta information of a plan to another plan.
 	 *
 	 * @since 1.0.0
-	 * @param mixed $id
-	 * @param mixed $new_id
+	 *
+	 * @param int $id ID of the plan being copied
+	 * @param int $new_id the ID of the new plan created
 	 */
 	private function duplicate_post_meta( $id, $new_id ) {
 		global $wpdb;
@@ -822,27 +842,25 @@ class WC_Memberships_Admin_Membership_Plans {
 
 
 	/**
-	 * Copy the plan rules from one plan to another
+	 * Copies the plan rules from one plan to another.
 	 *
 	 * @since 1.0.0
-	 * @param mixed $id
-	 * @param mixed $new_id
+	 *
+	 * @param int $id ID of the plan being copied
+	 * @param int $new_id the ID of the new plan created
 	 */
 	private function duplicate_plan_rules( $id, $new_id ) {
 
-		$rules     = get_option( 'wc_memberships_rules' );
+		$rules     = wc_memberships()->get_rules_instance()->get_rules_raw();
 		$new_rules = array();
 
 		foreach ( $rules as $key => $rule ) {
-
 			// copy rules to new plan
 			if ( (int) $id === (int) $rule['membership_plan_id'] ) {
-
-				$new_rule = $rule;
-				$new_rule['id'] = uniqid( 'rule_' );
+				$new_rule                       = $rule;
+				$new_rule['id']                 = uniqid( 'rule_', false );
 				$new_rule['membership_plan_id'] = (int) $new_id;
-
-				$new_rules[] = $new_rule;
+				$new_rules[]                    = $new_rule;
 			}
 		}
 

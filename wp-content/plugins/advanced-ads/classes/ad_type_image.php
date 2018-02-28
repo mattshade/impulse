@@ -57,7 +57,7 @@ class Advanced_Ads_Ad_Type_Image extends Advanced_Ads_Ad_Type_Abstract{
 		</p>
 		<input type="hidden" name="advanced_ad[output][image_id]" value="<?php echo $id; ?>" id="advads-image-id"/>
 		<div id="advads-image-preview">
-		    <?php $this->create_image_tag( $id ); ?>
+		    <?php $this->create_image_tag( $id, $ad ); ?>
 		</div>
 
 		<?php // don’t show if tracking plugin enabled
@@ -72,12 +72,15 @@ class Advanced_Ads_Ad_Type_Image extends Advanced_Ads_Ad_Type_Abstract{
 	/**
 	 * render image tag
 	 *
-	 * @param int $attachment_id post id of the image
+	 * @param int $attachment_id	post id of the image
+	 * @param obj $ad		ad object, since 1.8.21
 	 * @since 1.6.10
 	 */
-	public function create_image_tag( $attachment_id ){
+	public function create_image_tag( $attachment_id, $ad ){
 
 		$image = wp_get_attachment_image_src( $attachment_id, 'full' );
+		$style = '';
+		
 		if ( $image ) {
 			list( $src, $width, $height ) = $image;
 			$hwstring = image_hwstring($width, $height);
@@ -103,9 +106,17 @@ class Advanced_Ads_Ad_Type_Image extends Advanced_Ads_Ad_Type_Abstract{
 				}
 			}
 			
+			// add css rule to be able to center the ad
+			if( isset( $ad->output['position'] ) && 'center' === $ad->output['position'] ){
+			    $style .= 'display: inline-block;';
+			}
+			
+			$style = apply_filters( 'advanced-ads-ad-image-tag-style', $style );
+			$style = '' !== $style ? 'style="' . $style . '"' : '';
+			
 			$more_attributes = apply_filters( 'advanced-ads-ad-image-tag-attributes', $more_attributes );
 			
-			echo rtrim("<img $hwstring") . " src='$src' alt='$alt' title='$title' $more_attributes/>";
+			echo rtrim("<img $hwstring") . " src='$src' alt='$alt' title='$title' $more_attributes $style/>";
 		}
 	}
 	
@@ -157,7 +168,7 @@ class Advanced_Ads_Ad_Type_Image extends Advanced_Ads_Ad_Type_Abstract{
 
 		ob_start();
 		if( ! defined( 'AAT_VERSION' ) && $url ){ echo '<a href="'. $url .'"'.$target_blank.'>'; }
-		echo $this->create_image_tag( $id );
+		echo $this->create_image_tag( $id, $ad );
 		if( ! defined( 'AAT_VERSION' ) && $url ){ echo '</a>'; }
 
 		return ob_get_clean();

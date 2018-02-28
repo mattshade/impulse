@@ -23,12 +23,12 @@ class WP_Job_Manager_REST_Data_Store_CustomPostType extends WP_Job_Manager_REST_
 	/**
 	 * Mixtape_Data_Store_CustomPostType constructor.
 	 *
-	 * @param null|WP_Job_Manager_REST_Model_Definition $model_factory Def.
+	 * @param null|WP_Job_Manager_REST_Interfaces_Model $model_prototype Def.
 	 * @param array                    $args Args.
 	 */
-	public function __construct( $model_factory = null, $args = array() ) {
+	public function __construct( $model_prototype = null, $args = array() ) {
 		$this->post_type = isset( $args['post_type'] ) ? $args['post_type'] : 'post';
-		parent::__construct( $model_factory, $args );
+		parent::__construct( $model_prototype, $args );
 	}
 
 	/**
@@ -55,7 +55,7 @@ class WP_Job_Manager_REST_Data_Store_CustomPostType extends WP_Job_Manager_REST_
 	 * Get Entity
 	 *
 	 * @param int $id The id of the entity.
-	 * @return WP_Job_Manager_REST_Model|null
+	 * @return WP_Job_Manager_REST_Interfaces_Model|null
 	 */
 	public function get_entity( $id ) {
 		$post = get_post( absint( $id ) );
@@ -70,11 +70,11 @@ class WP_Job_Manager_REST_Data_Store_CustomPostType extends WP_Job_Manager_REST_
 	 * Create from Post.
 	 *
 	 * @param WP_Post $post Post.
-	 * @return WP_Job_Manager_REST_Model
+	 * @return WP_Job_Manager_REST_Interfaces_Model
 	 * @throws WP_Job_Manager_REST_Exception If something goes wrong.
 	 */
 	private function create_from_post( $post ) {
-		$field_declarations = $this->get_model_factory()->get_fields();
+		$field_declarations = $this->get_model_prototype()->get_fields();
 		$raw_post_data = $post->to_array();
 		$raw_meta_data = get_post_meta( $post->ID ); // assumes we are only ever adding one postmeta per key.
 
@@ -84,7 +84,7 @@ class WP_Job_Manager_REST_Data_Store_CustomPostType extends WP_Job_Manager_REST_
 		}
 		$merged_data = array_merge( $raw_post_data, $flattened_meta );
 
-		return $this->get_model_factory()->create( $merged_data, array(
+		return $this->get_model_prototype()->create( $merged_data, array(
 			'deserialize' => true,
 		) );
 	}
@@ -103,20 +103,32 @@ class WP_Job_Manager_REST_Data_Store_CustomPostType extends WP_Job_Manager_REST_
 			'force_delete' => false,
 		) );
 
-		do_action( 'mixtape_data_store_delete_model_before', $model, $id );
+		$this->get_model_prototype()
+			->get_environment()
+			->get_event_dispatcher()
+			->do_action( 'data_store_delete_model_before', $model, $id );
 
 		if ( $args['force_delete'] ) {
 			$result = wp_delete_post( $model->get_id() );
 			$model->set( 'id', 0 );
-			do_action( 'mixtape_data_store_delete_model', $model, $id );
+			$this->get_model_prototype()
+				->get_environment()
+				->get_event_dispatcher()
+				->do_action( 'data_store_delete_model', $model, $id );
 		} else {
 			$result = wp_trash_post( $model->get_id() );
 			$model->set( 'status', 'trash' );
-			do_action( 'mixtape_data_store_trash_model', $model, $id );
+			$this->get_model_prototype()
+				->get_environment()
+				->get_event_dispatcher()
+				->do_action( 'data_store_trash_model', $model, $id );
 		}
 
 		if ( false === $result ) {
-			do_action( 'mixtape_data_store_delete_model_fail', $model, $id );
+			$this->get_model_prototype()
+				->get_environment()
+				->get_event_dispatcher()
+				->do_action( 'data_store_delete_model_fail', $model, $id );
 			return new WP_Error( 'delete-failed', 'delete-failed' );
 		}
 		return $result;
@@ -142,11 +154,17 @@ class WP_Job_Manager_REST_Data_Store_CustomPostType extends WP_Job_Manager_REST_
 			unset( $fields['ID'] );
 		}
 
-		do_action( 'mixtape_data_store_model_upsert_before', $model );
+		$this->get_model_prototype()
+			->get_environment()
+			->get_event_dispatcher()
+			->do_action( 'data_store_model_upsert_before', $model );
 
 		$id_or_error = wp_insert_post( $fields, true );
 		if ( is_wp_error( $id_or_error ) ) {
-			do_action( 'mixtape_data_store_model_upsert_error', $model );
+			$this->get_model_prototype()
+				->get_environment()
+				->get_event_dispatcher()
+				->do_action( 'data_store_model_upsert_error', $model );
 			return $id_or_error;
 		}
 		$model->set( 'id', absint( $id_or_error ) );
@@ -158,7 +176,10 @@ class WP_Job_Manager_REST_Data_Store_CustomPostType extends WP_Job_Manager_REST_
 			}
 
 			if ( false === $id_or_bool ) {
-				do_action( 'mixtape_data_store_model_upsert_error', $model );
+				$this->get_model_prototype()
+					->get_environment()
+					->get_event_dispatcher()
+					->do_action( 'data_store_model_upsert_error', $model );
 				// Something was wrong with this update/create. TODO: Should we stop mid create/update?
 				return new WP_Error(
 					'mixtape-error-creating-meta',
@@ -171,7 +192,10 @@ class WP_Job_Manager_REST_Data_Store_CustomPostType extends WP_Job_Manager_REST_
 			}
 		}
 
-		do_action( 'mixtape_data_store_model_upsert_after', $model );
+		$this->get_model_prototype()
+			->get_environment()
+			->get_event_dispatcher()
+			->do_action( 'data_store_model_upsert_after', $model );
 
 		return absint( $id_or_error );
 	}

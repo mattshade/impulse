@@ -29,6 +29,9 @@ class Advanced_Ads_AdSense_Data {
 	    $options['page-level-enabled'] = false;
 	    
 	}
+	if ( ! isset( $options['background'] ) ) {
+		$options['background'] = false;
+	}
 
 	$this->options = $options;
 
@@ -66,4 +69,10 @@ class Advanced_Ads_AdSense_Data {
 	return self::$instance;
     }
 
+    /**
+     * ISSERS/HASSERS
+     */
+    public function is_page_level_enabled() {
+	return $this->options['page-level-enabled'];
+    }
 }

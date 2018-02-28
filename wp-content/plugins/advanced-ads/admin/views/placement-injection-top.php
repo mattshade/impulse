@@ -24,6 +24,9 @@ if( isset( $_GET['message'] ) && 6 === $_GET['message'] ) : ?>
 		else :
 		    ?><div class="advads-ad-injection-box-button-wrap"><button type="button" class="advads-ad-injection-button button-primary" data-placement-type="custom_position" style="background-image: url(<?php echo ADVADS_BASE_URL . 'admin/assets/img/placements/custom-position.png'; ?>)"><?php _e( 'Custom Position', 'advanced-ads'); ?></button></div><?php
 		endif;
+		if( class_exists( 'Advanced_Ads_In_Feed', false ) ) :
+		    ?><div class="advads-ad-injection-box-button-wrap"><button type="button" class="advads-ad-injection-button button-primary" data-placement-type="adsense_in_feed" style="background-image: url(<?php echo ADVADS_BASE_URL . 'admin/assets/img/placements/adsense-in-feed.png'; ?>)"><?php _e( 'AdSense In-feed', 'advanced-ads'); ?></button></div><?php
+		endif;
 
 		if( ! defined( 'AASADS_VERSION' ) ) :
 		?><a href="<?php echo ADVADS_URL . 'add-ons/sticky-ads/#utm_source=advanced-ads&utm_medium=link&utm_campaign=edit-created-injection-sticky' ?>" target="_blank"><div class="advads-ad-injection-box-button-wrap"><button type="button" class="advads-ad-injection-button button-primary advads-pro-link" style="background-image: url(<?php echo ADVADS_BASE_URL . 'admin/assets/img/placements/sticky-sidebar-left.png'; ?>)"><?php _e( 'Show Sticky Places', 'advanced-ads'); ?></button></div></a><?php

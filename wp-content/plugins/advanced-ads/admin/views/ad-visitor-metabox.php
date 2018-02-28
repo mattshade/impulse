@@ -1,5 +1,27 @@
 <?php
-$visitor_conditions = Advanced_Ads_Visitor_Conditions::get_instance()->conditions;
+$visitor_conditions = Advanced_Ads_Visitor_Conditions::get_instance()->get_conditions();
+
+// add mockup conditions if add-ons are missing
+$pro_conditions = array();
+if( ! defined( 'AAP_VERSION' ) ){
+	$pro_conditions[] = __( 'browser language', 'advanced-ads');
+	$pro_conditions[] = __( 'cookie', 'advanced-ads');
+	$pro_conditions[] = __( 'max. ad clicks', 'advanced-ads');
+	$pro_conditions[] = __( 'max. ad impressions', 'advanced-ads');
+	$pro_conditions[] = __( 'new visitor', 'advanced-ads');
+	$pro_conditions[] = __( 'page impressions', 'advanced-ads');
+	$pro_conditions[] = __( 'referrer url', 'advanced-ads');
+	$pro_conditions[] = __( 'user agent', 'advanced-ads');
+	$pro_conditions[] = __( 'user can (capabilities)', 'advanced-ads');
+}
+if( ! defined( 'AAGT_VERSION') ){
+	$pro_conditions[] = __( 'geo location', 'advanced-ads');
+}
+if( ! defined( 'AAR_VERSION') ){
+	$pro_conditions[] = __( 'browser width', 'advanced-ads');
+}
+asort( $pro_conditions );
+
 $options = $ad->options( 'visitors' );
 $empty_options = ( !is_array( $options ) || !count( $options ) );
 if( $empty_options ) :
@@ -56,9 +78,18 @@ endif;
 <select>
     <option value=""><?php _e( '-- choose a condition --', 'advanced-ads' ); ?></option>
     <?php foreach ( $visitor_conditions as $_condition_id => $_condition ) : ?>
-    <option value="<?php echo $_condition_id; ?>"<?php disabled( 1, isset( $_condition['disabled']) ) ?>><?php echo $_condition['label']; ?></option>
-    <?php endforeach; ?>
-</select>
+	<?php if( empty( $_condition['disabled'] ) ) : ?>
+	    <option value="<?php echo $_condition_id; ?>"><?php echo $_condition['label']; ?></option>
+	<?php endif; ?>
+    <?php endforeach;
+    if( count( $pro_conditions ) ) :
+	?><optgroup label="<?php _e( 'Add-On features', 'advanced-ads' ); ?>"><?php
+	    foreach ( $pro_conditions as $_pro_condition ) :
+		?><option disabled="disabled"><?php echo $_pro_condition; ?></option><?php
+	    endforeach;
+	?></optgroup><?php
+	endif; 
+?></select>
 <button type="button" class="button"><?php _e( 'add', 'advanced-ads' ); ?></button>
 <span class="advads-loader" style="display: none;"></span>
 </div>
@@ -80,7 +111,8 @@ jQuery( document ).ready(function ($) {
 		    data: {
 			    action: 'load_visitor_conditions_metabox',
 			    type: visitor_condition_type,
-			    index: visitor_condition_index
+			    index: visitor_condition_index,
+			    nonce: advadsglobal.ajax_nonce
 		    },
 		    success: function (r, textStatus, XMLHttpRequest) {
 			    // add

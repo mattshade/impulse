@@ -34,11 +34,12 @@ class Advanced_Ads_Ad_Type_Group extends Advanced_Ads_Ad_Type_Abstract{
 		);
 		
 		// on save, remove the group in which the ad is itself to prevent infinite loops
-		add_action( 'save_post', array($this, 'remove_from_ad_group'), 1 );
+		add_action( 'save_post_advanced_ads', array($this, 'remove_from_ad_group'), 1 );
 	}
 	
 	/**
 	 * when saving the ad, remove it from the ad group, if this is the group assigned as ad content
+	 * see also: /admin/includes/class-ad-groups-list.php::update_groups()
 	 */
 	public function remove_from_ad_group( $post_id ){
 	    

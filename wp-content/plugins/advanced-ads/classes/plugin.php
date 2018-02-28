@@ -101,6 +101,7 @@ class Advanced_Ads_Plugin {
 		// Load public-facing style sheet and JavaScript.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+		add_action( 'wp_head', array( $this, 'print_head_scripts' ), 7 );
 
 		// add short codes
 		add_shortcode( 'the_ad', array( $this, 'shortcode_display_ad' ) );
@@ -148,6 +149,33 @@ class Advanced_Ads_Plugin {
 		if ( $activated_js ){
 			wp_enqueue_script( $this->get_plugin_slug() . '-advanced-js', ADVADS_BASE_URL . 'public/assets/js/advanced.js', array( 'jquery' ), ADVADS_VERSION );
 		}
+	}
+
+	/**
+	 * Print public-facing JavaScript in the HTML head.
+	 *
+	 * @since    untagged
+	 */
+	public function print_head_scripts() {
+		/**
+		 * Usage example in add-ons:
+		 * ( window.advanced_ads_ready || jQuery( document ).ready ).call( null, function() {
+		 *    // Called when DOM is ready.
+		 * } );
+		 */
+		
+		echo apply_filters( 'advanced-ads-attribution', '<!-- managing ads with Advanced Ads -->' ); 
+
+		ob_start();
+		?><script>
+		<?php if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
+			readfile( ADVADS_BASE_PATH . 'public/assets/js/ready.js' );
+		} else { ?>
+			advanced_ads_ready=function(){var fns=[],listener,doc=typeof document==="object"&&document,hack=doc&&doc.documentElement.doScroll,domContentLoaded="DOMContentLoaded",loaded=doc&&(hack?/^loaded|^c/:/^loaded|^i|^c/).test(doc.readyState);if(!loaded&&doc){listener=function(){doc.removeEventListener(domContentLoaded,listener);window.removeEventListener("load",listener);loaded=1;while(listener=fns.shift())listener()};doc.addEventListener(domContentLoaded,listener);window.addEventListener("load",listener)}return function(fn){loaded?setTimeout(fn,0):fns.push(fn)}}();
+			<?php
+		}
+		?></script><?php
+		echo Advanced_Ads_Utils::get_inline_asset( ob_get_clean() );
 	}
 
 	public function widget_init() {

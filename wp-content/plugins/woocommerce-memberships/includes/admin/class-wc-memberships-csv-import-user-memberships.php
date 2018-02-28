@@ -19,41 +19,41 @@
  * @package   WC-Memberships/Admin
  * @author    SkyVerge
  * @category  Admin
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Import Members CSV
+ * Import Members CSV.
  *
  * @since 1.6.0
  */
 class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_Export {
 
 
-	/** @var bool Whether to create new User Memberships when a record is not found */
+	/** @var bool whether to create new User Memberships when a record is not found */
 	public $create_new_memberships = false;
 
-	/** @var bool Whether to merge existing User Memberships when a matching membership is found */
+	/** @var bool whether to merge existing User Memberships when a matching membership is found */
 	public $merge_existing_memberships = false;
 
-	/** @var bool Whether to allow transferring a User Membership to another user when there is a user conflict in update */
+	/** @var bool whether to allow transferring a User Membership to another user when there is a user conflict in update */
 	public $allow_memberships_transfer = false;
 
-	/** @var bool Whether to create new users to associate to a new User Membership if no user is found */
+	/** @var bool whether to create new users to associate to a new User Membership if no user is found */
 	public $create_new_users = false;
 
-	/** @var string Default User Membership start date to user when creating a new membership and no date is found in import */
+	/** @var string default User Membership start date to user when creating a new membership and no date is found in import */
 	public $default_start_date = '';
 
-	/** @var string Timezone to use to handle dates in import, defaults to site timezone */
+	/** @var string timezone to use to handle dates in import, defaults to site timezone */
 	public $timezone = '';
 
 
 	/**
-	 * Import admin page setup
+	 * Sets up the Import admin page.
 	 *
 	 * @since 1.6.0
 	 */
@@ -66,11 +66,12 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 		$this->delimiter_field_name = 'wc_memberships_members_csv_import_fields_delimiter';
 
 		/**
-		 * Filter the CSV import enclosure
+		 * Filter the CSV import enclosure.
 		 *
 		 * @since 1.6.0
+		 *
 		 * @param string $enclosure Default double quote `"`
-		 * @param \WC_Memberships_CSV_Import_User_Memberships $export_instance Instance of the import class
+		 * @param \WC_Memberships_CSV_Import_User_Memberships $export_instance instance of the import class
 		 */
 		$this->enclosure = apply_filters( 'wc_memberships_csv_import_enclosure', '"', $this );
 
@@ -86,11 +87,12 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Set the admin page title
+	 * Sets the admin page title.
 	 *
 	 * @since 1.6.2
-	 * @param string $admin_title The page title, with extra context added
-	 * @param string $title The original page title
+	 *
+	 * @param string $admin_title the page title, with extra context added
+	 * @param string $title the original page title
 	 * @return string
 	 */
 	public function set_admin_page_title( $admin_title, $title ) {
@@ -104,9 +106,10 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Get import options input fields
+	 * Returns import options input fields.
 	 *
 	 * @since 1.6.0
+	 *
 	 * @return array
 	 */
 	protected function get_fields() {
@@ -222,20 +225,21 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 		);
 
 		/**
-		 * Filter the CSV Import User Memberships options
+		 * Filters the CSV Import User Memberships options.
 		 *
 		 * @since 1.6.0
-		 * @param array $options Associative array
+		 *
+		 * @param array $options associative array
 		 */
 		return apply_filters( 'wc_memberships_csv_import_user_memberships_options', $options );
 	}
 
 
 	/**
-	 * Process input form submission to import
+	 * Processes input form submission to import.
 	 *
+	 * For details on the import process and required fields:
 	 * @see WC_Memberships_CSV_Import_User_Memberships::import_user_memberships()
-	 * for details on the import process and required fields
 	 *
 	 * @since 1.6.0
 	 */
@@ -281,11 +285,12 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 				$this->default_start_date            = ! empty( $_POST['wc_memberships_members_csv_import_default_start_date'] )            ? $_POST['wc_memberships_members_csv_import_default_start_date']                          : $this->default_start_date;
 
 				/**
-				 * Filter the import timezone
+				 * Filter the import timezone.
 				 *
 				 * @since 1.6.0
-				 * @param string $timezone A valid timezone
-				 * @param \WC_Memberships_CSV_Import_User_Memberships $export_instance Instance of the export class
+				 *
+				 * @param string $timezone a valid timezone
+				 * @param \WC_Memberships_CSV_Import_User_Memberships $export_instance instance of the import class
 				 */
 				$this->timezone = apply_filters( 'wc_memberships_csv_import_timezone', $_POST['wc_memberships_members_csv_import_timezone'], $this );
 
@@ -297,11 +302,12 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Parse a file with CSV data into an array
+	 * Parses a file with CSV data into an array.
 	 *
 	 * @since 1.6.0
-	 * @param resource $file_handle File to process as a resource
-	 * @return null|array Array data or null on read error
+	 *
+	 * @param resource $file_handle file to process as a resource
+	 * @return null|array array data or null on read error
 	 */
 	protected function parse_file_csv( $file_handle ) {
 
@@ -335,28 +341,22 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Import User Memberships from CSV data
+	 * Imports User Memberships from CSV data.
 	 *
-	 * When creating new memberships, the only required field is either
-	 * `membership_plan_id` or `membership_plan_slug`, in order to determine
-	 * a Membership Plan to assign to a User Membership (if the id is unspecified
-	 * or not found among the plans available, it will try to look for one using
-	 * the plan's post slug).
+	 * When creating new memberships, the only required field is either `membership_plan_id` or `membership_plan_slug`.
+	 * This is in order to determine a Membership Plan to assign to a User Membership.
+	 * If the id is unspecified or not found among the plans available, it will try to look for one using the plan's post slug.
 	 *
-	 * A `user_membership_id` field is required only if we want to update
-	 * an existing User Membership.
+	 * A `user_membership_id` field is required only if we want to update an existing User Membership.
 	 *
-	 * A `user_id` needs to exist if we are not allowing to create new users;
-	 * if updating an existing User Membership, the `user_id` has to match
-	 * the user connected to that membership; if `user_id` is not specified,
-	 * there is an option to attempt retrieving a WP user from `user_name`
-	 * (WP login name) or `member_email` email address fields. When creating
-	 * new users, an email must be specified or the row will be skipped;
-	 * the `user_name` is used to create a login name, if conflicts
-	 * with an existing one, the import script will use the first piece of
-	 * the email address, perhaps with a random numerical suffix.
+	 * A `user_id` needs to exist if we are not allowing to create new users.
+	 * If updating an existing User Membership, the `user_id` has to match the user connected to that membership.
+	 * If `user_id` is not specified, there is an option to attempt retrieving a WP user from `user_name` (WP login name) or `member_email` email address fields.
+	 * When creating new users, an email must be specified or the row will be skipped.
+	 * The `user_name` is used to create a login name, if conflicts with an existing one, the import script will use the first piece of the email address, perhaps with a random numerical suffix.
 	 *
 	 * @since 1.6.0
+	 *
 	 * @param array $rows CSV import data parsed into an array format, with headers in the first key
 	 */
 	protected function import_user_memberships( array $rows ) {
@@ -423,12 +423,12 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 				$import_data['membership_expiration'] = isset( $columns['membership_expiration'] ) && isset( $row[ $columns['membership_expiration'] ] )   ? $row[ $columns['membership_expiration'] ] : null;
 
 				/**
-				 * Filter CSV User Membership import data
-				 * before processing an import
+				 * Filter CSV User Membership import data before processing an import.
 				 *
 				 * @since 1.6.0
-				 * @param array $import_data The imported data as associative array
-				 * @param string $action Either 'create' or 'merge' (update) a User Membership
+				 *
+				 * @param array $import_data the imported data as associative array
+				 * @param string $action either 'create' or 'merge' (update) a User Membership
 				 * @param array $columns CSV columns raw data
 				 * @param array $row CSV row raw data
 				 */
@@ -449,12 +449,13 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Creates or updates a User Membership according to import data
+	 * Creates or updates a User Membership according to import data.
 	 *
 	 * @see \WC_Memberships_CSV_Import_User_Memberships::import_user_memberships()
 	 *
 	 * @since 1.6.0
-	 * @param string $action Either 'create' or 'renew' (for updating/merging)
+	 *
+	 * @param string $action either 'create' or 'renew' (for updating/merging)
 	 * @param array $import_data User Membership import data
 	 * @return null|bool
 	 */
@@ -495,13 +496,17 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 			}
 
 			// create the User Membership
-			$user_membership = wc_memberships_create_user_membership( array(
-				'user_membership_id' => 0,
-				'plan_id'            => $import_data['membership_plan']->get_id(),
-				'user_id'            => $user_id,
-				'product_id'         => ! empty( $import_data['product_id'] ) ? (int) $import_data['product_id'] : 0,
-				'order_id'           => ! empty( $import_data['order_id'] )   ? (int) $import_data['order_id']   : 0,
-			), 'create' );
+			try {
+				$user_membership = wc_memberships_create_user_membership( array(
+					'user_membership_id' => 0,
+					'plan_id'            => $import_data['membership_plan']->get_id(),
+					'user_id'            => $user_id,
+					'product_id'         => ! empty( $import_data['product_id'] ) ? (int) $import_data['product_id'] : 0,
+					'order_id'           => ! empty( $import_data['order_id'] )   ? (int) $import_data['order_id']   : 0,
+				), 'create' );
+			} catch ( SV_WC_Plugin_Exception $e ) {
+				$user_membership = $e;
+			}
 		}
 
 		if ( ! $user_membership instanceof WC_Memberships_User_Membership ) {
@@ -522,12 +527,13 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 		$this->update_user_membership_meta( $user_membership, $action, $import_data );
 
 		/**
-		 * Upon creating or updating a User Membership from import data
+		 * Fires upon creating or updating a User Membership from import data.
 		 *
 		 * @since 1.6.0
+		 *
 		 * @param \WC_Memberships_User_Membership $user_membership User Membership object
-		 * @param string $action Either 'create' or 'merge' (update) a User Membership
-		 * @param array $data Import data
+		 * @param string $action either 'create' or 'merge' (update) a User Membership
+		 * @param array $data import data
 		 */
 		do_action( 'wc_memberships_csv_import_user_membership', $user_membership, $action, $import_data );
 
@@ -536,12 +542,13 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Obtain a user ID from an existing user or a newly created one
+	 * Obtains a user ID from an existing user or a newly created one.
 	 *
 	 * @since 1.6.0
-	 * @param string $action Either 'merge' or 'create
-	 * @param array $data Import data
-	 * @return int A valid user ID or 0 on unsuccessful import
+	 *
+	 * @param string $action either 'merge' or 'create
+	 * @param array $data import data
+	 * @return int a valid user ID or 0 on unsuccessful import
 	 */
 	private function import_user_id( $action, $data )  {
 
@@ -564,9 +571,10 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Update a User Membership
+	 * Updates a User Membership.
 	 *
 	 * @since 1.6.0
+	 *
 	 * @param int $user_id User ID to update Membership for
 	 * @param array $data User Membership data to update
 	 * @return false|\WC_Memberships_User_Membership
@@ -580,7 +588,7 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 		$update_args        = array();
 
 		// check for users conflict
-		if ( (int) $user_id !== (int) $previous_owner ) {
+		if ( (int) $user_id !== $previous_owner ) {
 
 			if ( true === $this->allow_memberships_transfer ) {
 				$transfer_ownership = true;
@@ -592,8 +600,7 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 		// check for plans conflict
 		if ( null !== $membership_plan && (int) $user_membership->get_plan_id() !== (int) $membership_plan->get_id() ) {
 
-			// bail out if the user is already a non-expired member
-			// of the plan we're transferring to
+			// bail out if the user is already a non-expired member of the plan we're transferring to
 			if (    wc_memberships_is_user_active_member( $user_id, $membership_plan->get_id() )
 			     || wc_memberships_is_user_delayed_member( $user_id, $membership_plan->get_id() ) ) {
 
@@ -610,7 +617,7 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 		// maybe update the post object first
 		if ( ! empty( $update_args ) ) {
 
-			$update = wp_update_post( $update_args );
+			$update = wp_update_post( $update_args, true );
 
 			// ...so we can bail out in case of errors
 			if ( 0 === $update || is_wp_error( $update ) ) {
@@ -628,12 +635,13 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Update a User Membership meta data
+	 * Updates a User Membership meta data.
 	 *
 	 * @since 1.6.0
+	 *
 	 * @param \WC_Memberships_User_Membership $user_membership
-	 * @param string $action Either 'create' or 'merge' a User Membership
-	 * @param array $data Import data
+	 * @param string $action either 'create' or 'merge' a User Membership
+	 * @param array $data import data
 	 */
 	private function update_user_membership_meta( WC_Memberships_User_Membership $user_membership, $action, array $data ) {
 
@@ -671,13 +679,13 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 		} elseif ( 'create' === $action ) {
 
 			/**
-			 * Filter the default User Membership status
-			 * to be applied during an import, when not specified
+			 * Filters the default User Membership status to be applied during an import, when not specified.
 			 *
 			 * @since 1.6.0
-			 * @param string $default_status Default 'active'
-			 * @param \WC_Memberships_User_Membership $user_membership The current User Membership object
-			 * @param array $data Import data for the current User Membership
+			 *
+			 * @param string $default_status default 'active'
+			 * @param \WC_Memberships_User_Membership $user_membership the current User Membership object
+			 * @param array $data import data for the current User Membership
 			 */
 			$default_membership_status = apply_filters( 'wc_memberships_csv_import_default_user_membership_status', 'active', $user_membership, $data );
 
@@ -720,10 +728,11 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Get a user from import data
+	 * Returns a user from import data.
 	 *
 	 * @since 1.6.0
-	 * @param $user_data array Imported user information
+	 *
+	 * @param $user_data array imported user information
 	 * @return false|\WP_User
 	 */
 	protected function get_user( $user_data ) {
@@ -753,16 +762,15 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Create a user from import data
+	 * Creates a user from import data.
 	 *
-	 * An email is required, then attempts to create a login name
-	 * from the 'user_name' field; if not found, tries to make one
-	 * from the 'member_email' field using the string piece before "@";
-	 * however, if a user already exists with this name, it appends
-	 * to this piece a random string as suffix.
+	 * An email is required, then attempts to create a login name from the 'user_name' field.
+	 * If not found, tries to make one from the 'member_email' field using the string piece before "@".
+	 * However, if a user already exists with this name, it appends to this piece a random string as suffix.
 	 *
 	 * @since 1.6.0
-	 * @param array $user_data Arguments to create a user, must contain at least a 'member_email' key
+	 *
+	 * @param array $user_data arguments to create a user, must contain at least a 'member_email' key
 	 * @return false|\WP_User
 	 */
 	protected function create_user( $user_data ) {
@@ -807,10 +815,11 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Show a notice with import results
+	 * Shows a notice with import results.
 	 *
 	 * @since 1.6.0
-	 * @param int $total_rows Total rows in CSV file
+	 *
+	 * @param int $total_rows total rows in CSV file
 	 * @param int $created User Memberships created
 	 * @param int $merged User Memberships merged/updated
 	 */
@@ -869,12 +878,13 @@ class WC_Memberships_CSV_Import_User_Memberships extends WC_Memberships_Import_E
 
 
 	/**
-	 * Get an error message for file upload failure
+	 * Returns an error message for file upload failure.
 	 *
 	 * @see http://php.net/manual/en/features.file-upload.errors.php
 	 *
 	 * @since 1.6.0
-	 * @param int $error_code A PHP error code
+	 *
+	 * @param int $error_code PHP error code
 	 * @return string
 	 */
 	private function get_file_upload_error( $error_code ) {

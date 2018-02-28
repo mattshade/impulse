@@ -58,7 +58,7 @@ class Listify_WP_Job_Manager_Template extends listify_Integration {
 
 		// add custom classes to the cover
 		add_filter( 'listify_cover', array( $this, 'single_listing_cover' ), 99 );
-		
+
         add_action( 'single_job_listing_meta_start', array( $this, 'the_title' ), 10 );
         add_action( 'single_job_listing_meta_start', array( $this, 'the_location' ), 20 );
         add_action( 'single_job_listing_meta_start', array( $this, 'the_category' ), 30 );
@@ -124,10 +124,10 @@ class Listify_WP_Job_Manager_Template extends listify_Integration {
     public function template_include( $template ) {
         $this->is_home = listify_is_widgetized_page();
         $taxes = apply_filters( 'listify_job_listing_taxonomies', array(
-            'job_listing_category', 
+            'job_listing_category',
             'job_listing_type',
-            'job_listing_tag', 
-            'job_listing_region' 
+            'job_listing_tag',
+            'job_listing_region'
         ) );
 
         if ( is_tax( $taxes ) ) {
@@ -242,7 +242,7 @@ class Listify_WP_Job_Manager_Template extends listify_Integration {
         register_widget( 'Listify_Widget_Listing_Business_Hours' );
         register_widget( 'Listify_Widget_Listing_Author' );
         register_widget( 'Listify_Widget_Listing_Video' );
-		
+
 		if ( get_option( 'job_manager_enable_categories', true ) ) {
 			register_widget( 'Listify_Widget_Listing_Related_Listings' );
 		}
@@ -402,7 +402,7 @@ class Listify_WP_Job_Manager_Template extends listify_Integration {
 
 		if ( is_singular( 'job_listing' ) ) {
 			$classes[] = 'single_job_listing';
-		} 
+		}
 
 		return $data . ' class="' . implode( ' ', $classes ) . '"';
 	}
@@ -535,7 +535,7 @@ class Listify_WP_Job_Manager_Template extends listify_Integration {
      */
     public function get_the_formatted_location( $location = false ) {
 		$post = get_post();
-		
+
 		if ( ! $location  ) {
 			$location = get_the_job_location();
 		}
@@ -845,7 +845,7 @@ class Listify_WP_Job_Manager_Template extends listify_Integration {
 
 <div class="single-job_listing-cover-gallery">
 	<div class="single-job_listing-cover-gallery-slick">
-		<?php 
+		<?php
 			foreach ( $gallery as $image ) :
 				$image = wp_get_attachment_image_src( $image, 'large', false );
 				echo '<div>';
@@ -932,7 +932,7 @@ class Listify_WP_Job_Manager_Template extends listify_Integration {
         }
 
         echo '<p class="filter-by-type-label">';
-        _e( 'Filter by type:', 'listify' );
+        _e( 'Filter by Capabilities:', 'listify' );
         echo '</p>';
     }
 
@@ -988,8 +988,8 @@ class Listify_WP_Job_Manager_Template extends listify_Integration {
             return apply_filters( 'listify_list_columns', 'col-xs-12' );
         }
 
-        if ( 
-			( 
+        if (
+			(
 				in_array( $listify_job_manager->map->template->position(), array( 'side', 'right' ) ) ||
 				in_array( get_theme_mod( 'listing-archive-facetwp-position', 'side' ), array( 'side' ) ) ||
 				is_active_sidebar( 'archive-job_listing' )
@@ -1158,7 +1158,7 @@ class Listify_WP_Job_Manager_Template extends listify_Integration {
 		$context = did_action( 'listify_content_job_listing_before' ) ? 'card' : 'single';
 
 		$wrapper_class = array(
-			'listing-entry-company-image', 
+			'listing-entry-company-image',
 			'listing-entry-company-image--' . esc_attr( $context ),
 			'listing-entry-company-image--type-' . esc_attr( $args[ 'type' ] ),
 			'listing-entry-company-image--style-' . esc_attr( $args[ 'style' ] )
@@ -1166,7 +1166,7 @@ class Listify_WP_Job_Manager_Template extends listify_Integration {
 		$wrapper_class = implode( ' ', $wrapper_class );
 
 		$image_class = array(
-			'listing-entry-company-image__img', 
+			'listing-entry-company-image__img',
 			'listing-entry-company-image__img--type-' . esc_attr( $args[ 'type' ] ),
 			'listing-entry-company-image__img--style-' . esc_attr( $args[ 'style' ] )
 		);
@@ -1343,7 +1343,7 @@ class Listify_WP_Job_Manager_Template extends listify_Integration {
 		if ( 'thumbnail' == $args[ 'size' ] ) {
 			$args[ 'size' ] = get_option( 'thumbnail_size_w' );
 		}
-		
+
 		$gravatar = get_avatar( $args[ 'listing' ]->post_author, $args[ 'size' ] );
 
 		if ( $gravatar ) {

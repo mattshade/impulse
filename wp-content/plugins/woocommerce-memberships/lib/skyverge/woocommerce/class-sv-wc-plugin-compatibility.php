@@ -18,7 +18,7 @@
  *
  * @package   SkyVerge/WooCommerce/Plugin/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2013-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2013-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
@@ -38,14 +38,45 @@ if ( ! class_exists( 'SV_WC_Plugin_Compatibility' ) ) :
  * are dropped.
  *
  * Current Compatibility
- * + Core 2.5.5 - 3.0.x
- * + Subscriptions 1.5.x - 2.0.x
+ * + Core 2.6.14 - 3.3.x
+ * + Subscriptions 1.5.x - 2.2.x
  *
  * // TODO: move to /compatibility
  *
  * @since 2.0.0
  */
 class SV_WC_Plugin_Compatibility {
+
+
+	/**
+	 * Logs a doing_it_wrong message.
+	 *
+	 * Backports wc_doing_it_wrong() to WC 2.6.
+	 *
+	 * @since 4.9.0
+	 *
+	 * @param string $function function used
+	 * @param string $message message to log
+	 * @param string $version version the message was added in
+	 */
+	public static function wc_doing_it_wrong( $function, $message, $version ) {
+
+		if ( self::is_wc_version_gte( '3.0' ) ) {
+
+			wc_doing_it_wrong( $function, $message, $version );
+
+		} else {
+
+			$message .= ' Backtrace: ' . wp_debug_backtrace_summary();
+
+			if ( is_ajax() ) {
+				do_action( 'doing_it_wrong_run', $function, $message, $version );
+				error_log( "{$function} was called incorrectly. {$message}. This message was added in version {$version}." );
+			} else {
+				_doing_it_wrong( $function, $message, $version );
+			}
+		}
+	}
 
 
 	/**
@@ -117,6 +148,25 @@ class SV_WC_Plugin_Compatibility {
 		} else {
 
 			return $product->is_type( 'variation' ) ? $product->variation_id : $product->id;
+		}
+	}
+
+
+	/**
+	 * Backports wc_shipping_enabled() to < 2.6.0
+	 *
+	 * @since 4.7.0
+	 * @return bool
+	 */
+	public static function wc_shipping_enabled() {
+
+		if ( self::is_wc_version_gte_2_6() ) {
+
+			return wc_shipping_enabled();
+
+		} else {
+
+			return 'yes' === get_option( 'woocommerce_calc_shipping' );
 		}
 	}
 
@@ -247,6 +297,34 @@ class SV_WC_Plugin_Compatibility {
 
 
 	/**
+	 * Determines if the installed version of WooCommerce meets or exceeds the
+	 * passed version.
+	 *
+	 * @since 4.7.3
+	 *
+	 * @param string $version version number to compare
+	 * @return bool
+	 */
+	public static function is_wc_version_gte( $version ) {
+		return self::get_wc_version() && version_compare( self::get_wc_version(), $version, '>=' );
+	}
+
+
+	/**
+	 * Determines if the installed version of WooCommerce is lower than the
+	 * passed version.
+	 *
+	 * @since 4.7.3
+	 *
+	 * @param string $version version number to compare
+	 * @return bool
+	 */
+	public static function is_wc_version_lt( $version ) {
+		return self::get_wc_version() && version_compare( self::get_wc_version(), $version, '<' );
+	}
+
+
+	/**
 	 * Returns true if the installed version of WooCommerce is greater than $version
 	 *
 	 * @since 2.0.0
@@ -269,8 +347,8 @@ class SV_WC_Plugin_Compatibility {
 	 * TODO: Add WP version check when https://core.trac.wordpress.org/ticket/18857 is addressed {BR 2016-12-12}
 	 *
 	 * @since 4.6.0
-	 * @param string $slug The slug for the screen ID to normalize (minus `woocommerce_page_`).
-	 * @return string Normalized screen ID.
+	 * @param string $slug slug for the screen ID to normalize (minus `woocommerce_page_`)
+	 * @return string normalized screen ID
 	 */
 	public static function normalize_wc_screen_id( $slug = 'wc-settings' ) {
 

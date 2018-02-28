@@ -1,16 +1,16 @@
 <?php
 /*
  * Plugin Name: WooCommerce Name Your Price
- * Plugin URI: http://www.woothemes.com/products/name-your-price/
+ * Plugin URI: http://www.woocommerce.com/products/name-your-price/
  * Description: WooCommerce Name Your Price allows customers to set their own price for products or donations.
- * Version: 2.6.0
+ * Version: 2.7.1
  * Author: Kathy Darling
  * Author URI: http://kathyisawesome.com
  * Woo: 18738:31b4e11696cd99a3c0572975a84f1c08
- * Requires at least: 3.8
- * Tested up to: 4.7.3
- * WC requires at least: 2.4.0    
- * WC tested up to: 3.0.0   
+ * Requires at least: 4.4.0
+ * Tested up to: 4.9.2
+ * WC requires at least: 3.0.0    
+ * WC tested up to: 3.3.0   
  *
  * Text Domain: wc_name_your_price
  * Domain Path: /languages/
@@ -33,12 +33,6 @@ if ( ! function_exists( 'woothemes_queue_update' ) ){
  */
 woothemes_queue_update( plugin_basename( __FILE__ ), '31b4e11696cd99a3c0572975a84f1c08', '18738' );
 
-// Quit right now if WooCommerce is not active
-if ( ! is_woocommerce_active() ){
-	return;
-}
-
-
 /**
  * The Main WC_Name_Your_Price class.
  **/
@@ -56,13 +50,13 @@ class WC_Name_Your_Price {
 	 * @var plugin version
 	 * @since 2.0
 	 */
-	public $version = '2.6.0';   
+	public $version = '2.7.1';   
 
 	/**
 	 * @var required WooCommerce version
 	 * @since 2.1
 	 */
-	public $required_woo = '2.4.0';
+	public $required_woo = '3.0.0';
 
 	/**
 	 * Main WC_Name_Your_Price Instance.
@@ -77,6 +71,8 @@ class WC_Name_Your_Price {
 	public static function instance() {
 		if ( is_null( self::$_instance ) ) {
 			self::$_instance = new self();
+			// For backcompatibility, still set global.
+			$GLOBALS['wc_name_your_price'] = self::$_instance;
 		}
 		return self::$_instance;
 	}
@@ -87,7 +83,7 @@ class WC_Name_Your_Price {
 	 * @since 2.0
 	 */
 	public function __clone() {
-		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'wc_name_your_price' ) );
+		_doing_it_wrong( __FUNCTION__, __( 'Cloning this object is forbidden.', 'wc_name_your_price' ) );
 	}
 
 	/**
@@ -96,7 +92,7 @@ class WC_Name_Your_Price {
 	 * @since 2.0
 	 */
 	public function __wakeup() {
-		_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'wc_name_your_price' ) );
+		_doing_it_wrong( __FUNCTION__, __( 'Unserializing instances of this class is forbidden.', 'wc_name_your_price' ) );
 	}
   
 	/**
@@ -110,7 +106,7 @@ class WC_Name_Your_Price {
 	public function __construct() { 
 
 		// Load translation files
-		add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
+		add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
 
 		// Include required files
 		add_action( 'plugins_loaded', array( $this, 'includes' ) );
@@ -157,7 +153,7 @@ class WC_Name_Your_Price {
 	public function includes(){
 
 		// Include WC compatibility functions
-		include_once( 'includes/class-wc-name-your-price-core-compatibility.php' );
+		include_once( 'includes/compatibility/core/class-wc-name-your-price-core-compatibility.php' );
 
 		// check we're running the required version of WC
 		if ( ! WC_Name_Your_Price_Core_Compatibility::is_wc_version_gte( $this->required_woo ) ) {
@@ -166,11 +162,7 @@ class WC_Name_Your_Price {
 		}
 
 		// include all helper functions
-		if( WC_Name_Your_Price_Core_Compatibility::is_wc_version_gte( '3.0.0' ) ) {
-			include_once( 'includes/class-wc-name-your-price-helpers.php' );
-		} else {
-			include_once( 'includes/legacy/class-wc-name-your-price-helpers.php' );
-		}
+		include_once( 'includes/class-wc-name-your-price-helpers.php' );
 
 		// include admin class to handle all backend functions
 		if( is_admin() ){
@@ -190,7 +182,7 @@ class WC_Name_Your_Price {
 
 		}
 
-		include_once( 'includes/class-wc-name-your-price-compatibility.php' );
+		include_once( 'includes/compatibility/class-wc-name-your-price-compatibility.php' );
 		$this->compatibility = new WC_Name_Your_Price_Compatibility();
 
 		// Include deprecated functions.
@@ -217,11 +209,7 @@ class WC_Name_Your_Price {
 	 * @since  2.2
 	 */
 	public function admin_includes() {
-	    if ( WC_Name_Your_Price_Core_Compatibility::is_wc_version_gte( '3.0.0' ) ) {
-			include_once( 'includes/admin/class-name-your-price-admin.php' );
-		} else {
-			include_once( 'includes/admin/legacy/class-name-your-price-admin-legacy.php' );
-		}
+	    include_once( 'includes/admin/class-name-your-price-admin.php' );
 	}
 
 
@@ -269,44 +257,6 @@ class WC_Name_Your_Price {
 
 	}
 
-
-	/*-----------------------------------------------------------------------------------*/
-	/* Deprecated Functions */
-	/*-----------------------------------------------------------------------------------*/
-
-	/**
-	 * display_minimum_price function.
-	 *
-	 * @deprecated As of 2.0, function is now in display class and global replaced with instance
-	 * @access public
-	 */
-	public function display_minimum_price() {
-		_deprecated_function( 'display_minimum_price', '2.0', 'WC_Name_Your_Price()->display->display_minimum_price' );
-		return $this->display->display_minimum_price();
-	}
-
-	/**
-	 * display_price_input function.
-	 *
-	 * @deprecated As of 2.0, function is now in display class and global replaced with instance
-	 * @access public
-	 */
-	public function display_price_input() { 
-		_deprecated_function( 'display_price_input', '2.0', 'WC_Name_Your_Price()->display->display_price_input' );
-		return $this->display->display_price_input();
-	}
-
-	/**
-	 * nyp_style function.
-	 *
-	 * @deprecated As of 2.0, function is now in display class and global replaced with instance
-	 * @access public
-	 */
-	public function nyp_style() {
-		_deprecated_function( 'nyp_style', '2.0', 'WC_Name_Your_Price()->display->nyp_style' );
-		return $this->display->nyp_style();
-	}
-
 } //end class: do not remove or there will be no more guacamole for you
 
 endif; // end class_exists check
@@ -322,5 +272,5 @@ function WC_Name_Your_Price() {
   return WC_Name_Your_Price::instance();
 }
 
-// Launch the whole plugin w/ a little backcompat.
-$GLOBALS['wc_name_your_price'] = WC_Name_Your_Price();
+// Launch the whole plugin.
+add_action( 'woocommerce_loaded', 'WC_Name_Your_Price' );

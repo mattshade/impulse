@@ -93,9 +93,23 @@ class Advanced_Ads_Admin_Menu {
 			$this->plugin_slug, __( 'Advanced Ads Settings', 'advanced-ads' ), __( 'Settings', 'advanced-ads' ), Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options'), $this->plugin_slug . '-settings', array($this, 'display_plugin_settings_page')
 		);
 		// add support page
-		add_submenu_page(
+		/*add_submenu_page(
 			$this->plugin_slug, __( 'Support', 'advanced-ads' ), __( 'Support', 'advanced-ads' ), Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options'), $this->plugin_slug . '-support', array($this, 'display_support_page')
-		);
+		);*/
+		
+		/**
+		 * since we forward the support link to the settings page, we need to add the menu item manually
+		 * could break if WordPress changes the API at one point, but it didn’t do that for many years
+		 */
+		global $submenu;
+		if(current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options') ) ){
+			$submenu['advanced-ads'][] = array( 
+			    __('Support', 'advanced-ads' ), // title
+			    Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options'), // capability
+			    admin_url( 'admin.php?page=advanced-ads-settings#top#support' ),
+			    __('Support', 'advanced-ads' ), // not sure what this is, but it is in the API
+			);
+		}
 
 		// allows extensions to insert sub menu pages
 		do_action( 'advanced-ads-submenu-pages', $this->plugin_slug );

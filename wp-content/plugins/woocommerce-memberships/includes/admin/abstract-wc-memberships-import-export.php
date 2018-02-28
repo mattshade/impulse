@@ -19,35 +19,35 @@
  * @package   WC-Memberships/Admin
  * @author    SkyVerge
  * @category  Admin
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Abstract class for Import / Export pages
+ * Abstract class for Import / Export pages.
  *
  * @since 1.6.0
  */
 abstract class WC_Memberships_Import_Export {
 
 
-	/** @var string Action performed */
+	/** @var string action performed */
 	public $action = '';
 
-	/** @var string Action label */
+	/** @var string action label */
 	public $action_label = '';
 
 	/** @var string CSV fields delimiter option field name */
 	protected $delimiter_field_name = '';
 
-	/** @var string The enclosure used to process a CSV file */
+	/** @var string the enclosure used to process a CSV file */
 	protected $enclosure = '';
 
 
 	/**
-	 * Render admin page
+	 * Renders the corresponding admin page.
 	 *
 	 * @since 1.6.0
 	 */
@@ -70,23 +70,25 @@ abstract class WC_Memberships_Import_Export {
 
 
 	/**
-	 * Set the admin page title
+	 * Sets the admin page title.
 	 *
 	 * @since 1.6.2
-	 * @param string $admin_title The page title, with extra context added
-	 * @param string $title The original page title
+	 *
+	 * @param string $admin_title the page title, with extra context added
+	 * @param string $title the original page title
 	 * @return string
 	 */
 	abstract public function set_admin_page_title( $admin_title, $title );
 
 
 	/**
-	 * Conditionally output HTML if the section is displayed
+	 * Conditionally outputs HTML if the section is displayed.
 	 *
 	 * @internal
 	 *
 	 * @since 1.6.0
-	 * @param string $current_section
+	 *
+	 * @param string $current_section the current section ID
 	 */
 	public function render_section( $current_section ) {
 
@@ -98,7 +100,7 @@ abstract class WC_Memberships_Import_Export {
 
 
 	/**
-	 * Output HTML
+	 * Outputs HTML fields of the import/export page.
 	 *
 	 * @internal
 	 *
@@ -120,12 +122,13 @@ abstract class WC_Memberships_Import_Export {
 
 
 	/**
-	 * Output a file input field
+	 * Outputs a file input field.
 	 *
 	 * @internal
 	 *
 	 * @since 1.6.0
-	 * @param array $field Field settings
+	 *
+	 * @param array $field field settings
 	 */
 	public function render_file_upload_field( $field ) {
 
@@ -162,12 +165,13 @@ abstract class WC_Memberships_Import_Export {
 
 
 	/**
-	 * Output a date range input field
+	 * Outputs a date range input field.
 	 *
 	 * @internal
 	 *
 	 * @since 1.6.0
-	 * @param array $field Field settings
+	 *
+	 * @param array $field field settings
 	 */
 	public function render_date_range_field( $field ) {
 
@@ -218,19 +222,21 @@ abstract class WC_Memberships_Import_Export {
 
 
 	/**
-	 * Get settings configuration for input fields to be displayed
+	 * Returns settings configuration for input fields to be displayed.
 	 *
 	 * @since 1.6.0
-	 * @return array
+	 *
+	 * @return array associative array
 	 */
 	abstract protected function get_fields();
 
 
 	/**
-	 * Get fields delimiter for CSV import or export file
+	 * Returns the fields delimiter for CSV import or export file.
 	 *
 	 * @since 1.6.0
-	 * @return string Tab space or comma (default)
+	 *
+	 * @return string tab space or comma (default comma)
 	 */
 	protected function get_fields_delimiter() {
 
@@ -248,9 +254,10 @@ abstract class WC_Memberships_Import_Export {
 
 
 	/**
-	 * Check if a string is a valid User Membership status
+	 * Checks if a string is a valid User Membership status.
 	 *
 	 * @since 1.6.0
+	 *
 	 * @param string $status Perhaps a User Membership status
 	 * @return bool
 	 */
@@ -269,10 +276,11 @@ abstract class WC_Memberships_Import_Export {
 
 
 	/**
-	 * Loose check if a date is valid
+	 * Loosely checks if a date is valid.
 	 *
 	 * @since 1.6.0
-	 * @param string|int $date Date as timestamp or string format
+	 *
+	 * @param string|int $date a date as timestamp or string format
 	 * @return bool
 	 */
 	protected function is_date( $date ) {
@@ -284,9 +292,10 @@ abstract class WC_Memberships_Import_Export {
 
 
 	/**
-	 * Check if a timezone is a valid timezone string
+	 * Checks if a timezone is a valid timezone string.
 	 *
 	 * @since 1.6.0
+	 *
 	 * @param string $timezone
 	 * @return bool
 	 */
@@ -296,14 +305,15 @@ abstract class WC_Memberships_Import_Export {
 
 
 	/**
-	 * Ensure a date is returned in mysql format
+	 * Ensures if a date is returned in MySQL format.
 	 *
 	 * @see wc_memberships_adjust_date_by_timezone()
 	 *
 	 * @since 1.6.0
-	 * @param string|int $date Date as timestamp or string format
-	 * @param string $timezone Timezone to use to convert the date from, defaults to site timezone
-	 * @return string Datetime string in UTC
+	 *
+	 * @param string|int $date a date as timestamp or string format
+	 * @param string $timezone timezone to use to convert the date from, defaults to site timezone
+	 * @return string datetime string in UTC
 	 */
 	protected function parse_date_mysql( $date, $timezone = '' ) {
 

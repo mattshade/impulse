@@ -20,16 +20,16 @@
 
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
-define('DB_NAME', 'db87685_impulsesurvey');
+define('DB_NAME', 'impulses_core');
 
 /** MySQL database username */
-define('DB_USER', 'db87685_impulse');
+define('DB_USER', 'impulses_shade');
 
 /** MySQL database password */
 define('DB_PASSWORD', 'M[v1t7o+Me');
 
 /** MySQL hostname */
-define('DB_HOST', 'internal-db.s87685.gridserver.com');
+define('DB_HOST', 'localhost');
 
 /** Database Charset to use in creating database tables. */
 define('DB_CHARSET', 'utf8');

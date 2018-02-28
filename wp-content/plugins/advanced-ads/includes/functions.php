@@ -90,11 +90,42 @@ function advads_can_display_ads(){
 
 /**
  * Are we currently on an AMP URL?
- * Will always return `false` if called before the `parse_query` hook.
+ * Will always return `false` and show PHP Notice if called before the `parse_query` hook.
  *
  * @return bool true if amp url, false otherwise
  */
 function advads_is_amp() {
+	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+		return false;
+	}
+
 	return ( function_exists( 'is_amp_endpoint' ) && is_amp_endpoint() )
 	|| ( function_exists( 'is_wp_amp' ) && is_wp_amp() );
+}
+
+/**
+ * Test if a placement has ads.
+ *
+ * @return bool
+ */
+function placement_has_ads( $id = '' ) {
+	$args = array(
+		'global_output' => false,
+		'cache-busting' => 'ignore',
+	);
+	return Advanced_Ads_Select::get_instance()->get_ad_by_method( $id, 'placement', $args ) != '';
+
+}
+
+/**
+ * Test if a group has ads.
+ *
+ * @return bool
+ */
+function group_has_ads( $id = '' ) {
+	$args = array(
+		'global_output' => false,
+		'cache-busting' => 'ignore',
+	);
+	return Advanced_Ads_Select::get_instance()->get_ad_by_method( $id, 'group', $args ) != '';
 }

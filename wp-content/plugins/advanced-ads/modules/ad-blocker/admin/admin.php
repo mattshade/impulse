@@ -23,11 +23,11 @@ class Advanced_Ads_Ad_Blocker_Admin
 	protected $search_file_pattern = '/(css|js|png|gif)$/';
 
 	/**
-	 * pattern to exclide directories from search. The string does not contain 'vendor/composer' or '/admin/'
+	 * pattern to exclide directories from search. The string does not contain 'vendor/composer' or '/admin/' or /node_modules/
 	 *
 	 * @var     string
 	 */
-	protected $exclude_dir_pattern = '/(vendor\/composer|\/admin\/)/';
+	protected $exclude_dir_pattern = '/(vendor\/composer|\/admin\/|\/node_modules\/)/';
 
 	/**
 	 * Array, containing path information on the currently configured uploads directory
@@ -152,6 +152,9 @@ class Advanced_Ads_Ad_Blocker_Admin
 			if ( $wp_filesystem instanceof WP_Filesystem_Base && is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
 				$message = esc_html( $wp_filesystem->errors->get_error_message() );
 			}
+			if ( is_wp_error( $fs_connect ) && $fs_connect->get_error_code() ) {
+				$message = esc_html( $fs_connect->get_error_message() );
+			}
 		} else {
 			$output = $this->process_form();
 			if ( is_wp_error( $output ) ) {
@@ -239,14 +242,14 @@ class Advanced_Ads_Ad_Blocker_Admin
 		if ( ! empty( $this->options['folder_name'] ) ) {
 			$new_options['folder_name'] = $new_options_error['folder_name'] = $this->options['folder_name'];
 
-			$old_folder_normalized = Advanced_Ads_Filesystem::get_instance()->normalize_path( trailingslashit( $this->upload_dir['basedir'] ) . $this->options['folder_name'] );
+			$old_folder_normalized = Advanced_Ads_Filesystem::get_instance()->normalize_path( trailingslashit( $this->upload_dir['basedir'] ) ) . $this->options['folder_name'];
 
 			if ( $wp_filesystem->exists( $old_folder_normalized ) ) {
 
 				if ( $need_assign_new_name ) {
 					$existing_files[] = (string) $new_options['folder_name'];
 					$new_folder_name = $this->generate_unique_name( $existing_files );
-					$new_folder_normalized = Advanced_Ads_Filesystem::get_instance()->normalize_path( trailingslashit( $this->upload_dir['basedir'] ) . $new_folder_name );
+					$new_folder_normalized = Advanced_Ads_Filesystem::get_instance()->normalize_path( trailingslashit( $this->upload_dir['basedir'] ) ) . $new_folder_name;
 
 					if ( ! $wp_filesystem->move( $old_folder_normalized, $new_folder_normalized ) ) {
 						$message = sprintf( __( 'Unable to rename "%s" directory', 'advanced-ads' ), $old_folder_normalized );
@@ -317,18 +320,18 @@ class Advanced_Ads_Ad_Blocker_Admin
 		global $wp_filesystem;
 
 		// Are we completely rebuilding the assets folder?
-		$normalized_asset_path = Advanced_Ads_Filesystem::get_instance()->normalize_path( trailingslashit( $this->upload_dir['basedir'] ) . $folder_name );
 		$asset_path = trailingslashit( $this->upload_dir['basedir'] ) . $folder_name ;
+		$asset_path_normalized = Advanced_Ads_Filesystem::get_instance()->normalize_path( trailingslashit( $this->upload_dir['basedir'] ) ) . $folder_name;
 
 		// already saved associations (original name => replaced name)
 		$rand_asset_names = array();
 
 		if ( $need_assign_new_name ) {
 			// Check if there is a previous asset folder
-			if ( $wp_filesystem->exists( $normalized_asset_path ) ) {
+			if ( $wp_filesystem->exists( $asset_path_normalized ) ) {
 				// Remove the old directory and its contents
-				if ( ! $wp_filesystem->rmdir( trailingslashit( $normalized_asset_path ), true ) ) {
-					$message = sprintf( __( 'We do not have direct write access to the "%s" directory', 'advanced-ads' ), $normalized_asset_path );
+				if ( ! $wp_filesystem->rmdir( trailingslashit( $asset_path_normalized ), true ) ) {
+					$message = sprintf( __( 'We do not have direct write access to the "%s" directory', 'advanced-ads' ), $asset_path_normalized );
 					$this->error_messages->add( 'copy_assets_1', $message);
 					return false;
 				}
@@ -346,13 +349,6 @@ class Advanced_Ads_Ad_Blocker_Admin
 			}
 		}
 
-		if ( ! $wp_filesystem->exists( $normalized_asset_path ) ) {
-			if ( ! $wp_filesystem->mkdir( $normalized_asset_path ) ) {
-				$message = sprintf( __( 'We do not have direct write access to the "%s" directory', 'advanced-ads' ), $this->upload_dir['basedir'] );
-				$this->error_messages->add( 'copy_assets_2', $message);
-				return false;
-			}
-		}
 
 		// lookup_table contains associations between the original path of the asset and it path within our magic folder
 		// i.e: [advanced-ads-layer/admin/assets/css/admin.css] => array( path => /12/34/56/78/1347107783.css, size => 99 )
@@ -393,39 +389,43 @@ class Advanced_Ads_Ad_Blocker_Admin
 			}
 
 			$new_dir_full = trailingslashit( $asset_path ) . trailingslashit( implode( '/', $path_components_new ) );
+			$new_dir_full_normalized = trailingslashit( $asset_path_normalized ) . trailingslashit( implode( '/', $path_components_new ) );
 			$new_dir = trailingslashit( implode( '/', $path_components_new ) );
+
+
 
 
 			if ( ! in_array( $first_cleanup_filename, $not_rename_assets ) && ( $first_cleanup_file_extension == 'js' || $first_cleanup_file_extension == 'css' ) ) {
 				if ( array_key_exists( $first_cleanup_filename, $rand_asset_names ) ) {
-					$new_abs_file = $new_dir_full . $rand_asset_names[$first_cleanup_filename];
+					$new_abs_file = $new_dir_full_normalized . $rand_asset_names[$first_cleanup_filename];
 					$new_rel_file = $new_dir . $rand_asset_names[$first_cleanup_filename];
 				} else {
 					$new_filename = $this->generate_unique_name( array_values( $rand_asset_names ) ) . '.' . $first_cleanup_file_extension;
 					$rand_asset_names[$first_cleanup_filename] = (string) $new_filename;
-					$new_abs_file = $new_dir_full . $new_filename;
+					$new_abs_file = $new_dir_full_normalized . $new_filename;
 					$new_rel_file = $new_dir . $new_filename;
 				}
 			} else {
-				$new_abs_file = $new_dir_full . $first_cleanup_filename;
+				$new_abs_file = $new_dir_full_normalized . $first_cleanup_filename;
 				$new_rel_file = $new_dir . $first_cleanup_filename;
 			}
 
-			if ( ! file_exists( $new_dir_full ) ) {
+
+			if ( ! file_exists( $new_dir_full_normalized ) ) {
 				// Create the path if it doesn't exist (prevents the copy() function from failing)
-				if ( ! wp_mkdir_p( $new_dir_full ) ) {
-					$message = sprintf( __( 'Unable to create "%s" directory. Is its parent directory writable by the server?', 'advanced-ads' ), $asset_path );
+				if ( ! Advanced_Ads_Filesystem::get_instance()->mkdir_p( $new_dir_full_normalized ) ) {
+					$message = sprintf( __( 'We do not have direct write access to the "%s" directory', 'advanced-ads' ), $this->upload_dir['basedir'] );
 					$this->error_messages->add( 'copy_assets_4', $message);
 					return false;
 				}
 			}
 
-			$file = Advanced_Ads_Filesystem::get_instance()->normalize_path( $file );
-			$new_abs_file = Advanced_Ads_Filesystem::get_instance()->normalize_path( $new_abs_file );
+
+			$file_normalized = Advanced_Ads_Filesystem::get_instance()->normalize_path( trailingslashit( dirname( $file ) ) ) . basename( $file );
 
 			// Copy the file to our new magic directory
-			if ( ! $wp_filesystem->copy( $file, $new_abs_file, true, FS_CHMOD_FILE ) ) {
-				$message = sprintf( __( 'Unable to copy files to %s', 'advanced-ads' ), $normalized_asset_path );
+			if ( ! $wp_filesystem->copy( $file_normalized, $new_abs_file, true, FS_CHMOD_FILE ) ) {
+				$message = sprintf( __( 'Unable to copy files to %s', 'advanced-ads' ), $asset_path_normalized );
 				$this->error_messages->add( 'copy_assets_5', $message);
 				return false;
 			}
@@ -565,4 +565,5 @@ class Advanced_Ads_Ad_Blocker_Admin
 			$wp_filesystem->rmdir( $path, true );
 		}
 	}
+
 }

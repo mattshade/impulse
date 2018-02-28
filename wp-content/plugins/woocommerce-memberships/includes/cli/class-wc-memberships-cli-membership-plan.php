@@ -18,12 +18,12 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 /**
- * Manage Membership Plans
+ * Manage Membership Plans from WP CLI.
  *
  * @since 1.7.0
  */
@@ -31,7 +31,7 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 
 
 	/**
-	 * Create a Membership Plan
+	 * Create a Membership Plan.
 	 *
 	 * ## OPTIONS
 	 *
@@ -66,6 +66,7 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 	 *
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param array $args
 	 * @param array $assoc_args
 	 */
@@ -222,9 +223,9 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 				$access_method = 'purchase';
 			}
 
-			$post_id = wp_insert_post( $post_args );
+			$post_id = wp_insert_post( $post_args, true );
 
-			if ( is_wp_error( $post_id ) ) {
+			if ( 0 === $post_id || is_wp_error( $post_id ) ) {
 				throw new WC_CLI_Exception( 'woocommerce_memberships_cli_cannot_create_membership_plan', $post_id->get_error_message() );
 			}
 
@@ -261,17 +262,18 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 					'ID'        => $post_id,
 					'post_type' => 'wc_membership_plan',
 					'post_name' => wp_unique_post_slug( $slug, $post_id, $post->post_status, $post->post_type, $post->post_parent ),
-				) );
+				), true );
 
-				if ( is_wp_error( $updated ) ) {
+				if ( 0 === $updated || is_wp_error( $updated ) ) {
 					WP_CLI::warning( 'Could not set the slug "%1$s" for Membership Plan %2$s, auto-generated "%3$s" has been used instead.', $slug, $post_id, $post->post_name );
 				}
 			}
 
 			/**
-			 * Upon creating a Membership Plan via CLI
+			 * Upon creating a Membership Plan via CLI.
 			 *
 			 * @since 1.7.0
+			 *
 			 * @param \WC_Memberships_Membership_Plan $membership_plan
 			 * @param array $data
 			 */
@@ -287,12 +289,12 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 
 
 	/**
-	 * Update one or more Membership Plans
+	 * Update one or more Membership Plans.
 	 *
 	 * ## OPTIONS
 	 *
 	 * <id>
-	 * : Membership Plan ID
+	 * : Membership Plan ID or name
 	 *
 	 * [--<field>=<value>]
 	 * : One or more fields to update
@@ -307,6 +309,7 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 	 *
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param array $args
 	 * @param array $assoc_args
 	 */
@@ -314,7 +317,8 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 
 		try {
 
-			$id = $args[0];
+			// plan ID or name
+			$id = is_numeric( $args[0] ) ? (int) $args[0] : $args[0];
 
 			/**
 			 * Filter arguments when updating a Membership Plan via CLI
@@ -498,9 +502,9 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 
 			if ( ! empty( $post_args ) ) {
 
-				$updated = wp_update_post( $post_args );
+				$updated = wp_update_post( $post_args, true );
 
-				if ( is_wp_error( $updated ) ) {
+				if ( 0 === $updated || is_wp_error( $updated ) ) {
 					throw new WC_CLI_Exception( 'woocommerce_memberships_cli_cannot_update_membership_plan', $updated->get_error_message() );
 				}
 			}
@@ -544,9 +548,10 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 			}
 
 			/**
-			 * Upon updating a Membership Plan via CLI
+			 * Upon updating a Membership Plan via CLI.
 			 *
 			 * @since 1.7.0
+			 *
 			 * @param \WC_Memberships_Membership_Plan $membership_plan
 			 * @param array $data
 			 */
@@ -562,12 +567,12 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 
 
 	/**
-	 * Get a Membership Plan
+	 * Get a Membership Plan.
 	 *
 	 * ## OPTIONS
 	 *
 	 * <id>
-	 * : Membership Plan ID to look for
+	 * : Membership Plan ID or plan name to look for
 	 *
 	 * [--field=<field>]
 	 * : Instead of returning the whole Membership Plan fields, returns the value of a single fields
@@ -586,21 +591,24 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 	 *
 	 *     wp wc memberships plan get 123
 	 *
+	 *     wp wc memberships plan get "Golden Membership"
+	 *
 	 *     wp wc memberships plan get 123 --fields=id
 	 *
 	 *
 	 * @since 1.7.0
-	 * @param int[] $args Only the first id will be used
-	 * @param array $assoc_args Formatting arguments
+	 *
+	 * @param int[] $args only the first id will be used
+	 * @param array $assoc_args formatting arguments
 	 */
 	public function get( $args, $assoc_args ) {
 
 		try {
 
-			$membership_plan = wc_memberships_get_membership_plan( (int) $args[0] );
+			$membership_plan = wc_memberships_get_membership_plan( is_numeric( $args[0] ) ? (int) $args[0] : $args[0] );
 
 			if ( ! $membership_plan instanceof WC_Memberships_Membership_Plan ) {
-				throw new WC_CLI_Exception( 'woocommerce_memberships_cli_invalid_membership_plan', sprintf( 'Invalid Membership Plan "%s".', $args[0] ) );
+				throw new WC_CLI_Exception( 'woocommerce_memberships_cli_invalid_membership_plan', sprintf( 'Membership Plan "%s" invalid or not found.', $args[0] ) );
 			}
 
 			$membership_plan_data = $this->get_membership_plan_data( $membership_plan );
@@ -616,9 +624,10 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 
 
 	/**
-	 * Get default format fields that will be used in `list` and `get` subcommands
+	 * Get default format fields that will be used in `list` and `get` subcommands.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return string
 	 */
 	protected function get_default_format_fields() {
@@ -635,9 +644,10 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 		$default_fields[] = 'members_count';
 
 		/**
-		 * Memberships Plan default format fields used in WP CLI
+		 * Memberships Plan default format fields used in WP CLI.
 		 *
 		 * @since 1.7.0
+		 *
 		 * @param array $default_fields
 		 */
 		$default_fields = apply_filters( 'wc_memberships_cli_membership_plan_default_fields', $default_fields );
@@ -647,9 +657,10 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 
 
 	/**
-	 * Get Membership Plan data
+	 * Get Membership Plan data.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param \WC_Memberships_Membership_Plan $membership_plan
 	 * @return array
 	 */
@@ -680,11 +691,12 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 		}
 
 		/**
-		 * Filter the membership plan data for Memberships CLI
+		 * Filter the membership plan data for Memberships CLI.
 		 *
 		 * @since 1.7.0
-		 * @param array $membership_plan_data The plan data passed to CLI
-		 * @param \WC_Memberships_Membership_Plan $membership_plan The membership plan
+		 *
+		 * @param array $membership_plan_data the plan data passed to CLI
+		 * @param \WC_Memberships_Membership_Plan $membership_plan the membership plan
 		 */
 		$membership_plan_data = apply_filters( 'wc_memberships_cli_membership_plan_data', $membership_plan_data, $membership_plan );
 
@@ -693,7 +705,7 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 
 
 	/**
-	 * List Membership Plans
+	 * List Membership Plans.
 	 *
 	 * ## OPTIONS
 	 *
@@ -735,6 +747,7 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 	 * @subcommand list
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param array $args
 	 * @param array $assoc_args
 	 */
@@ -760,12 +773,13 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 
 
 	/**
-	 * Get query args for list subcommand
+	 * Get query args for list subcommand.
 	 *
 	 * @see WC_Memberships_CLI_Membership_Plan::list__()
 	 *
 	 * @since 1.7.0
-	 * @param array $args Args from command line
+	 *
+	 * @param array $args arguments from command line
 	 * @return array
 	 */
 	protected function get_list_query_args( $args ) {
@@ -781,11 +795,12 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 
 
 	/**
-	 * Format posts from WP_Query result to items
+	 * Format posts from WP_Query result to items.
 	 *
 	 * @since 1.7.0
-	 * @param \WP_Post[] $posts Array of post objects
-	 * @return array Items
+	 *
+	 * @param \WP_Post[] $posts array of post objects
+	 * @return array items
 	 */
 	protected function format_posts_to_items( $posts ) {
 
@@ -807,31 +822,35 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 
 
 	/**
-	 * Delete Membership Plans
+	 * Delete Membership Plans.
 	 *
 	 * ## OPTIONS
 	 *
 	 * <id>...
-	 * : The Membership Plan ID to delete
+	 * : The ID or the plan name of the Membership Plan to delete
 	 *
 	 * ## EXAMPLES
 	 *
 	 *     wp wc memberships plan delete 123
 	 *
+	 *     wp wc memberships plan delete "Golden Membership"
+	 *
 	 *     wp wc memberships plan delete $(wp wc memberships plan list --format=ids)
 	 *
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param int|int[] $args
 	 * @param array $assoc_args
 	 */
 	public function delete( $args, $assoc_args ) {
 
 		$exit_code = 0;
+		$args      = ! is_array( $args ) ? (array) $args : $args;
 
 		foreach ( $args as $membership_plan_id ) {
 
-			$membership_plan = wc_memberships_get_membership_plan( $membership_plan_id );
+			$membership_plan = wc_memberships_get_membership_plan( is_numeric( $membership_plan_id ) ? (int) $membership_plan_id : $membership_plan_id );
 
 			if ( ! $membership_plan instanceof WC_Memberships_Membership_Plan ) {
 				WP_CLI::warning( "Failed deleting Membership Plan $membership_plan_id: not a Membership Plan." );
@@ -842,9 +861,10 @@ class WC_Memberships_CLI_Membership_Plan extends WC_Memberships_CLI_Command {
 			}
 
 			/**
-			 * Upon deleting a Membership Plan via CLI
+			 * Upon deleting a Membership Plan via CLI.
 			 *
 			 * @since 1.7.0
+			 *
 			 * @param int $membership_plan_id
 			 */
 			do_action( 'wc_memberships_cli_delete_membership_plan', $membership_plan_id );

@@ -19,19 +19,17 @@
  * @package   WC-Memberships/Admin
  * @author    SkyVerge
  * @category  Admin
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Admin Users class.
+ * Users admin handler.
  *
  * This class handles all the admin-related functionality in users edit screens.
- *
- * Note: it's not necessary to check for the post type, or `$typenow`
- * in this class, as this is already handled in WC_Memberships_Admin->init()
+ * Note: it's not necessary to check for the post type, or `$typenow` in this class, as this is already handled in `WC_Memberships_Admin::init()`.
  *
  * @since 1.7.4
  */
@@ -39,28 +37,29 @@ class WC_Memberships_Admin_Users {
 
 
 	/**
-	 * Constructor.
+	 * Handler constructor.
 	 *
 	 * @since 1.7.4
 	 */
 	public function __construct() {
 
-		// Show user memberships in Users list screen.
+		// show user memberships in Users list screen
 		add_filter( 'manage_users_columns',       array( $this, 'add_user_columns' ), 11 );
 		add_filter( 'manage_users_custom_column', array( $this, 'user_column_values' ), 11, 3 );
 
-		// List user memberships in individual WordPress User Profile page.
+		// list user memberships in individual WordPress User Profile page
 		add_action( 'show_user_profile', array( $this, 'show_user_memberships' ) );
 		add_action( 'edit_user_profile', array( $this, 'show_user_memberships' ) );
 	}
 
 
 	/**
-	 * Add the "Memberships" column to the User's admin table
+	 * Adds the "Memberships" column to the User's admin table.
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.4
+	 *
 	 * @param array $columns the array of Users columns
 	 * @return array $columns the updated column layout
 	 */
@@ -68,7 +67,7 @@ class WC_Memberships_Admin_Users {
 
 		if ( current_user_can( 'manage_woocommerce' ) ) {
 
-			// Move Memberships before Orders for aesthetics.
+			// move Memberships before Orders for aesthetics
 			$last_column = array_slice( $columns, -1, 1, true );
 
 			array_pop( $columns );
@@ -83,21 +82,22 @@ class WC_Memberships_Admin_Users {
 
 
 	/**
-	 * Display membership plan name(s) if a given user has a membership for the plan.
+	 * Displays membership plan name(s) if a given user has a membership for the plan.
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.4
-	 * @param string $output The string to output in the column specified with $column_name
-	 * @param string $column_name The string key for the current column in an admin table
-	 * @param int $user_id The ID of the user to which this row relates
-	 * @return string $output Links to active user memberships
+	 *
+	 * @param string $output the string to output in the column specified with $column_name
+	 * @param string $column_name the string key for the current column in an admin table
+	 * @param int $user_id the ID of the user to which this row relates
+	 * @return string $output links to active user memberships
 	 */
 	public function user_column_values( $output, $column_name, $user_id ) {
 
 		if ( 'wc_memberships_user_memberships' === $column_name ) {
 
-			// Get all active memberships.
+			// get all active memberships
 			$memberships = wc_memberships()->get_user_memberships_instance()->get_user_memberships( $user_id );
 
 			if ( ! empty( $memberships ) ) {
@@ -108,7 +108,7 @@ class WC_Memberships_Admin_Users {
 
 					$plan = $membership->get_plan();
 
-					// Get a link to the membership only if currently active.
+					// get a link to the membership only if currently active
 					if ( $plan && wc_memberships_is_user_active_member( $user_id, $plan ) ) {
 						$membership_links[] = '<a href="' . esc_url( get_edit_post_link( $membership->get_id() ) ) . '">' . esc_html( $plan->name ) . '</a>';
 					}
@@ -123,12 +123,13 @@ class WC_Memberships_Admin_Users {
 
 
 	/**
-	 * Show user memberships on user profile page.
+	 * Shows user memberships on user profile page.
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.4
-	 * @param \WP_User $user The user object.
+	 *
+	 * @param \WP_User $user the user object
 	 */
 	public function show_user_memberships( WP_User $user ) {
 

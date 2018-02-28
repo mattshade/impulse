@@ -60,6 +60,7 @@
 				 endif;
 			    ?></td>
                             <td class="advads-placements-table-options">
+				<input type="hidden" class="advads-placement-slug" value="<?php echo $_placement_slug; ?>"/>
 				<?php if( ! isset( $_placement['type'] ) || 'default' === $_placement['type']) : ?>
 				<div class="hidden advads-usage">
 				    <label><?php _e( 'shortcode', 'advanced-ads' ); ?>
@@ -124,9 +125,10 @@
 				do_action( 'advanced-ads-placement-options-after-advanced', $_placement_slug, $_placement );
 			    $advanced_options = ob_get_clean();
 			    if( $advanced_options ) :
-				?><a class="advads-toggle-link" onclick="advads_toggle('.advads-placements-advanced-options-<?php
-				echo $_placement_slug; ?>')"><?php _e( 'show all options', 'advanced-ads' ); ?></a>
-				<div class="advads-placements-advanced-options-<?php echo $_placement_slug; ?>" style="display: none"><?php
+				?><a class="advads-toggle-link advads-placement-options-link"><?php _e( 'show all options', 'advanced-ads' ); ?></a>
+				<?php 
+				$hidden = ( isset( $_POST['advads-last-edited-placement'] ) && $_placement_slug == $_POST['advads-last-edited-placement'] ) ? '' : ' hidden'; ?>
+				<div class="advads-placements-advanced-options advads-placements-advanced-options-<?php echo $_placement_slug; echo $hidden; ?>"><?php
 				    echo $advanced_options;
 				?></div><?php
 			    endif;
@@ -152,6 +154,7 @@
 	    _e( 'New Placement', 'advanced-ads' ); ?></button>
 	    <?php do_action( 'advanced-ads-placements-list-buttons', $placements ); ?>
 	    </div>
+	    <input type="hidden" name="advads-last-edited-placement" id="advads-last-edited-placement" value="0"/>
         </form>
 	<?php do_action( 'advanced-ads-placements-list-after', $placements );
 endif;

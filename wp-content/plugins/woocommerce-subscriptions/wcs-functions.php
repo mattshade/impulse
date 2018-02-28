@@ -466,14 +466,15 @@ function wcs_get_subscriptions( $args ) {
 		case 'trial_end_date' :
 		case 'end_date' :
 			// We need to orderby post meta value: http://www.paulund.co.uk/order-meta-query
+			$date_type  = str_replace( '_date', '', $args['orderby'] );
 			$query_args = array_merge( $query_args, array(
 				'orderby'   => 'meta_value',
-				'meta_key'  => wcs_get_date_meta_key( $args['orderby'] ),
+				'meta_key'  => wcs_get_date_meta_key( $date_type ),
 				'meta_type' => 'DATETIME',
 			) );
 			$query_args['meta_query'][] = array(
-				'key'     => wcs_get_date_meta_key( $args['orderby'] ),
-				'value'   => 'EXISTS',
+				'key'     => wcs_get_date_meta_key( $date_type ),
+				'compare' => 'EXISTS',
 				'type'    => 'DATETIME',
 			);
 			break;
@@ -527,7 +528,7 @@ function wcs_get_subscriptions_for_product( $product_ids, $fields = 'ids' ) {
 
 	// If we have an array of IDs, convert them to a comma separated list and sanatise them to make sure they're all integers
 	if ( is_array( $product_ids ) ) {
-		$ids_for_query = implode( "', '", array_map( 'absint', array_unique( $product_ids ) ) );
+		$ids_for_query = implode( "', '", array_map( 'absint', array_unique( array_filter( $product_ids ) ) ) );
 	} else {
 		$ids_for_query = absint( $product_ids );
 	}
@@ -586,6 +587,17 @@ function wcs_can_items_be_removed( $subscription ) {
 	}
 
 	return apply_filters( 'wcs_can_items_be_removed', $allow_remove, $subscription );
+}
+
+/**
+ * Checks if the user can be granted the permission to remove a particular line item from the subscription.
+ *
+ * @param WC_Order_item $item An instance of a WC_Order_item object
+ * @param WC_Subscription $subscription An instance of a WC_Subscription object
+ * @since 2.2.15
+ */
+function wcs_can_item_be_removed( $item, $subscription ) {
+	return apply_filters( 'wcs_can_item_be_removed', true, $item, $subscription );
 }
 
 /**

@@ -18,7 +18,7 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
@@ -39,13 +39,13 @@ class WC_Memberships_Integration_Subscriptions_Membership_Plans {
 	 */
 	public function __construct() {
 
-		// Helper object for subscription-tied membership plans.
+		// helper object for subscription-tied membership plans
 		require( wc_memberships()->get_plugin_path() . '/includes/integrations/subscriptions/class-wc-memberships-integration-subscriptions-membership-plan.php' );
 
-		// Init hooks that need to be executed early.
+		// init hooks that need to be executed early
 		add_action( 'init', array( $this, 'init' ) );
 
-		// Handle granting access from a subscription product.
+		// handle granting access from a subscription product
 		add_filter( 'wc_memberships_access_granting_purchased_product_id',               array( $this, 'adjust_access_granting_product_id' ), 10, 3 );
 		add_action( 'wc_memberships_grant_membership_access_from_purchase',              array( $this, 'save_subscription_data' ), 10, 2 );
 		add_filter( 'wc_memberships_grant_access_from_new_purchase',                     array( $this, 'maybe_grant_access_from_new_subscription' ), 10, 2 );
@@ -55,7 +55,7 @@ class WC_Memberships_Integration_Subscriptions_Membership_Plans {
 
 
 	/**
-	 * Init early hooks.
+	 * Initializes early hooks.
 	 *
 	 * @internal
 	 *
@@ -68,7 +68,7 @@ class WC_Memberships_Integration_Subscriptions_Membership_Plans {
 
 
 	/**
-	 * Filter a Membership Plan to return a subscription-tied Membership Plan.
+	 * Filters a Membership Plan to return a subscription-tied Membership Plan.
 	 *
 	 * This method is a filter callback and should not be used directly.
 	 * @see \wc_memberships_get_membership_plan() instead.
@@ -76,26 +76,28 @@ class WC_Memberships_Integration_Subscriptions_Membership_Plans {
 	 * @internal
 	 *
 	 * @since 1.8.0
-	 * @param \WC_Memberships_Membership_Plan $membership_plan The membership plan
-	 * @param null|\WP_Post $membership_plan_post The membership plan post object
-	 * @param null|\WC_Memberships_User_Membership $user_membership
+	 *
+	 * @param \WC_Memberships_Membership_Plan $membership_plan the membership plan
+	 * @param null|\WP_Post $membership_plan_post the membership plan post object
+	 * @param null|\WC_Memberships_User_Membership $user_membership the user membership object
 	 * @return \WC_Memberships_Integration_Subscriptions_Membership_Plan|\WC_Memberships_Membership_Plan
 	 */
 	public function get_membership_plan( $membership_plan, $membership_plan_post = null, $user_membership = null ) {
 
-		// We can't filter directly $membership_plan since it may have
-		// both regular products and subscription products that grant access;
+		// We can't filter directly $membership_plan:
+		// it may have both regular products and subscription products that grant access;
 		// instead, the user membership type will tell the type of purchase.
 		return wc_memberships_has_subscription_granted_access( $user_membership ) ? new WC_Memberships_Integration_Subscriptions_Membership_Plan( $membership_plan->post ) : $membership_plan;
 	}
 
 
 	/**
-	 * Check whether a membership plan can be accessed when a subscription is active
+	 * Checks whether a membership plan can be accessed when a subscription is active
 	 *
 	 * @since 1.8.0
-	 * @param int|WC_Memberships_Membership_Plan $plan_id Membership Plan ID or object.
-	 * @return bool True, if access is allowed, false otherwise
+	 *
+	 * @param int|WC_Memberships_Membership_Plan $plan_id Membership Plan ID or object
+	 * @return bool true, if access is allowed, false otherwise
 	 */
 	public function grant_access_while_subscription_active( $plan_id ) {
 
@@ -113,37 +115,32 @@ class WC_Memberships_Integration_Subscriptions_Membership_Plans {
 
 
 	/**
-	 * Adjust the product ID that grants access to a membership plan on purchase.
+	 * Adjusts the product ID that grants access to a membership plan on purchase.
 	 *
 	 * Subscription products take priority over all other products.
 	 *
 	 * @internal
 	 *
 	 * @since 1.8.0
+	 *
 	 * @param int $product_id Product ID
-	 * @param array $access_granting_product_ids Array of product IDs in the purchase order
+	 * @param array $access_granting_product_ids array of product IDs in the purchase order
 	 * @param \WC_Memberships_Membership_Plan $plan Membership Plan to access
-	 * @return int ID of the Subscription product that grants access,
-	 *             if multiple IDs are in a purchase order, the one that grants longest membership access is used
+	 * @return int ID of the Subscription product that grants access, if multiple IDs are in a purchase order, the one that grants longest membership access is used
 	 */
 	public function adjust_access_granting_product_id( $product_id, $access_granting_product_ids, WC_Memberships_Membership_Plan $plan ) {
 
 		// check if more than one products may grant access,
 		// and if the plan even allows access while subscription is active
-		if ( count( $access_granting_product_ids ) > 1 && $this->grant_access_while_subscription_active( $plan ) ) {
+		if (    count( $access_granting_product_ids ) > 1
+		     && $this->grant_access_while_subscription_active( $plan ) ) {
 
 			// first, find all subscription products that grant access
 			$access_granting_subscription_product_ids = array();
 
 			foreach ( $access_granting_product_ids as $_product_id ) {
 
-				$product = wc_get_product( $_product_id );
-
-				if ( ! $product ) {
-					continue;
-				}
-
-				if ( $product->is_type( array( 'subscription', 'subscription_variation', 'variable-subscription' ) ) ) {
+				if ( WC_Subscriptions_Product::is_subscription( $_product_id ) ) {
 					$access_granting_subscription_product_ids[] = $_product_id;
 				}
 			}
@@ -156,7 +153,7 @@ class WC_Memberships_Integration_Subscriptions_Membership_Plans {
 
 					$product_id = $access_granting_subscription_product_ids[0];
 
-					// multiple subscriptions grant access
+				// multiple subscriptions grant access
 				} else {
 
 					$longest_expiration_date = 0;
@@ -191,11 +188,12 @@ class WC_Memberships_Integration_Subscriptions_Membership_Plans {
 
 
 	/**
-	 * Only grant access to new subscriptions if they're not a subscription renewal
+	 * Only grants access to new subscriptions if they're not a subscription renewal.
 	 *
 	 * @internal
 	 *
 	 * @since 1.8.0
+	 *
 	 * @param bool $grant_access
 	 * @param array $args
 	 * @return bool
@@ -214,7 +212,7 @@ class WC_Memberships_Integration_Subscriptions_Membership_Plans {
 
 			$product = wc_get_product( $args['product_id'] );
 
-			if ( $product && $product->is_type( array( 'subscription', 'subscription_variation', 'variable-subscription' ) ) ) {
+			if ( $product && WC_Subscriptions_Product::is_subscription( $product ) ) {
 
 				$user_id = (int) $args['user_id'];
 				$order   = wc_get_order( (int) $args['order_id'] );
@@ -270,7 +268,7 @@ class WC_Memberships_Integration_Subscriptions_Membership_Plans {
 
 
 	/**
-	 * Only grant access from existing subscription if it's active
+	 * Only grants access from existing subscription if it's active
 	 *
 	 * @internal
 	 *
@@ -283,12 +281,8 @@ class WC_Memberships_Integration_Subscriptions_Membership_Plans {
 
 		$product = wc_get_product( $args['product_id'] );
 
-		if ( ! $product ) {
-			return $grant_access;
-		}
-
 		// handle access from subscriptions
-		if ( isset( $args['order_id'] ) && $args['order_id'] > 0 && $product->is_type( array( 'subscription', 'subscription_variation', 'variable-subscription' ) ) ) {
+		if ( $product && isset( $args['order_id'] ) && $args['order_id'] > 0 && WC_Subscriptions_Product::is_subscription( $product ) ) {
 
 			$subscription = wc_memberships_get_order_subscription( $args['order_id'], $product->get_id() );
 
@@ -309,13 +303,14 @@ class WC_Memberships_Integration_Subscriptions_Membership_Plans {
 
 
 	/**
-	 * Add 'active' to valid order statuses for granting membership access.
+	 * Adds 'active' to valid order statuses for granting membership access.
 	 *
 	 * Filters `'wc_memberships_grant_access_from_existing_purchase_order_statuses'`.
 	 *
 	 * @internal
 	 *
 	 * @since 1.8.0
+	 *
 	 * @param array $statuses
 	 * @return array
 	 */
@@ -325,13 +320,14 @@ class WC_Memberships_Integration_Subscriptions_Membership_Plans {
 
 
 	/**
-	 * Save related subscription data when a membership access is granted via a purchase.
+	 * Saves related subscription data when a membership access is granted via a purchase.
 	 *
 	 * Sets the end date to match subscription end date.
 	 *
 	 * @internal
 	 *
 	 * @since 1.8.0
+	 *
 	 * @param WC_Memberships_Membership_Plan $plan
 	 * @param array $args
 	 */
@@ -340,9 +336,10 @@ class WC_Memberships_Integration_Subscriptions_Membership_Plans {
 		$product     = wc_get_product( $args['product_id'] );
 		$integration = wc_memberships()->get_integrations_instance()->get_subscriptions_instance();
 
-		// Handle access from Subscriptions.
+		// handle access from subscriptions
 		if (    $product
-		     && $product->is_type( array( 'subscription', 'subscription_variation', 'variable-subscription' ) )
+		     && $integration
+		     && WC_Subscriptions_Product::is_subscription( $product )
 		     && $integration->has_membership_plan_subscription( $plan->get_id() ) ) {
 
 			$subscription = wc_memberships_get_order_subscription( $args['order_id'], $product->get_id() );

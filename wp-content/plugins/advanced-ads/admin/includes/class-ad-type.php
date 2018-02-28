@@ -41,6 +41,7 @@ class Advanced_Ads_Admin_Ad_Type {
 		add_action( 'edit_form_after_title', array($this, 'edit_form_below_title') );
 		add_action( 'dbx_post_sidebar', array($this, 'edit_form_end') );
 		add_action( 'post_submitbox_misc_actions', array($this, 'add_submit_box_meta') );
+		add_action( 'admin_enqueue_scripts', array($this, 'use_code_editor') );
 
 		// ad updated messages
 		add_filter( 'post_updated_messages', array($this, 'ad_update_messages') );
@@ -145,7 +146,7 @@ class Advanced_Ads_Admin_Ad_Type {
 
 			$expiry = false;
 			$post_future = false;
-			$post_start = get_the_date('U', $ad->id );
+			$post_start = get_post_time('U', true, $ad->id );
 			$html_classes = 'advads-filter-timing';
 			$expiry_date_format = get_option( 'date_format' ). ', ' . get_option( 'time_format' );
 
@@ -263,13 +264,12 @@ class Advanced_Ads_Admin_Ad_Type {
 	 */
 	public function save_ad($post_id) {
 
-		// only use for ads, no other post type
-		if ( ! isset($_POST['post_type']) || $this->post_type != $_POST['post_type'] || ! isset($_POST['advanced_ad']['type']) ) {
-			return;
-		}
-
-		// don’t do this on revisions
-		if ( wp_is_post_revision( $post_id ) ) {
+		if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads') )
+			// only use for ads, no other post type
+			|| ! isset($_POST['post_type']) 
+			|| $this->post_type != $_POST['post_type'] 
+			|| ! isset($_POST['advanced_ad']['type']) 
+			|| wp_is_post_revision( $post_id ) ) {
 			return;
 		}
 
@@ -283,11 +283,7 @@ class Advanced_Ads_Admin_Ad_Type {
 		$_POST['advanced_ad'] = apply_filters( 'advanced-ads-ad-settings-pre-save', $_POST['advanced_ad'] );
 
 		$ad->type = $_POST['advanced_ad']['type'];
-		if ( isset($_POST['advanced_ad']['output']) ) {
-			$ad->set_option( 'output', $_POST['advanced_ad']['output'] );
-		} else {
-			$ad->set_option( 'output', array() );
-		}
+
 		/**
 		 * deprecated since introduction of "visitors" in 1.5.4
 		 */
@@ -323,6 +319,17 @@ class Advanced_Ads_Admin_Ad_Type {
 		if ( ! empty($_POST['advanced_ad']['content']) ) {
 			$ad->content = $_POST['advanced_ad']['content']; }
 		else { $ad->content = ''; }
+
+		$output = isset( $_POST['advanced_ad']['output'] ) ? $_POST['advanced_ad']['output'] : array();
+
+		// Find Advanced Ads shortcodes.
+		if ( ! empty( $output['allow_shortcodes'] ) ) {
+			$shortcode_pattern = get_shortcode_regex( array( 'the_ad', 'the_ad_group', 'the_ad_placement' ) );
+			$output['has_shortcode'] = preg_match( '/' . $shortcode_pattern . '/s', $ad->content );
+		}
+
+		// Set output.
+		$ad->set_option( 'output', $output );
 
 		if ( ! empty($_POST['advanced_ad']['conditions']) ){
 			$ad->conditions = $_POST['advanced_ad']['conditions'];
@@ -476,6 +483,38 @@ class Advanced_Ads_Admin_Ad_Type {
 		$enabled = 1 - empty($ad->expiry_date);
 
 		include ADVADS_BASE_PATH . 'admin/views/ad-submitbox-meta.php';
+	}
+	
+	/**
+	 * use CodeMirror for plain text input field
+	 * 
+	 * needs WordPress 4.9 and higher
+	 * 
+	 * @since 1.8.15
+	 */
+	public function use_code_editor(){
+		global $wp_version;
+		if ( 'advanced_ads' !== get_current_screen()->id 
+			|| defined( 'ADVANCED_ADS_DISABLE_CODE_HIGHLIGHTING' )
+			|| -1 === version_compare( $wp_version, '4.9' ) ) {
+		    return;
+		}
+		
+		// Enqueue code editor and settings for manipulating HTML.
+		$settings = wp_enqueue_code_editor( array( 'type' => 'application/x-httpd-php' ) );
+
+		// Bail if user disabled CodeMirror.
+		if ( false === $settings ) {
+			return;
+		}
+
+		wp_add_inline_script(
+		    'code-editor',
+		    sprintf(
+			'jQuery( function() { if( jQuery( "#advads-ad-content-plain" ).length ){ wp.codeEditor.initialize( "advads-ad-content-plain", %s ); } } );',
+			wp_json_encode( $settings )
+		    )
+		);
 	}
 
 	/**

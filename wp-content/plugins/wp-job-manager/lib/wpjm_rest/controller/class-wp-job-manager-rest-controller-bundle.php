@@ -69,8 +69,8 @@ class WP_Job_Manager_REST_Controller_Bundle implements WP_Job_Manager_REST_Inter
 		 *
 		 * @return array
 		 */
-		$endpoints = (array) apply_filters(
-			'mt_rest_api_controller_bundle_get_endpoints',
+		$endpoints = (array) $this->environment->get_event_dispatcher()->apply_filters(
+			'rest_api_controller_bundle_get_endpoints',
 			$this->endpoints,
 			$this
 		);

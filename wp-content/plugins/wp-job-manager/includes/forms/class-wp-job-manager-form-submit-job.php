@@ -142,14 +142,17 @@ class WP_Job_Manager_Form_Submit_Job extends WP_Job_Manager_Form {
 			case 'email' :
 				$application_method_label       = __( 'Application email', 'wp-job-manager' );
 				$application_method_placeholder = __( 'you@yourdomain.com', 'wp-job-manager' );
+				$application_method_sanitizer   = 'email';
 			break;
 			case 'url' :
 				$application_method_label       = __( 'Application URL', 'wp-job-manager' );
 				$application_method_placeholder = __( 'http://', 'wp-job-manager' );
+				$application_method_sanitizer   = 'url';
 			break;
 			default :
 				$application_method_label       = __( 'Application email/URL', 'wp-job-manager' );
 				$application_method_placeholder = __( 'Enter an email address or website URL', 'wp-job-manager' );
+				$application_method_sanitizer   = 'url_or_email';
 			break;
 		}
 
@@ -202,6 +205,7 @@ class WP_Job_Manager_Form_Submit_Job extends WP_Job_Manager_Form {
 				'application' => array(
 					'label'       => $application_method_label,
 					'type'        => 'text',
+					'sanitizer'   => $application_method_sanitizer,
 					'required'    => true,
 					'placeholder' => $application_method_placeholder,
 					'priority'    => 6
@@ -218,6 +222,7 @@ class WP_Job_Manager_Form_Submit_Job extends WP_Job_Manager_Form {
 				'company_website' => array(
 					'label'       => __( 'Website', 'wp-job-manager' ),
 					'type'        => 'text',
+					'sanitizer'   => 'url',
 					'required'    => false,
 					'placeholder' => __( 'http://', 'wp-job-manager' ),
 					'priority'    => 2
@@ -689,7 +694,7 @@ class WP_Job_Manager_Form_Submit_Job extends WP_Job_Manager_Form {
 		// Handle attachments
 		if ( sizeof( $maybe_attach ) && apply_filters( 'job_manager_attach_uploaded_files', true ) ) {
 			// Get attachments
-			$attachments     = get_posts( 'post_parent=' . $this->job_id . '&post_type=attachment&fields=ids&post_mime_type=image&numberposts=-1' );
+			$attachments     = get_posts( 'post_parent=' . $this->job_id . '&post_type=attachment&fields=ids&numberposts=-1' );
 			$attachment_urls = array();
 
 			// Loop attachments already attached to the job

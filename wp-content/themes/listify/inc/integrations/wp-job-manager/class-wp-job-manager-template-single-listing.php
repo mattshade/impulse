@@ -31,10 +31,11 @@ class Listify_WP_Job_Manager_Template_Single_Listing {
 
 		add_action( 'single_job_listing_meta_start', array( __CLASS__, 'the_secondary_image' ), 7 );
 		add_action( 'single_job_listing_meta_start', 'listify_the_listing_title', 10 );
+		add_action( 'single_job_listing_meta_after', 'listify_the_listing_rating' );
 		add_action( 'single_job_listing_meta_start', 'listify_the_listing_location', 20 );
 		add_action( 'single_job_listing_meta_start', 'listify_the_listing_category', 30 );
 
-		add_action( 'single_job_listing_meta_after', 'listify_the_listing_rating' );
+
 
 		add_action( 'listify_single_job_listing_actions', array( __CLASS__, 'the_actions' ) );
 		add_action( 'listify_single_job_listing_actions_after', array( __CLASS__, 'submit_review_link' ) );
@@ -210,7 +211,7 @@ class Listify_WP_Job_Manager_Template_Single_Listing {
 		ob_start();
 	?>
 
-<a href="<?php echo esc_url( $url ); ?>" class="single-job_listing-respond button button-secondary <?php echo $nlclass?>"><?php _e( 'Write a Review', 'listify' ); ?></a>
+<a href="<?php echo esc_url( $url ); ?>" class="single-job_listing-respond button button-secondary <?php echo $nlclass?>"><?php _e( 'Impulse Score', 'listify' ); ?></a>
 
 	<?php
 		$link = apply_filters( 'listify_submit_review_markup', ob_get_clean() );

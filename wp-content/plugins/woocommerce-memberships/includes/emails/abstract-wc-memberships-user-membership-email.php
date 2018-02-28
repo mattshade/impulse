@@ -18,32 +18,32 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * User Membership notification emails abstract
+ * User Membership notification emails abstract class.
  *
- * Handles common methods and hooks for emails
- * related to a user membership's events
+ * Handles common methods and hooks for emails  related to a user membership's events.
  *
  * @since 1.7.0
  */
 abstract class WC_Memberships_User_Membership_Email extends WC_Email {
 
 
-	/** @var string The email content body */
+	/** @var string the email content body */
 	protected $body = '';
 
 
 	/**
-	 * Is customer email
+	 * Checks if it's a customer email.
 	 *
 	 * @since 1.7.0
-	 * @return true
+	 *
+	 * @return true overrides parent method to always return true
 	 */
 	public function is_customer_email() {
 		return true;
@@ -51,7 +51,7 @@ abstract class WC_Memberships_User_Membership_Email extends WC_Email {
 
 
 	/**
-	 * Parse merge tags
+	 * Parses the email's body merge tags.
 	 *
 	 * @since 1.7.0
 	 */
@@ -94,12 +94,13 @@ abstract class WC_Memberships_User_Membership_Email extends WC_Email {
 
 
 	/**
-	 * Get the email default body content
+	 * Returns the email default body content.
 	 *
-	 * This method should be overridden by child classes
+	 * This method should be overridden by child classes.
 	 *
 	 * @since 1.7.0
-	 * @return string
+	 *
+	 * @return string HTML
 	 */
 	public function get_default_body() {
 		return '';
@@ -107,21 +108,23 @@ abstract class WC_Memberships_User_Membership_Email extends WC_Email {
 
 
 	/**
-	 * Get the email body content
+	 * Returns the email body content.
 	 *
 	 * @since 1.7.0
-	 * @return string
+	 *
+	 * @return string HTML
 	 */
 	public function get_body() {
 
 		$email_id = strtolower( $this->id );
 
 		/**
-		 * Filter the membership email body
+		 * Filters the membership email body.
 		 *
 		 * @since 1.7.0
-		 * @param string $body Email body content
-		 * @param \WC_Memberships_User_Membership_Email Email instance
+		 *
+		 * @param string $body email body content
+		 * @param \WC_Memberships_User_Membership_Email current email instance
 		 */
 		$body = (string) apply_filters( "{$email_id}_email_body", $this->format_string( $this->body ), $this->object );
 
@@ -129,8 +132,7 @@ abstract class WC_Memberships_User_Membership_Email extends WC_Email {
 			$body = $this->get_default_body();
 		}
 
-		// convert relative URLs to absolute
-		// for links href and images src attributes
+		// convert relative URLs to absolute for links href and images src attributes
 		$domain  = get_home_url();
 		$replace = array();
 		$replace['/href="(?!https?:\/\/)(?!data:)(?!#)/'] = 'href="' . $domain;

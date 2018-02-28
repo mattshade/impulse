@@ -137,8 +137,6 @@ class Advanced_Ads_Display_Conditions {
 	endforeach;
 
 	$this->conditions = apply_filters('advanced-ads-display-conditions', $conditions);
-
-	ksort($this->conditions);
     }
 
     /**
@@ -153,6 +151,18 @@ class Advanced_Ads_Display_Conditions {
 
 	return self::$instance;
     }
+    
+
+    /**
+     * get the conditions array alphabetically by label
+     * 
+     * @since 1.8.12
+     */
+    public function get_conditions(){
+	    uasort( $this->conditions, 'Advanced_Ads_Admin::sort_condition_array_by_label' );
+
+	    return $this->conditions;
+    }    
 
     /**
      * controls frontend checks for conditions
@@ -792,6 +802,15 @@ class Advanced_Ads_Display_Conditions {
                     } 
                 }
                 
+		/**
+		 * WooCommerce Store page fix
+		 * since WooCommerce changes the post ID of the static page selected to be the product overview page, we need to get the original page id from the WC options
+		 */
+		if ( function_exists( 'is_shop' ) && is_shop() && isset( $options['value'] ) && is_array( $options['value'] ) ) {
+			$post_id = get_option( 'woocommerce_shop_page_id' );
+			return self::can_display_ids($post_id, $options['value'], $operator);
+		}
+				
 		if( empty( $ad_options['wp_the_query']['is_singular'] ) ){
 		    if( 'is_not' === $operator ){
 			return true;
@@ -1103,6 +1122,13 @@ class Advanced_Ads_Display_Conditions {
 	 * @return string
 	 */
 	public static function modify_post_search( $query ) {
+	    
+		// use ID and not search field if ID given
+		if( 0 !== absint( $query['s'] ) && strlen( $query['s'] ) == strlen ( absint( $query['s'] ) ) ){
+                    $query['post__in'] = array( absint( $query['s'] ));
+		    unset( $query['s'] );
+		}
+		
 		$query['suppress_filters'] = false;
 		$query['orderby'] = 'post_title';
 		$query['post_status'] = array( 'publish', 'pending', 'draft', 'future' );
@@ -1110,16 +1136,19 @@ class Advanced_Ads_Display_Conditions {
 	}
 
 	/**
-	 * modify post search sql to search by post_title or ID
+	 * modify post search sql to search only in post title
 	 *
 	 * @param string $sql
 	 * @return string
 	 */
 	public static function modify_post_search_sql( $sql ) {
 		global $wpdb;
-
-		$sql = preg_replace_callback( "/{$wpdb->posts}.post_(content|excerpt)( NOT)? LIKE '%(.*?)%'/", array( 'Advanced_Ads_Display_Conditions', 'modify_post_search_sql_callback' ), $sql );
-
+		
+		// $sql = preg_replace_callback( "/{$wpdb->posts}.post_(content|excerpt)( NOT)? LIKE '%(.*?)%'/", array( 'Advanced_Ads_Display_Conditions', 'modify_post_search_sql_callback' ), $sql );
+		
+		// removes the search in content and excerpt columns
+		$sql = preg_replace( "/OR \({$wpdb->posts}.post_(content|excerpt)( NOT)? LIKE '(.*?)'\)/", '', $sql );
+		
 		return $sql;
 	}
 
@@ -1128,6 +1157,7 @@ class Advanced_Ads_Display_Conditions {
 	 *
 	 * @param array $matches
 	 * @return string
+	 * @deprecated since version 1.8.16
 	 */
 	public static function modify_post_search_sql_callback( $matches ) {
 		global $wpdb;

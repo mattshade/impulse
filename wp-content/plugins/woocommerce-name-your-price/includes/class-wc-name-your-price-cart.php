@@ -15,6 +15,7 @@ class WC_Name_Your_Price_Cart {
 
 		// Functions for cart actions - ensure they have a priority before addons (10).
 		add_filter( 'woocommerce_is_purchasable', array( $this, 'is_purchasable' ), 5, 2 );
+		add_filter( 'woocommerce_subscription_is_purchasable', array( $this, 'is_purchasable' ), 5, 2 );
 		add_filter( 'woocommerce_add_cart_item_data', array( $this, 'add_cart_item_data' ), 5, 3 );
 		add_filter( 'woocommerce_get_cart_item_from_session', array( $this, 'get_cart_item_from_session' ), 11, 2 );
 		add_filter( 'woocommerce_add_cart_item', array( $this, 'add_cart_item' ), 11, 1 );
@@ -26,24 +27,27 @@ class WC_Name_Your_Price_Cart {
 	/* Cart Filters */
 	/*-----------------------------------------------------------------------------------*/
 
-	/*
+	/**
 	 * Override woo's is_purchasable in cases of nyp products.
 	 * @since 1.0
 	 */
 	public function is_purchasable( $purchasable , $product ) {
-		if( ( $product->is_type( WC_Name_Your_Price_Helpers::$supported_types ) && WC_Name_Your_Price_Helpers::is_nyp( $product ) ) || ( $product->is_type( WC_Name_Your_Price_Helpers::$supported_variable_types ) && WC_Name_Your_Price_Helpers::has_nyp( $product ) ) ) {
+		if( ( $product->is_type( WC_Name_Your_Price_Helpers::get_simple_supported_types() ) && WC_Name_Your_Price_Helpers::is_nyp( $product ) ) || ( $product->is_type( WC_Name_Your_Price_Helpers::get_variable_supported_types() ) && WC_Name_Your_Price_Helpers::has_nyp( $product ) ) ) {
 			$purchasable = true;
 		}
 		return $purchasable;
 	}
 
-	/*
+	/**
 	 * Add cart session data.
+	 * @param array $cart_item_data extra cart item data we want to pass into the item.
+	 * @param int   $product_id contains the id of the product to add to the cart.
+	 * @param int   $variation_id ID of the variation being added to the cart.
 	 * @since 1.0
 	 */
 	public function add_cart_item_data( $cart_item_data, $product_id, $variation_id ) {
 
-		// An NYP item can either be a product or variation
+		// An NYP item can either be a product or variation.
 		$nyp_id = $variation_id ? $variation_id : $product_id;
 
 		$posted_nyp_field = 'nyp' . apply_filters( 'nyp_field_prefix', '', $nyp_id );
@@ -54,17 +58,20 @@ class WC_Name_Your_Price_Cart {
 		}
 
 		// Add the subscription billing period (the input name is nyp-period).
-		$posted_nyp_period = 'nyp-period' . apply_filters( 'nyp_field_prefix', '', $nyp_id );
+		$posted_nyp_period_field = 'nyp-period' . apply_filters( 'nyp_field_prefix', '', $nyp_id );
 
-		if ( WC_Name_Your_Price_Helpers::is_subscription( $nyp_id ) && isset( $_REQUEST[ $posted_nyp_period ] ) && in_array( $_REQUEST[ $posted_nyp_period ], WC_Name_Your_Price_Helpers::get_subscription_period_strings() ) ) {
-			$cart_item_data['nyp_period'] = $_REQUEST[ $posted_nyp_period ];
+		if ( WC_Name_Your_Price_Helpers::is_subscription( $nyp_id ) && WC_Name_Your_Price_Helpers::is_billing_period_variable( $nyp_id ) && isset( $_REQUEST[ $posted_nyp_period_field ] ) && array_key_exists( $_REQUEST[ $posted_nyp_period_field ], WC_Name_Your_Price_Helpers::get_subscription_period_strings() ) ) {
+			$cart_item_data['nyp_period'] = $_REQUEST[ $posted_nyp_period_field ];
 		}
 
 		return $cart_item_data;
 	}
 
-	/*
+	/**
 	 * Adjust the product based on cart session data.
+	 *
+	 * @param  array $cart_item $cart_item['data'] is product object in session
+	 * @param  array $values cart item array
 	 * @since 1.0
 	 */
 	public function get_cart_item_from_session( $cart_item, $values ) {
@@ -74,7 +81,7 @@ class WC_Name_Your_Price_Cart {
 			$cart_item['nyp'] = $values['nyp'];
 
 			// Add the subscription billing period.
-			if ( WC_Name_Your_Price_Helpers::is_subscription( $values['product_id'] ) && isset( $values['nyp_period'] ) && in_array( $values['nyp_period'], WC_Name_Your_Price_Helpers::get_subscription_period_strings() ) ){
+			if ( WC_Name_Your_Price_Helpers::is_subscription( $cart_item['data'] ) && isset( $values['nyp_period'] ) && array_key_exists( $values['nyp_period'], WC_Name_Your_Price_Helpers::get_subscription_period_strings() ) ){
 				$cart_item['nyp_period'] = $values['nyp_period'];
 			}
 
@@ -84,41 +91,44 @@ class WC_Name_Your_Price_Cart {
 		return $cart_item;
 	}
 
-	/*
+	/**
 	 * Change the price of the item in the cart.
 	 * @since 1.0
 	 */
 	public function add_cart_item( $cart_item ) {
 
-		$product_id = $cart_item['variation_id'] ? $cart_item['variation_id'] : $cart_item['product_id'];
+		$the_product = $cart_item['data'];
 
 		// Adjust price in cart if nyp is set.
-		if ( WC_Name_Your_Price_Helpers::is_nyp( $product_id ) ) {
+		if ( WC_Name_Your_Price_Helpers::is_nyp( $the_product ) && isset( $cart_item['nyp'] ) ) {
 
-			if ( isset( $cart_item['nyp'] ) ) {
-				WC_Name_Your_Price_Core_Compatibility::set_prop( $cart_item['data'], 'price', $cart_item['nyp'] );
-				WC_Name_Your_Price_Core_Compatibility::set_prop( $cart_item['data'], 'subscription_price', $cart_item['nyp'] );
-				WC_Name_Your_Price_Core_Compatibility::set_prop( $cart_item['data'], 'sale_price', $cart_item['nyp'] );
-				WC_Name_Your_Price_Core_Compatibility::set_prop( $cart_item['data'], 'regular_price', $cart_item['nyp'] );
-			}
+			$the_product->set_price( $cart_item['nyp'] );
+			$the_product->set_sale_price( $cart_item['nyp'] );
+			$the_product->set_regular_price( $cart_item['nyp'] );
 
-			if ( isset( $cart_item['nyp_period'] ) ) {
-				WC_Name_Your_Price_Core_Compatibility::set_prop( $cart_item['data'], 'subscription_period', $cart_item['nyp_period'] );
-				// Variable billing period is always a "per" interval.
-				WC_Name_Your_Price_Core_Compatibility::set_prop( $cart_item['data'], 'subscription_period_interval', 1 );;
-			}
+			// Subscription-specific price and variable billing period. 
+			if ( $the_product->is_type( array( 'subscription', 'subscription_variation' ) ) ) {
+				
+				$the_product->update_meta_data( '_subscription_price', $cart_item['nyp'] );
+
+				if ( WC_Name_Your_Price_Helpers::is_billing_period_variable( $the_product ) && isset( $cart_item['nyp_period'] ) ) {
+					$the_product->update_meta_data( '_subscription_period', $cart_item['nyp_period'] );
+					// Variable billing period is always a "per" interval.
+					$the_product->update_meta_data( '_subscription_period_interval', 1 );
+				}
+			}		
 
 		}
 		return $cart_item;
 	}
 
-	/*
+	/**
 	 * Check this is a NYP product before adding to cart.
 	 * @since 1.0
 	 */
 	public function validate_add_cart_item( $passed, $product_id, $quantity, $variation_id = '', $variations= '', $cart_item_data = array() ) {
 
-		// An NYP item can either be a product or variation
+		// An NYP item can either be a product or variation.
 		$nyp_id = $variation_id ? $variation_id : $product_id;
 
 		// Skip if not a NYP product - send original status back.
@@ -132,31 +142,32 @@ class WC_Name_Your_Price_Cart {
 		if( isset( $cart_item_data['nyp'] ) ){
 			$input = $cart_item_data['nyp'];
 		} else {
+			// get_posted_price() runs the price through the standardize_number() helper.
 			$input = WC_Name_Your_Price_Helpers::get_posted_price( $nyp_id, $prefix );
 		}
-
-		// Get minimum price.
-		$minimum = WC_Name_Your_Price_Helpers::get_minimum_price( $nyp_id );
 
 		// Null error message.
 		$error_message = '';
 
 		// The product title.
-		$the_product = wc_get_product( $nyp_id );
-		$product_title = $the_product->get_title();
+		$nyp_product = wc_get_product( $nyp_id );
+		$product_title = $nyp_product->get_title();
+
+		// Get minimum price.
+		$minimum = WC_Name_Your_Price_Helpers::get_minimum_price( $nyp_product );
 
 		// Check that it is a positive numeric value.
 		if ( ! is_numeric( $input ) || is_infinite( $input ) || floatval( $input ) < 0 ) {
 			$passed = false;
 			$error_message = WC_Name_Your_Price_Helpers::error_message( 'invalid', array( '%%TITLE%%' => $product_title ) );
 		// Check that it is greater than minimum price for variable billing subscriptions.
-		} elseif ( $minimum && WC_Name_Your_Price_Helpers::is_subscription( $nyp_id ) && WC_Name_Your_Price_Helpers::is_billing_period_variable( $nyp_id ) ) {
+		} elseif ( $minimum && WC_Name_Your_Price_Helpers::is_subscription( $nyp_product ) && WC_Name_Your_Price_Helpers::is_billing_period_variable( $nyp_product ) ) {
 
 			// Get the posted billing period, defaults to 'month'.
-			$period = WC_Name_Your_Price_Helpers::get_posted_period( $nyp_id, $prefix );
+			$period = WC_Name_Your_Price_Helpers::get_posted_period( $nyp_product, $prefix );
 
 			// Minimum billing period.
-			$minimum_period = WC_Name_Your_Price_Helpers::get_minimum_billing_period( $nyp_id );
+			$minimum_period = WC_Name_Your_Price_Helpers::get_minimum_billing_period( $nyp_product );
 
 			// Annual minimum.
 			$minimum_annual = WC_Name_Your_Price_Helpers::annualize_price( $minimum, $minimum_period );
@@ -182,15 +193,15 @@ class WC_Name_Your_Price_Cart {
 
 				// The minimum is a combo of price and period.
 				$minimum_error = wc_price( $error_price ) . ' / ' . $error_period;
-				$error_message = WC_Name_Your_Price_Helpers::error_message( 'minimum', array( '%%TITLE%%' => $product_title, '%%MINIMUM%%' => $minimum_error ), $the_product );
+				$error_message = WC_Name_Your_Price_Helpers::error_message( 'minimum', array( '%%TITLE%%' => $product_title, '%%MINIMUM%%' => $minimum_error ), $nyp_product );
 
 			}
 
 		// Check that it is greater than minimum price.
-		} elseif ( $minimum && floatval( WC_Name_Your_Price_Helpers::standardize_number( $input ) ) < floatval( $minimum ) ) {
+		} elseif ( $minimum && floatval( $input ) < floatval( $minimum ) ) {
 			$passed = false;
 			$minimum_error = wc_price( $minimum );
-			$error_message = WC_Name_Your_Price_Helpers::error_message( 'minimum', array( '%%TITLE%%' => $product_title, '%%MINIMUM%%' => $minimum_error ), $the_product );
+			$error_message = WC_Name_Your_Price_Helpers::error_message( 'minimum', array( '%%TITLE%%' => $product_title, '%%MINIMUM%%' => $minimum_error ), $nyp_product );
 		}
 
 		// Show the error message.

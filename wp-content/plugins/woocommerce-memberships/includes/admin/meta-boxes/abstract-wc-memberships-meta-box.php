@@ -19,7 +19,7 @@
  * @package   WC-Memberships/Admin/Meta-Boxes
  * @author    SkyVerge
  * @category  Admin
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
@@ -72,7 +72,7 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Constructor
+	 * Meta box constructor.
 	 *
 	 * @since 1.0.0
 	 */
@@ -84,14 +84,12 @@ abstract class WC_Memberships_Meta_Box {
 		// add/edit screen hooks
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );
 
-		// enqueue meta box scripts and styles,
-		// but only if the meta box has scripts or styles
+		// enqueue meta box scripts and styles, but only if the meta box has scripts or styles
 		if ( method_exists( $this, 'enqueue_scripts_and_styles' ) ) {
 			add_action( 'admin_enqueue_scripts', array( $this, 'maybe_enqueue_scripts_and_styles' ) );
 		}
 
-		// update meta box data when saving post,
-		// but only if the meta box supports data updates
+		// update meta box data when saving post, but only if the meta box supports data updates
 		if ( method_exists( $this, 'update_data' ) ) {
 			add_action( 'save_post', array( $this, 'save_post' ), 5, 2 );
 		}
@@ -99,18 +97,20 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Get the meta box title
+	 * Returns the meta box title.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @return string
 	 */
 	abstract public function get_title();
 
 
 	/**
-	 * Get the meta box ID
+	 * Returns the meta box ID.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @return string
 	 */
 	public function get_id() {
@@ -119,9 +119,10 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Get the meta box ID, with underscores instead of dashes
+	 * Returns the meta box ID, with underscores instead of dashes.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @return string
 	 */
 	protected function get_id_underscored() {
@@ -130,9 +131,10 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Get the nonce name for this meta box
+	 * Returns the nonce name for the current meta box.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @return string
 	 */
 	protected function get_nonce_name() {
@@ -141,9 +143,10 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Get the nonce action for this meta box
+	 * Returns the nonce action for the current meta box.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @return string
 	 */
 	protected function get_nonce_action() {
@@ -152,9 +155,10 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Get the post object
+	 * Returns the post object.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return \WP_Post
 	 */
 	public function get_post() {
@@ -163,9 +167,10 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Get the membership plan object
+	 * Returns the membership plan object.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return \WC_Memberships_Membership_Plan
 	 */
 	public function get_membership_plan() {
@@ -174,9 +179,10 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Get the user membership object
+	 * Returns the user membership object.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return \WC_Memberships_User_Membership
 	 */
 	public function get_user_membership() {
@@ -185,9 +191,10 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Get the product object
+	 * Returns the product object.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return \WC_Product
 	 */
 	public function get_product() {
@@ -196,9 +203,10 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Get the order object
+	 * Returns the order object.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return \WC_Order
 	 */
 	public function get_order() {
@@ -207,9 +215,10 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Get the user object
+	 * Returns the user object.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return \WP_User
 	 */
 	public function get_user() {
@@ -218,10 +227,11 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Get access period options
+	 * Returns access period options.
 	 *
 	 * @since 1.7.0
-	 * @return array Associative array of option keys and labels
+	 *
+	 * @return array associative array of option keys and labels
 	 */
 	public function get_access_period_options() {
 		return wc_memberships()->get_plans_instance()->get_membership_plans_access_length_periods( true );
@@ -229,13 +239,13 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Get access schedule period options
+	 * Returns access schedule period options.
 	 *
 	 * @since 1.7.0
-	 * @return array Associative array of option keys and labels
+	 *
+	 * @return array associative array of option keys and labels
 	 */
 	public function get_access_schedule_period_options() {
-
 		return array(
 			'immediate' => __( 'immediately', 'woocommerce-memberships' ),
 			'specific'  => __( 'specify a time', 'woocommerce-memberships' ),
@@ -244,13 +254,13 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Get products discount type options
+	 * Returns products discount type options.
 	 *
 	 * @since 1.7.0
-	 * @return array Associative array of option keys and labels
+	 *
+	 * @return array associative array of option keys and labels
 	 */
 	public function get_discount_type_options() {
-
 		return array(
 			'percentage' => '%',
 			'amount'     => get_woocommerce_currency_symbol(),
@@ -259,13 +269,13 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Get Product restriction access type options
+	 * Returns product restriction access type options.
 	 *
 	 * @since 1.7.0
-	 * @return array Associative array of option keys and labels
+	 *
+	 * @return array associative array of option keys and labels
 	 */
 	public function get_product_restriction_access_type_options() {
-
 		return array(
 			'view'     => __( 'view', 'woocommerce-memberships' ),
 			'purchase' => __( 'purchase', 'woocommerce-memberships' ),
@@ -274,7 +284,7 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Get product restriction content type options
+	 * Returns product restriction content type options.
 	 *
 	 * @since 1.7.0
 	 * @return array
@@ -288,7 +298,7 @@ abstract class WC_Memberships_Meta_Box {
 			'taxonomies' => array(),
 		);
 
-		foreach ( wc_memberships()->get_admin_instance()->get_valid_taxonomies_for_product_restriction() as $taxonomy_name => $taxonomy ) {
+		foreach ( WC_Memberships_Admin_Membership_Plan_Rules::get_valid_taxonomies_for_product_restriction_rules() as $taxonomy_name => $taxonomy ) {
 			$product_restriction_content_type_options['taxonomies'][ 'taxonomy|' . $taxonomy_name ] = $taxonomy;
 		}
 
@@ -297,9 +307,10 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Get purchasing discount content type options
+	 * Returns purchasing discount content type options.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return array
 	 */
 	public function get_purchasing_discount_content_type_options() {
@@ -311,7 +322,7 @@ abstract class WC_Memberships_Meta_Box {
 			'taxonomies' => array(),
 		);
 
-		foreach ( wc_memberships()->get_admin_instance()->get_valid_taxonomies_for_purchasing_discounts() as $taxonomy_name => $taxonomy ) {
+		foreach ( WC_Memberships_Admin_Membership_Plan_Rules::get_valid_taxonomies_for_purchasing_discounts_rules() as $taxonomy_name => $taxonomy ) {
 			$purchasing_discount_content_type_options['taxonomies'][ 'taxonomy|' . $taxonomy_name ] = $taxonomy;
 		}
 
@@ -320,54 +331,34 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Get available membership plans
+	 * Returns available membership plans.
 	 *
 	 * @since 1.7.0
-	 * @return \WC_Memberships_Membership_Plan[] Membership Plan objects
+	 *
+	 * @return \WC_Memberships_Membership_Plan[] membership plan objects or IDs
 	 */
 	public function get_available_membership_plans() {
-
-		return wc_memberships_get_membership_plans( array(
-			'post_status' => array( 'publish', 'private', 'future', 'draft', 'pending' )
-		) );
+		return wc_memberships()->get_plans_instance()->get_available_membership_plans( 'objects' );
 	}
 
 
 	/**
-	 * Get Membership Plan options
+	 * Returns Membership Plan options.
 	 *
 	 * @since 1.7.0
-	 * @return array Associative array of option keys and labels
+	 *
+	 * @return array associative array of option keys and labels
 	 */
 	public function get_membership_plan_options() {
-
-		$membership_plan_options = array();
-
-		$membership_plans = $this->get_available_membership_plans();
-
-		if ( ! empty( $membership_plans ) ) {
-
-			foreach ( $membership_plans as $membership_plan ) {
-
-				$membership_plan_name = $membership_plan->get_name();
-
-				if ( 'publish' !== $membership_plan->post->post_status ) {
-					/* translators: Placeholder: Membership plan name for a membership that is inactive */
-					$membership_plan_name = sprintf( __( '%s (inactive)', 'woocommerce-memberships' ), $membership_plan_name );
-				}
-
-				$membership_plan_options[ $membership_plan->get_id() ] = $membership_plan_name;
-			}
-		}
-
-		return $membership_plan_options;
+		return wc_memberships()->get_plans_instance()->get_available_membership_plans( 'labels' );
 	}
 
 
 	/**
-	 * Get user membership's user id
+	 * Returns the user from a user membership from context.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param null|\WC_Memberships_User_Membership $user_membership
 	 * @return null|\WP_User
 	 */
@@ -392,62 +383,72 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Get a blank rule to be used as template in meta box views to add new ones
+	 * Returns a blank rule to be used as template in meta box views to add new ones.
 	 *
 	 * @since 1.7.0
-	 * @param string $type Rule type: 'content_restriction', 'product_restriction' or 'purchasing_discount'
-	 * @return \null|\WC_Memberships_Membership_Plan_Rule
+	 *
+	 * @param string $type rule type: 'content_restriction', 'product_restriction' or 'purchasing_discount'
+	 * @return null|\WC_Memberships_Membership_Plan_Rule
 	 */
 	private function get_plan_rule_template( $type = '' ) {
 
-		if ( ! in_array( $type, array( 'content_restriction', 'product_restriction', 'purchasing_discount' ), true ) ) {
-			return null;
+		$template = null;
+
+		if ( wc_memberships()->get_rules_instance()->is_valid_rule_type( $type ) ) {
+
+			// rule args
+			$args = array(
+				'rule_type'         => $type,
+				'id'                => '',
+				'content_type'      => '',
+				'content_type_name' => '',
+				'object_ids'        => array(),
+			);
+
+			$has_template = true;
+
+			// determine the rule object by context
+			if ( $this->membership_plan instanceof WC_Memberships_Membership_Plan ) {
+				$args['membership_plan_id'] = $this->membership_plan->get_id();
+			} elseif ( $this->post instanceof WP_Post ) {
+				$args['object_id']          = (int) $this->post->ID;
+			} else {
+				$has_template = false;
+			}
+
+			if ( $has_template ) {
+
+				if ( 'purchasing_discount' !== $type ) {
+					// restriction properties
+					$args = array_merge( $args, array(
+						'access_type'                   => '',
+						'access_schedule'               => 'immediate',
+						'access_schedule_exclude_trial' => 'no',
+					) );
+				} else {
+					// discount properties
+					$args = array_merge( $args, array(
+						'discount_type'      => '',
+						'discount_amount'    => '',
+						'active'             => '',
+					) );
+				}
+
+				$template = new WC_Memberships_Membership_Plan_Rule( $args );
+			}
 		}
 
-		// rule args
-		$args = array(
-			'rule_type'          => $type,
-			'id'                 => '',
-			'content_type'       => '',
-			'content_type_name'  => '',
-			'object_ids'         => array(),
-		);
-
-		// determine the rule object by context
-		if ( $this->membership_plan instanceof WC_Memberships_Membership_Plan ) {
-			$args['membership_plan_id'] = $this->membership_plan->get_id();
-		} elseif ( $this->post instanceof WP_Post ) {
-			$args['object_id'] = (int) $this->post->ID;
-		} else {
-			return null;
-		}
-
-		if ( 'purchasing_discount' !== $type ) {
-			// restriction properties
-			$args = array_merge( $args, array(
-				'access_type'                   => '',
-				'access_schedule'               => 'immediate',
-				'access_schedule_exclude_trial' => 'no',
-			) );
-		} else {
-			// discount properties
-			$args = array_merge( $args, array(
-				'discount_type'      => '',
-				'discount_amount'    => '',
-				'active'             => '',
-			) );
-		}
-
-		return new WC_Memberships_Membership_Plan_Rule( $args );
+		return $template;
 	}
 
 
 	/**
-	 * Get content restriction rules
+	 * Return content restriction rules.
 	 *
-	 * This stub method can be overridden by individual meta boxes
+	 * This stub method can be overridden by individual meta boxes.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return \WC_Memberships_Membership_Plan_Rule[] array of rule objects
 	 */
 	public function get_content_restriction_rules() {
@@ -463,11 +464,12 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Get product restriction rules
+	 * Returns product restriction rules.
 	 *
-	 * This stub method can be overridden by individual meta boxes
+	 * This stub method can be overridden by individual meta boxes.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return \WC_Memberships_Membership_Plan_Rule[] array of rule objects
 	 */
 	public function get_product_restriction_rules() {
@@ -483,11 +485,12 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Get purchasing discount rules
+	 * Returns purchasing discount rules.
 	 *
-	 * This stub method can be overridden by individual meta boxes
+	 * This stub method can be overridden by individual meta boxes.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return \WC_Memberships_Membership_Plan_Rule[] array of object rules
 	 */
 	public function get_purchasing_discount_rules() {
@@ -503,7 +506,7 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Enqueue scripts & styles for this meta box, if conditions are met
+	 * Enqueues scripts & styles for the meta box, if conditions are met.
 	 *
 	 * @internal
 	 *
@@ -522,21 +525,19 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Enqueue scripts and styles for this meta box
-	 *
-	 * Default implementation is a no-op.
+	 * Enqueues scripts and styles for the meta box.
 	 *
 	 * @internal
 	 *
 	 * @since 1.0.0
 	 */
 	public function enqueue_scripts_and_styles() {
-		// no-op, implement in subclass
+		// no-op, implement in child classes
 	}
 
 
 	/**
-	 * Add meta box to the supported screen(s)
+	 * Adds the meta box to the supported screen(s).
 	 *
 	 * @since 1.0.0
 	 */
@@ -572,11 +573,12 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Add wc-memberships class to meta box
+	 * Adds a wc-memberships CSS class to the meta box.
 	 *
 	 * @internal
 	 *
 	 * @since 1.0.0
+	 *
 	 * @param array $classes
 	 * @return array
 	 */
@@ -586,7 +588,9 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Output basic meta box contents
+	 * Outputs the basic meta box contents.
+	 *
+	 * @internal
 	 *
 	 * @since 1.0.0
 	 */
@@ -604,20 +608,55 @@ abstract class WC_Memberships_Meta_Box {
 
 
 	/**
-	 * Output meta box contents
+	 * Outputs meta box contents.
+	 *
+	 * @since 1.0.0
 	 *
 	 * @param \WP_Post $post
-	 * @since 1.0.0
 	 */
 	abstract public function output( WP_Post $post );
 
 
 	/**
-	 * Process and save meta box data
+	 * Updates a custom message for a post.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param int $post_id the content ID
+	 * @param array $message_types message types to save
+	 */
+	protected function update_custom_message( $post_id, $message_types ) {
+
+		foreach ( $message_types as $message_type ) {
+
+			$message      = '';
+			$message_code = "{$message_type}_message";
+			$use_custom   = 'no';
+
+			if ( ! empty( $_POST["_wc_memberships_{$message_code}"] ) ) {
+				$message = wp_unslash( sanitize_post_field( 'post_content', $_POST["_wc_memberships_{$message_code}"], 0, 'db' ) );
+			}
+
+			if ( isset( $_POST["_wc_memberships_use_custom_{$message_code}"] ) && 'no' !== $_POST["_wc_memberships_use_custom_{$message_code}"] ) {
+				$use_custom = 'yes';
+			}
+
+			// save the message
+			WC_Memberships_User_Messages::set_message( $message_code, $message, $post_id );
+
+			// set the flag to use a custom message (for admin UI)
+			wc_memberships_set_content_meta( $post_id, "_wc_memberships_use_custom_{$message_code}", $use_custom );
+		}
+	}
+
+
+	/**
+	 * Processes and saves meta box data
 	 *
 	 * @internal
 	 *
 	 * @since 1.0.0
+	 *
 	 * @param int $post_id
 	 * @param \WP_Post $post
 	 */
@@ -659,9 +698,10 @@ abstract class WC_Memberships_Meta_Box {
 		}
 
 		/**
-		 * Save meta box
+		 * Fires upon saving a meta box data for a post object.
 		 *
 		 * @since 1.5.3
+		 *
 		 * @param array $_POST The Post data
 		 * @param string $meta_box_id The meta box id
 		 * @param int $post_id WP_Post id

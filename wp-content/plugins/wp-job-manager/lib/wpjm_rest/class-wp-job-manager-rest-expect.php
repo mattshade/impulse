@@ -29,6 +29,18 @@ class WP_Job_Manager_REST_Expect {
 	}
 
 	/**
+	 * Expect that something implements an interface.
+	 *
+	 * @param object|string|mixed $thing The thing to check.
+	 * @param string              $interface_name The interface name.
+	 */
+	static function implements_interface( $thing, $interface_name ) {
+		$thing_class = is_object( $thing ) ? get_class( $thing ) : (string) $thing;
+		$interfaces = class_implements( $thing );
+		self::that( in_array( $interface_name, $interfaces, true ), 'Class ' . $thing_class . ' does not implement interface ' . $interface_name );
+	}
+
+	/**
 	 * Expect that thing is an object
 	 *
 	 * @param mixed $thing The thing.

@@ -1,9 +1,9 @@
 === Ninja Forms - The Easy and Powerful Forms Builder ===
 Contributors: wpninjasllc, kstover, jameslaws, kbjohnson90, klhall1987, krmoorhouse, jmcelhaney, wpnzach
 Tags: form, forms, contact form, custom form, form builder, form creator, form manager, form creation, contact forms, custom forms, forms builder, forms creator, forms manager, forms creation, form administration,
-Requires at least: 4.6
-Tested up to: 4.8
-Stable tag: 3.2.1
+Requires at least: 4.7
+Tested up to: 4.9
+Stable tag: 3.2.14
 License: GPLv2 or later
 
 Drag and drop fields in an intuitive UI to create contact forms, email subscription forms, order forms, payment forms, send emails and more!
@@ -65,9 +65,6 @@ Want access to everything we offer, or perhaps just our form building toolkit "B
 
 [Find our more about our Ninja Forms Memberships here.](https://ninjaforms.com/pricing/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=Ninja+Forms+Readme&utm_content=Developer+Membership)
 
-= Demo Site =
-Please feel free to visit our [demo site](http://three.ninjaforms.com?utm_medium=referral&utm_source=wordpress.org&utm_campaign=Ninja+Forms+Readme) where you can test the features of Ninja Forms and all of our extensions.
-
 = For Developers =
 
 The Ninja Forms framework is on [GitHub](https://github.com/wpninjas/ninja-forms)! If you're a developer and want to help make Ninja Forms better, check it out. It's also a great resource for developers who are interested in creating add-ons for our online store.
@@ -114,29 +111,184 @@ For help and video tutorials, please visit our website: [Ninja Forms Documentati
 
 == Upgrade Notice ==
 
-= 3.2.1 (14 September 2017) =
+= 3.2.14 (20 February 2018) =
+
+*Security:*
+
+* Patched a potential XSS vulnerability. Many thanks to Kasper Karlsson at Omegapoint for practicing responsible disclosure.
 
 *Bugs:*
 
-* Fixed a bug that caused opt-ins to show incorrectly.
-* Multiple Google reCaptchas on the same page should function properly.
-* Fixed the layout of description text for checkbox lists.
-* New lines in rich text areas should convert properly from version 2.9.x.
-* Merge Tag insertion should maintain the proper cursor position in all cases.
-* Form duplication should happen much more quickly.
-* Unknown field types will be removed upon upgrade to prevent forms from breaking in 3.0.
-* Fixed serveral issues with converting merge tags from version 2.9.x to 3.0.
-
-*Changes:*
-
-* A portion of users will begin to see upgrade notices for Ninja Forms 3.0. The number of users who see this notice will increase in future releases.
-* "Currency" has been added to the list of input mask options.
-* Basic error logging has been added to Ninja Forms; the "Get Help" page will now show the most recently recorded errors.
-* Added a setting for changing stat opt-in tracking.
-* License activation errors will now show more detail.
+* Resolved an issue that was sometimes causing code snippets to appear on form display.
+* Newly created date fields should now no longer contain a timestamp in their default display setting.
+* Star rating fields should now be properly caught by required field validation.
+* Default values of star rating fields should no longer be considered "valid" for required field validation.
+* Single checkbox fields can now be edited in the submission edit screen again.
+* Resolved an issue that sometimes caused single checkbox fields to not display a value in exports.
+* Field and calculation merge tags can now be used in the same HTML field.
+* Images can once again be used in help text values.
 
 == Changelog ==
 
+= 3.2.14 (20 February 2018) =
+
+*Security:*
+
+* Patched a potential XSS vulnerability. Many thanks to Kasper Karlsson at Omegapoint for practicing responsible disclosure.
+
+*Bugs:*
+
+* Resolved an issue that was sometimes causing code snippets to appear on form display.
+* Newly created date fields should now no longer contain a timestamp in their default display setting.
+* Star rating fields should now be properly caught by required field validation.
+* Default values of star rating fields should no longer be considered "valid" for required field validation.
+* Single checkbox fields can now be edited in the submission edit screen again.
+* Resolved an issue that sometimes caused single checkbox fields to not display a value in exports.
+* Field and calculation merge tags can now be used in the same HTML field.
+* Images can once again be used in help text values.
+
+= 3.2.13 (14 February 2018) =
+
+*Bugs:*
+
+* Resolved an issue that caused recently published forms to not display in Internet Explorer.
+
+= 3.2.12 (13 February 2018) =
+
+*Bugs:*
+
+* Localized several strings for translation that had previously been missed.
+* Radio and checkbox lists will now properly save updates made on the edit submission page.
+* Resolved an issue that sometimes caused excessive page load times in the WordPress admin.
+
+*Changes:*
+
+* (Beta) Added a Gutenberg block to replace the shortcode when Gutenberg is active.
+
+= 3.2.11 (26 January 2018) =
+
+*Bugs:*
+
+* Resolved an error that sometimes caused PHP warnings on certain admin pages.
+* Help text should now display properly again.
+
+*Changes:*
+
+* Updated translation packs for Spanish (Spain and Mexico), courtesy of Jesus Garcia.
+
+= 3.2.10 (23 January 2018) =
+
+*Bugs:*
+
+* Fixed an issue that sometimes caused forms to not display after publish.
+* Calculations with a decimal setting of 0 should now properly round to 0 decimal places instead of the default 2.
+* Fixed a bug that was causing some settings boxes to contain seemingly random snippets of code.
+
+= 3.2.9 (17 January 2018) =
+
+*Bugs:*
+
+* Resolved an issue that sometimes caused certain Categories to not appear in the terms list field.
+* Fixed a visual bug where drop downs in CRM actions were seemingly being reset to the default option on page refresh.
+
+= 3.2.8 (4 January 2018) =
+
+*Bugs:*
+
+* Resolved an issue that sometimes caused Forms to not load in the Dashboard.
+
+*Changes:*
+
+* Made some minor tweaks to improve the loading and processing efficiency of certain admin pages.
+
+= 3.2.7 (3 January 2018) =
+
+*Bugs:*
+
+* Submissions of duplicated forms should now properly increment their sequence number.
+* The merge tag selector box should now detect the lower edge of the window and shift upwards accordingly.
+* Resolved an issue that was causing input masks on required fields to throw an error on focus.
+* Fields with currency input masks should now properly save data upon submission.
+* Resolved several lingering PHP errors and warnings.
+* Checkbox list and radio list fields with wrapped values should now display properly.
+* Wrapped labels for single checkbox fields should now display properly.
+* Resolved an issue that was causing strictly numeric custom input masks with more than 12 characters to display improperly.
+
+*Changes:*
+
+* Added custom checked and unchecked value settings to checkbox fields.
+* The calendar in the date field is now translatable.
+
+= 3.2.6 (13 December 2017) =
+
+*Bugs:*
+
+* Fixed an issue that was breaking form display when multi-select fields had no pre-selected values.
+
+= 3.2.5 (13 December 2017) =
+
+*Bugs:*
+
+* Submission searching should now work in WordPress version 4.8.3 and above.
+* Fixed an issue that sometimes caused forms not to publish after deleting a field.
+* Fixed a bug that was causing User Management to sometimes not properly set default user meta values.
+* Fixed a compatibility issue with the add a form widget in PHP 7.2.
+* Fixed an issue that caused Ninja Forms to crash on activation with a PHP version missing the Parser Functions package.
+* Fixed a bug that sometimes caused too many database calls on pages where multiple JavaScript errors were present.
+* Fixed a bug that sometimes caused a Request Entity Too Large error on form publish.
+* Fixed an issue that caused the Add Form button to sometimes display improperly on smaller screens.
+
+*Changes:*
+
+* Added an option to ignore UTF-8 encoding on export/import, which can correct forms importing with no field data.
+* Updated the format of submission dates to match that of the WordPress install.
+* Updated the custom field template file path so that it should now properly pull from child themes when active.
+
+= 3.2.4 (7 November 2017) =
+
+*Bugs:*
+
+* Multi-select fields can now be updated in the submission edit page.
+* Modified number fields to better handle rounding numbers with decimals.
+
+*Changes:*
+
+* Added the GNU license file.
+
+= 3.2.3 (19 October 2017) =
+
+*Bugs:*
+
+* Fixed a bug that caused some 2.9.x to 3.0 conversion to fail.
+
+= 3.2.2 (12 October 2017) =
+
+*Bugs:*
+
+* Required field validation should now work properly with the Layout and Styles add-on. 
+* The email action now removes extra comma separators from email settings like(To, BCC, CC, reply-to, and from address').
+* The date range on the submissions table will now show the correct submissions for the selected dates.
+* Fixed a bug that was causing form imports with extra characters at the beginning to break.
+* Forms that fail to load on the front-end will now remove the loading animation from the page. 
+* Calculations will display correctly on the front end in HTML fields if the Save Progress add-on is active on sites. 
+* The decimal setting in calculations will no longer break if non-numeric values are input into them.
+* Unique fields will no longer try to validate deleted submissions. 
+* Country fields should now be sorted alphabetically in non-English languages.
+* Calculations decimal setting now defaults to 2 decimal places if the setting is left empty. 
+* Fixed "This is not a required field" to read "This IS a required field" in Spanish locales. 
+* Added translatable text for the (of) in the input limit text. 
+
+*Changes:*
+
+* Created a merge tag for custom user meta. This will allow users to do things like pre-populate fields with custom user meta. 
+* Added placeholder for date field.
+* We now have currency support for South African Rand(ZAR). 
+* Added support for setting number of rows shown on a multi-select list on the front end. 
+* Created a confirm field. This will allow users to map another field on their form to it and will validate the input on the front end with the field it is mapped to. 
+* Added a new merge tag for submission time. This will display the time the form was submitted.
+* Added WordPress filter to disable all Ninja Forms in app sales banners.
+* The merge tag selector can now be used in the body of HTML fields.
+
 = 3.2.1 (14 September 2017) =
 
 *Bugs:*
@@ -148,7 +300,7 @@ For help and video tutorials, please visit our website: [Ninja Forms Documentati
 * Merge Tag insertion should maintain the proper cursor position in all cases.
 * Form duplication should happen much more quickly.
 * Unknown field types will be removed upon upgrade to prevent forms from breaking in 3.0.
-* Fixed serveral issues with converting merge tags from version 2.9.x to 3.0.
+* Fixed several issues with converting merge tags from version 2.9.x to 3.0.
 
 *Changes:*
 
@@ -168,7 +320,7 @@ For help and video tutorials, please visit our website: [Ninja Forms Documentati
 * Merge Tag insertion should maintain the proper cursor position in all cases.
 * Form duplication should happen much more quickly.
 * Unknown field types will be removed upon upgrade to prevent forms from breaking in 3.0.
-* Fixed serveral issues with converting merge tags from version 2.9.x to 3.0.
+* Fixed several issues with converting merge tags from version 2.9.x to 3.0.
 
 *Changes:*
 

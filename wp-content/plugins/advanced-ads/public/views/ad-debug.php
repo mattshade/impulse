@@ -1,4 +1,5 @@
-<!--noptimize--><script>
+<?php ob_start(); ?>
+<script>
 // Output script that makes full-screen mode.
 if ( typeof advanced_ads_full_screen_debug !== 'function' ) {
 	function advanced_ads_full_screen_debug( ad ) {
@@ -13,7 +14,8 @@ if ( typeof advanced_ads_full_screen_debug !== 'function' ) {
 		document.body.appendChild( ad_full );
 	}
 }
-</script><!--/noptimize-->
+</script>
+<?php echo Advanced_Ads_Utils::get_inline_asset( ob_get_clean() ); ?>
 <div id="<?php echo $wrapper_id; ?>" style="<?php echo $style; ?>" ondblclick="advanced_ads_full_screen_debug( this );">
 <strong><?php _e( 'Ad debug output', 'advanced-ads' ); ?></strong>
 <?php echo '<br /><br />' . implode( '<br /><br />', $content ); ?>

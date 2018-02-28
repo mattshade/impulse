@@ -69,11 +69,11 @@ class Listify_Widget_Listing_Comments extends Listify_Widget {
 // 		echo $after_widget;
 // 	}else{
 		echo $before_widget;
-		if( wc_memberships_is_user_active_member( null, 'monthly' ) || wc_memberships_is_user_active_member( null, 'annual' ) ) {
+		if( wc_memberships_is_user_active_member( null, 'monthly' ) || wc_memberships_is_user_active_member( null, 'annual' ) || wc_memberships_is_user_active_member( null, 'claim' ) ) {
 	// do stuff for the current user with active "premium_gold" plan (even in trial period)
 	comments_template();
 }else{
-	echo '<h3>Wuh oh! It looks like you are not a member.</h3><a href="/shop/" type="submit" class="single_add_to_cart_button button alt">Choose A Plan</a>';
+	echo '<h3 class="choose-text"><strong>Wuh oh!</strong><br>It looks like you are not a member.<br>To see and post reviews please subscribe.</h3><div class="choose-btn"><a href="/choose-a-plan/" type="submit" class="single_add_to_cart_button button alt">Choose A Plan</a></div>';
 }
 
 		echo $after_widget;

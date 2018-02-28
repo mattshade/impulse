@@ -16,7 +16,8 @@
     },
     "require": {
         "composer/installers": "~1.0",
-        "xrstf/composer-php52": "^1.0.17"
+        "xrstf/composer-php52": "^1.0.17",
+        "yoast/i18n-module": "^3.0"
     },
     "autoload": {
         "classmap": [

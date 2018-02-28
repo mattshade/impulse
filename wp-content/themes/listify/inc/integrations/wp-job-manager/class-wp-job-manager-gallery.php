@@ -72,7 +72,7 @@ class Listify_WP_Job_Manager_Gallery {
 		if ( $this->can_upload_to_listing() || ! is_user_logged_in() ) {
 			?>
 
-			<a href="#add-photo" class="popup-trigger"><i class="ion-ios-camera"></i> <?php _e( 'Add Photos', 'listify' ); ?></a>
+			<a href="#add-photo" class="popup-trigger photos button button-secondary"><i class="ion-ios-camera"></i> <?php _e( 'Add Photos', 'listify' ); ?></a>
 
 			<?php include( locate_template( array( 'popup-content-single-job_listing-add-photo.php' ) ) ); ?>
 

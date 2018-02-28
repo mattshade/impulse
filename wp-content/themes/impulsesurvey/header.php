@@ -60,7 +60,9 @@ $logvar = "loggedin";
 			<div class="container">
 				<div class="primary-header-inner">
 					<div class="site-branding">
+<a href="/">
 						<img width="385" class="pull-left" src="https://www.impulsesurvey.com/img/impulsesurvey.png"><!-- <?php //echo listify_partial_site_branding(); ?> -->
+</a>
 					</div>
 
 					<div class="primary nav-menu">

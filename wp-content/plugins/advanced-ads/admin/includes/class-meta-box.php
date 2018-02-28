@@ -25,6 +25,8 @@ class Advanced_Ads_Admin_Meta_Boxes {
 		add_action( 'save_post', array( $this, 'save_post_meta_box' ) );
 		// register dashboard widget
 		add_action( 'wp_dashboard_setup', array($this, 'add_dashboard_widget') );
+		// fixes compatibility issue with WP QUADS PRO
+		add_action( 'quads_meta_box_post_types', array($this, 'fix_wpquadspro_issue'), 11 );
 	}
 
 	/**
@@ -67,6 +69,16 @@ class Advanced_Ads_Admin_Meta_Boxes {
 		add_meta_box(
 			'ad-visitor-box', __( 'Visitor Conditions', 'advanced-ads' ), array($this, 'markup_meta_boxes'), $post_type, 'normal', 'high'
 		);
+		if( ! defined( 'AAP_VERSION' ) ){
+			add_meta_box(
+				'advads-pro-pitch', __( 'Increase your ad revenue', 'advanced-ads' ), array($this, 'markup_meta_boxes'), $post_type, 'side', 'low'
+			);
+		}
+		if( ! defined( 'AAT_VERSION' ) ){
+			add_meta_box(
+				'advads-tracking-pitch', __( 'Ad Stats', 'advanced-ads' ), array($this, 'markup_meta_boxes'), $post_type, 'normal', 'low'
+			);
+		}
 
 		// register meta box ids
 		$this->meta_box_ids = array(
@@ -75,6 +87,8 @@ class Advanced_Ads_Admin_Meta_Boxes {
 		    'ad-output-box',
 		    'ad-display-box',
 		    'ad-visitor-box',
+		    'advads-pro-pitch',
+		    'advads-tracking-pitch',
 		    'revisionsdiv', // revisions – only when activated
 		    'advanced_ads_groupsdiv' // automatically added by ad groups taxonomy
 		);
@@ -140,6 +154,14 @@ class Advanced_Ads_Admin_Meta_Boxes {
 			case 'ad-visitor-box':
 				$view = 'ad-visitor-metabox.php';
 				$hndlelinks = '<a href="' . ADVADS_URL . 'manual/visitor-conditions#utm_source=advanced-ads&utm_medium=link&utm_campaign=edit-visitor" target="_blank">' . __('Manual', 'advanced-ads') . '</a>';
+				break;
+			case 'advads-pro-pitch':
+				$view = 'pitch-bundle.php';
+				// $hndlelinks = '<a href="' . ADVADS_URL . 'manual/visitor-conditions#utm_source=advanced-ads&utm_medium=link&utm_campaign=edit-visitor" target="_blank">' . __('Manual', 'advanced-ads') . '</a>';
+				break;
+			case 'advads-tracking-pitch':
+				$view = 'pitch-tracking.php';
+				// $hndlelinks = '<a href="' . ADVADS_URL . 'manual/visitor-conditions#utm_source=advanced-ads&utm_medium=link&utm_campaign=edit-visitor" target="_blank">' . __('Manual', 'advanced-ads') . '</a>';
 				break;
 		}
 
@@ -301,7 +323,7 @@ class Advanced_Ads_Admin_Meta_Boxes {
 	 */
 	public function close_ad_type_metabox( $classes = array() ) {
 	    global $post;
-	    if ( isset( $post->ID ) && 'edit' === $post->filter ) {
+	    if ( isset( $post->ID ) && 'publish' === $post->post_status ) {
 			if ( ! in_array( 'closed', $classes ) ) {
 			    $classes[] = 'closed';
 			}
@@ -406,6 +428,8 @@ class Advanced_Ads_Admin_Meta_Boxes {
 	 */
 	static function dashboard_widget_function_output( ) {
 	    
+		check_ajax_referer('advanced-ads-admin-ajax-nonce', 'nonce');
+	    
 		$cache_key = 'dash_' . md5( 'advads_dashboard_widget' );
 	    
 		$feeds = array(
@@ -440,6 +464,16 @@ class Advanced_Ads_Admin_Meta_Boxes {
 		}
 		set_transient( $cache_key, ob_get_flush(), 48 * HOUR_IN_SECONDS ); // Default lifetime in cache of 48 hours
 		die();
+	}
+	
+	/**
+	 * fixes a WP QUADS PRO compatibility issue
+	 * they inject their ad optimization meta box into our ad page, even though it is not a public post type
+	 * using they filter, we remove AA from the list of post types they inject this box into
+	 */
+	function fix_wpquadspro_issue( $allowed_post_types ){
+		unset( $allowed_post_types['advanced_ads'] );
+		return $allowed_post_types;
 	}
 
 }

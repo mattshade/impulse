@@ -18,16 +18,16 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Membership Plans class
+ * Membership Plans handler.
  *
- * This class handles general membership plans related functionality
+ * This class handles general membership plans related functionality.
  *
  * @since 1.0.0
  */
@@ -39,7 +39,7 @@ class WC_Memberships_Membership_Plans {
 
 
 	/**
-	 * Constructor
+	 * Plans handler constructor.
 	 *
 	 * @since 1.0.0
 	 */
@@ -60,11 +60,12 @@ class WC_Memberships_Membership_Plans {
 
 
 	/**
-	 * Get a single membership plan
+	 * Returns a single membership plan.
 	 *
 	 * @since 1.0.0
-	 * @param int|\WP_Post|null $post Optional, post object or post id of the membership plan
-	 * @param \WC_Memberships_User_Membership|int|null Optional, user membership object or id, used in filter
+	 *
+	 * @param int|\WP_Post|null $post optional, post object or post id of the membership plan
+	 * @param \WC_Memberships_User_Membership|int|null optional, user membership object or id, used in filter
 	 * @return \WC_Memberships_Membership_Plan|false
 	 */
 	public function get_membership_plan( $post = null, $user_membership = null ) {
@@ -87,7 +88,7 @@ class WC_Memberships_Membership_Plans {
 				'name'           => $post,
 				'post_type'      => 'wc_membership_plan',
 				'posts_per_page' => 1,
-			));
+			) );
 
 			if ( ! empty( $posts ) ) {
 				$post = $posts[0];
@@ -110,31 +111,34 @@ class WC_Memberships_Membership_Plans {
 		$membership_plan = new WC_Memberships_Membership_Plan( $post );
 
 		/**
-		 * Get a membership plan
+		 * Filter a membership plan before returning it.
+		 *
+		 * This filter is important as it's also used internally to extend a Membership Plan when used with Subscriptions.
 		 *
 		 * @since 1.7.0
-		 * @param \WC_Memberships_Membership_Plan $membership_plan The membership plan
-		 * @param \WP_Post $membership_plan_post The membership plan post object
-		 * @param \WC_Memberships_User_Membership|null $user_membership Optional, when calling this filter from a user membership
+		 *
+		 * @param \WC_Memberships_Membership_Plan $membership_plan the membership plan
+		 * @param \WP_Post $membership_plan_post the membership plan post object
+		 * @param \WC_Memberships_User_Membership|null $user_membership optional, when calling this filter from a user membership
 		 */
 		return apply_filters( 'wc_memberships_membership_plan', $membership_plan, $post, $user_membership );
 	}
 
 
 	/**
-	 * Get all membership plans
+	 * Return all membership plans.
 	 *
 	 * @since 1.0.0
-	 * @param array $args Optional array of arguments, to pass to `get_posts()`
-	 * @return \WC_Memberships_Membership_Plan[] $plans Array of membership plans
+	 *
+	 * @param array $args optional array of arguments, to pass to `get_posts()`
+	 * @return \WC_Memberships_Membership_Plan[] $plans array of membership plans
 	 */
 	public function get_membership_plans( $args = array() ) {
 
-		$defaults = array(
+		$args = wp_parse_args( $args, array(
 			'posts_per_page' => -1,
-		);
+		) );
 
-		$args = wp_parse_args( $args, $defaults );
 		$args['post_type'] = 'wc_membership_plan';
 
 		// unique key for caching the applied rule results
@@ -159,10 +163,11 @@ class WC_Memberships_Membership_Plans {
 
 
 	/**
-	 * Get membership plans accessed upon user registration
+	 * Returns membership plans accessed upon user registration.
 	 *
 	 * @since 1.7.0
-	 * @param array $args Optional array of arguments, to pass to `get_posts()`
+	 *
+	 * @param array $args optional array of arguments, to pass to `get_posts()`
 	 * @return \WC_Memberships_Membership_Plan[]
 	 */
 	public function get_free_membership_plans( $args = array() ) {
@@ -181,11 +186,38 @@ class WC_Memberships_Membership_Plans {
 
 
 	/**
-	 * Get membership plans possible access methods
+	 * Returns the count of the existing membership plans.
+	 *
+	 * By default will only return the count of published plans.
+	 * If you need to count also drafts and plans with other statuses, you need to pass an appropriate `post_status` argument.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param array $args optional array of arguments as in `get_posts()`
+	 * @return int
+	 */
+	public function get_membership_plans_count( $args = array() ) {
+
+		$args = wp_parse_args( $args, array(
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'nopaging'       => true,
+		) );
+
+		// there's no point to gather objects in this context
+		$args['fields'] = 'ids';
+
+		return count( $this->get_membership_plans( $args ) );
+	}
+
+
+	/**
+	 * Returns membership plans' possible access methods.
 	 *
 	 * @since 1.7.0
-	 * @param bool $with_labels Whether to return labels along with access method keys
-	 * @return array Indexed or Associative array
+	 *
+	 * @param bool $with_labels whether to return labels along with access method keys
+	 * @return array indexed or associative array
 	 */
 	public function get_membership_plans_access_methods( $with_labels = false ) {
 
@@ -203,11 +235,12 @@ class WC_Memberships_Membership_Plans {
 
 
 	/**
-	 * Get membership plans possible access length types
+	 * Returns membership plans' possible access length types.
 	 *
 	 * @since 1.7.0
-	 * @param bool $with_labels Whether to return labels along with access length keys
-	 * @return array Indexed or Associative array
+	 *
+	 * @param bool $with_labels whether to return labels along with access length keys
+	 * @return array indexed or associative array
 	 */
 	public function get_membership_plans_access_length_types( $with_labels = false ) {
 
@@ -225,11 +258,12 @@ class WC_Memberships_Membership_Plans {
 
 
 	/**
-	 * Get membership plans possible access length periods
+	 * Returns membership plans' possible access length periods.
 	 *
 	 * @since 1.7.0
-	 * @param bool $with_labels Whether to return labels along with access length keys
-	 * @return array Indexed or Associative array
+	 *
+	 * @param bool $with_labels whether to return labels along with access length keys
+	 * @return array indexed or associative array
 	 */
 	public function get_membership_plans_access_length_periods( $with_labels = false ) {
 
@@ -241,12 +275,13 @@ class WC_Memberships_Membership_Plans {
 		);
 
 		/**
-		 * Filter plan access length periods
+		 * Filter plan access length periods.
 		 *
 		 * Note: acceptable keys should be time values recognizable by `strtotime()`
 		 *
 		 * @since 1.6.1
-		 * @param array $access_length_periods Associative array of keys and labels
+		 *
+		 * @param array $access_length_periods associative array of keys and labels
 		 */
 		$access_length_periods = apply_filters( 'wc_memberships_plan_access_period_options', $access_length_periods );
 
@@ -255,57 +290,100 @@ class WC_Memberships_Membership_Plans {
 
 
 	/**
-	 * Delete any related data if membership plan is deleted
+	 * Returns membership plans that are available to use for user memberships assignments.
 	 *
-	 * Deletes any related user memberships and plan rules
+	 * Skips trashed items, includes plans with all other statuses, not just published active ones.
 	 *
-	 * @since 1.0.0
-	 * @param int $post_id Deleted post ID
+	 * @since 1.9.0
+	 *
+	 * @param string $values either return plan 'objects' (default, associative array of IDs and plan objects), 'ids' (array of integers) or 'labels' (associative array values)
+	 * @return array associative array of keys and labels
 	 */
-	public function delete_related_data( $post_id ) {
-		global $wpdb;
+	public function get_available_membership_plans( $values = 'objects' ) {
 
-		// bail out if the post being deleted is not a membership plan
-		if ( 'wc_membership_plan' !== get_post_type( $post_id ) ) {
-			return;
-		}
+		$available_plans  = array();
+		$membership_plans = wc_memberships_get_membership_plans( array(
+			'post_status' => array( 'publish', 'private', 'future', 'draft', 'pending' )
+		) );
 
-		// find related membership IDs
-		$membership_ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_parent = %d", $post_id ) );
+		if ( ! empty( $membership_plans ) ) {
 
-		// delete each membership plan
-		if ( ! empty( $membership_ids ) ) {
-			foreach ($membership_ids as $membership_id) {
+			foreach ( $membership_plans as $membership_plan ) {
 
-				wp_delete_post( $membership_id, true );
+				if ( 'labels' === $values ) {
+
+					$membership_plan_name = $membership_plan->get_name();
+
+					if ( 'publish' !== $membership_plan->post->post_status ) {
+						/* translators: Placeholder: Membership plan name for a membership that is inactive */
+						$membership_plan_name = sprintf( __( '%s (inactive)', 'woocommerce-memberships' ), $membership_plan_name );
+					}
+
+					$available_plans[ $membership_plan->get_id() ] = $membership_plan_name;
+
+				} elseif ( 'objects' === $values ) {
+
+					$available_plans[ $membership_plan->get_id() ] = $membership_plan;
+
+				} elseif ( 'ids' === $values ) {
+
+					$available_plans[]                             = $membership_plan->get_id();
+				}
 			}
 		}
 
-		// find related restriction rules and delete them
-		$rules = (array) get_option( 'wc_memberships_rules' );
-
-		foreach ( $rules as $key => $rule ) {
-
-			// remove related rule
-			if ( $rule['membership_plan_id'] == $post_id ) {
-				unset( $rules[ $key ] );
-			}
-		}
-
-		update_option( 'wc_memberships_rules', array_values( $rules ) );
+		return $available_plans;
 	}
 
 
 	/**
-	 * Grant access to free membership plans
-	 * to users that just signed up for an account
+	 * Deletes any related data if membership plan is deleted.
+	 *
+	 * For sanity, also deletes any related user memberships and plan rules.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $post_id deleted post ID
+	 */
+	public function delete_related_data( $post_id ) {
+		global $wpdb;
+
+		if ( 'wc_membership_plan' === get_post_type( $post_id ) ) {
+
+			// find related membership IDs
+			$user_memberships = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_parent = %d", $post_id ) );
+
+			// delete each membership plan
+			if ( ! empty( $user_memberships ) ) {
+				foreach ( $user_memberships as $user_membership_id ) {
+					wp_delete_post( $user_membership_id, true );
+				}
+			}
+
+			// find related rules and delete them
+			$plan_rules   = wc_memberships()->get_rules_instance()->get_rules();
+			$delete_rules = array();
+
+			foreach ( $plan_rules as $rule ) {
+				if ( $rule->get_membership_plan_id() === (int) $post_id ) {
+					$delete_rules[] = $rule->get_id();
+				}
+			}
+
+			wc_memberships()->get_rules_instance()->delete_rules( $delete_rules );
+		}
+	}
+
+
+	/**
+	 * Grants access to free membership plans to users that just signed up for an account.
 	 *
 	 * @since 1.7.0
-	 * @param int $user_id Newly registered WP_User id
-	 * @param bool $renew Whether to renew a membership if the user is already a member, default true
-	 * @param int|\WC_Memberships_Membership_Plan|null $plan Optional plan to grant access to,
-	 *                                                        will otherwise run through all free plans
-	 * @return void|null|\WC_Memberships_User_Membership The newly created membership or null if none created or fail
+	 *
+	 * @param int $user_id newly registered WP_User id
+	 * @param bool $renew whether to renew a membership if the user is already a member, default true
+	 * @param int|\WC_Memberships_Membership_Plan|null $plan optional plan to grant access to, will otherwise run through all free plans
+	 * @return void|null|\WC_Memberships_User_Membership the newly created membership or null if none created or fail
 	 */
 	public function grant_access_to_free_membership( $user_id, $renew = true, $plan = null ) {
 
@@ -349,20 +427,25 @@ class WC_Memberships_Membership_Plans {
 						);
 
 						/**
-						 * Confirm grant access to a free membership
+						 * Confirm grant access to a free membership.
 						 *
 						 * @since 1.7.0
+						 *
 						 * @param bool $grant_access true by default
 						 * @param array $args {
-						 *      @type int $user_id User id being granted access
-						 *      @type int $plan_id Id of the free plan accessing to
+						 *      @type int $user_id user ID being granted access
+						 *      @type int $plan_id ID of the free plan accessing to
 						 * }
 						 */
 						$grant_access = (bool) apply_filters( 'wc_memberships_grant_access_to_free_membership', true, $access_args );
 
+						// assign a membership to this user
 						if ( $grant_access ) {
-							// assign a membership to this user
-							$user_membership = wc_memberships_create_user_membership( $access_args, $action );
+							try {
+								$user_membership = wc_memberships_create_user_membership( $access_args, $action );
+							} catch ( SV_WC_Plugin_Exception $e ) {
+								$user_membership = null;
+							}
 						}
 					}
 				}
@@ -379,7 +462,7 @@ class WC_Memberships_Membership_Plans {
 
 
 	/**
-	 * Grant customer access to membership when making a purchase.
+	 * Grants customer access to membership when making a purchase.
 	 *
 	 * Note: this method runs also when an order is manually added in WC admin.
 	 *
@@ -431,14 +514,15 @@ class WC_Memberships_Membership_Plans {
 					}
 
 					/**
-					 * Confirm grant access from new purchase to paid plan
+					 * Confirm grant access from new purchase to paid plan.
 					 *
 					 * @since 1.3.5
+					 *
 					 * @param bool $grant_access by default true unless the order already granted access to the plan
 					 * @param array $args {
-					 *      @type int $user_id Customer id for purchase order
-					 *      @type int $product_id Id of product that grants access
-					 *      @type int $order_id Order id containing the product
+					 *      @type int $user_id customer id for purchase order
+					 *      @type int $product_id ID of product that grants access
+					 *      @type int $order_id order ID containing the product
 					 * }
 					 */
 					$grant_access = (bool) apply_filters( 'wc_memberships_grant_access_from_new_purchase', ! $order_granted_access_already, array(

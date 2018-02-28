@@ -18,15 +18,14 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 /**
- * WooCommerce Memberships CLI Subscriptions extension
+ * WooCommerce Memberships CLI Subscriptions extension.
  *
- * Extends Memberships WP CLI support for user memberships and plans
- * with Subscriptions-specific properties via WordPress hooks
+ * Extends Memberships WP CLI support for user memberships and plans with Subscriptions-specific properties via WordPress hooks.
  *
  * @since 1.7.0
  */
@@ -34,8 +33,7 @@ class WC_Memberships_Integration_Subscriptions_CLI {
 
 
 	/**
-	 * Extend the Memberships WP CLI support
-	 * with Subscriptions specific fields
+	 * Extends the Memberships WP CLI support with Subscriptions specific fields.
 	 *
 	 * @since 1.7.0
 	 */
@@ -64,14 +62,18 @@ class WC_Memberships_Integration_Subscriptions_CLI {
 
 
 	/**
-	 * Check if there is at least one subscription product that grants access
-	 * among the products specified in CLI command to create or update a plan
+	 * Checks if there is at least one subscription product that grants access.
+	 *
+	 * Executes the check on the products specified in CLI command to create or update a plan.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param array $data
 	 * @return bool
 	 */
 	private function plan_has_subscription_product( $data ) {
+
+		$has_subscription = false;
 
 		if ( ! empty( $data['product'] ) ) {
 
@@ -81,25 +83,25 @@ class WC_Memberships_Integration_Subscriptions_CLI {
 
 				foreach ( $product_ids as $product_id ) {
 
-					$product = wc_get_product( $product_id );
-
-					if ( $product->is_type( array( 'subscription', 'subscription_variation', 'variable-subscription' ) ) ) {
-						return true;
+					if ( WC_Subscriptions_Product::is_subscription( $product_id ) ) {
+						$has_subscription = true;
+						break;
 					}
 				}
 			}
 		}
 
-		return false;
+		return $has_subscription;
 	}
 
 
 	/**
-	 * Validate Subscription data before creating a membership plan
+	 * Validates Subscription data before creating a membership plan.
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param array $data
 	 * @return array
 	 * @throws \WC_CLI_Exception
@@ -161,13 +163,14 @@ class WC_Memberships_Integration_Subscriptions_CLI {
 
 
 	/**
-	 * Save or update subscription access information of a membership plan
+	 * Saves or updates subscription access information of a membership plan.
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.0
-	 * @param \WC_Memberships_Membership_Plan $membership_plan Membership plan being saved or updated
-	 * @param array $data Array of membership plan data
+	 *
+	 * @param \WC_Memberships_Membership_Plan $membership_plan membership plan being saved or updated
+	 * @param array $data array of membership plan data
 	 */
 	public function set_subscription_tied_membership_length( $membership_plan, $data ) {
 
@@ -200,11 +203,12 @@ class WC_Memberships_Integration_Subscriptions_CLI {
 
 
 	/**
-	 * Validate Subscription data before creating a user membership
+	 * Validates Subscription data before creating a user membership.
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param array $data
 	 * @return array
 	 * @throws \WC_CLI_Exception
@@ -227,13 +231,14 @@ class WC_Memberships_Integration_Subscriptions_CLI {
 
 
 	/**
-	 * Save or update subscription data of a user membership
+	 * Saves or updates subscription data of a user membership.
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.0
-	 * @param \WC_Memberships_User_Membership $user_membership The user membership object being created or updated
-	 * @param array $data Array of membership data
+	 *
+	 * @param \WC_Memberships_User_Membership $user_membership the user membership object being created or updated
+	 * @param array $data array of membership data
 	 */
 	public function tie_subscription_to_membership( $user_membership, $data ) {
 
@@ -254,11 +259,12 @@ class WC_Memberships_Integration_Subscriptions_CLI {
 
 
 	/**
-	 * Membership plan default fields
+	 * Filters membership plan default fields in CLI to add subscription information.
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param array $default_fields
 	 * @return array
 	 */
@@ -271,11 +277,12 @@ class WC_Memberships_Integration_Subscriptions_CLI {
 
 
 	/**
-	 * User Membership default fields
+	 * Filters user membership default fields in CLI to add subscription information.
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param array $default_fields
 	 * @return array
 	 */
@@ -288,13 +295,14 @@ class WC_Memberships_Integration_Subscriptions_CLI {
 
 
 	/**
-	 * Get membership plan data
+	 * Returns membership plan data adjusted with subscription data.
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.0
-	 * @param array $membership_plan_data The plan data
-	 * @param \WC_Memberships_Membership_Plan $membership_plan The plan object
+	 *
+	 * @param array $membership_plan_data the plan data
+	 * @param \WC_Memberships_Membership_Plan $membership_plan the plan object
 	 * @return array
 	 */
 	public function get_membership_plan_data( $membership_plan_data, $membership_plan ) {
@@ -313,13 +321,14 @@ class WC_Memberships_Integration_Subscriptions_CLI {
 
 
 	/**
-	 * Get membership plan data
+	 * Returns membership plan data adjusted with subscription data.
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.0
-	 * @param array $user_membership_data The user membership data
-	 * @param \WC_Memberships_User_Membership $user_membership The user membership object
+	 *
+	 * @param array $user_membership_data the user membership data
+	 * @param \WC_Memberships_User_Membership $user_membership the user membership object
 	 * @return array
 	 */
 	public function get_user_membership_data( $user_membership_data, $user_membership ) {

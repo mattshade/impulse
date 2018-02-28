@@ -1,23 +1,25 @@
 === If Menu ===
 Contributors: andrei.igna
-Tags: menu, if, rules, conditional, statements, hide, show, dispaly, roles, nav menu
+Tags: menu, if, menu, rules, conditional, statements, hide, show, dispaly, roles, nav menu
 Requires at least: 4
-Tested up to: 4.8
+Tested up to: 4.9
 Stable tag: trunk
 License: GPL2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Display or hide menu items with user-defines rules
+Display tailored menu items to each visitor with visibility rules
 
 == Description ==
 
-**If Menu** plugin adds extra functionality for menu items, making it easy to hide or display them based on user-defined rules. Example:
+Display tailored menu items to each visitor, based on visibility rules. Here are a few examples:
 
 * Display a menu item only if current `User is logged in`
-* Hide menu items if `visiting from mobile device`
-* Display menu items just for `Admins and Editors`
+* Hide menu items if `Device is mobile`
+* Display menu items for `Admins and Editors`
+* Hide Login or Register links for `Logged in Users`
+* Display menu items for `Users from US and UK`
 
-The plugin is easy to use, each menu item will have a “Change menu item visibility” option which will enable the selection of rules (example in Screenshots).
+The plugin is easy to use, each menu item will have a new option “Change menu item visibility” which will enable the selection of rules (example in Screenshots)
 
 ## Features
 
@@ -25,9 +27,10 @@ The plugin is easy to use, each menu item will have a “Change menu item visibi
   * User state `User is logged in`
   * User roles `Admin` `Editor` `Author` etc
   * Page type `Front page` `Single page` `Single post`
-  * Device `Is Mobile`
-  * Language `Is RTL`
-  * *more to be added with each plugin update*
+  * Visitor device `Is Mobile`
+* Advanced visibility rules - requires Premium plan
+  * Visitor location - detect visitor's Country
+  * 3rd-party plugin integrations - WooCommerce Subscriptions, Groups, WishList Member
 * Multiple rules - mix multiple rules for a menu item visibility
   * show if `User is logged in` AND `Device is mobile`
   * show if `User is Admin` AND `Is front page`
@@ -45,7 +48,7 @@ To install the plugin, follow the steps below
 
 == Frequently Asked Questions ==
 
-= If Menu is broken =
+= If Menu is broken, no visibility rules are available =
 
 The code for modifying the menu items is limited and if other plugins/themes try to alter the menu items, this plugin will break.
 
@@ -77,7 +80,7 @@ function my_new_menu_conditions($conditions) {
 }
 `
 
-= Where do I find conditional functions? =
+= Where can I find conditional functions? =
 
 WordPress provides [a lot of functions](http://codex.wordpress.org/Conditional_Tags) which can be used to create custom rules for almost any combination that a theme/plugin developer can think of.
 
@@ -91,6 +94,28 @@ Got the icons from here https://dribbble.com/shots/1045549-Light-Switches-PSD, s
 2. Example of visibility rules
 
 == Changelog ==
+
+= 0.8.2 =
+*Release Date - 20 February 2018*
+
+* Fixed - Support for older visibilty rule names, fixes PHP warning
+
+= 0.8.1 =
+*Release Date - 20 February 2018*
+
+* Fixed - Better options checking, fixes PHP warning
+
+= 0.8 =
+*Release Date - 19 February 2018*
+
+* Added - Visibility rules with multiple options. Requires Premium plan
+* Added - Visibility rule - User country
+* Added - Visibility rule - Is Super Admin on MultiSite
+* Added - Visibility rule - User is in Group, integration with [Groups](https://wordpress.org/plugins/groups/) plugin
+* Added - Visibility rule - User has subscription, integration with [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) plugin
+* Added - Visibility rule - User membership level, integration with [WishList Member](https://member.wishlistproducts.com/) plugin
+* Updated - Better conflict detection for Nav_Menu Walker
+* Fixed - translation strings & function used
 
 = 0.7 =
 *Release Date - 18 September 2017*

@@ -62,7 +62,6 @@ class_exists( 'Advanced_Ads', false ) || exit();
 		<div id="advads_xml_content" style="display:none;">
 			<p><textarea id="xml_textarea" name="xml_textarea" rows="10" cols="20" class="large-text code"></textarea></p>
 		</div>
-
 		<?php submit_button( __( 'Start import', 'advanced-ads' ), 'primary' ); ?>
 	</form>
 

@@ -42,8 +42,6 @@ class Advanced_Ads_Visitor_Conditions {
 				'check' => array( 'Advanced_Ads_Visitor_Conditions', 'check_logged_in' ) // callback for frontend check
 			),
 	    ));
-
-	    ksort( $this->conditions );
 	}
 
 	/**
@@ -58,6 +56,18 @@ class Advanced_Ads_Visitor_Conditions {
 
 		return self::$instance;
 	}
+	
+	
+	/**
+	 * get the conditions array alphabetically by label
+	 * 
+	 * @since 1.8.12
+	 */
+	public function get_conditions(){
+		uasort( $this->conditions, 'Advanced_Ads_Admin::sort_condition_array_by_label' );
+		
+		return $this->conditions;
+	}	
 
 	/**
 	 * callback to render the mobile condition using the "is not" condition

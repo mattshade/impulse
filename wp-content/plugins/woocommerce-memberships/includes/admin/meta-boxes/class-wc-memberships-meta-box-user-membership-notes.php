@@ -19,7 +19,7 @@
  * @package   WC-Memberships/Admin/Meta-Boxes
  * @author    SkyVerge
  * @category  Admin
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
@@ -48,9 +48,10 @@ class WC_Memberships_Meta_Box_User_Membership_Notes extends WC_Memberships_Meta_
 
 
 	/**
-	 * Get the meta box title
+	 * Returns the meta box title.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @return string
 	 */
 	public function get_title() {
@@ -59,7 +60,7 @@ class WC_Memberships_Meta_Box_User_Membership_Notes extends WC_Memberships_Meta_
 
 
 	/**
-	 * Add meta box to the supported screen(s)
+	 * Adds the meta box to the supported screen(s).
 	 *
 	 * @internal
 	 *
@@ -78,10 +79,11 @@ class WC_Memberships_Meta_Box_User_Membership_Notes extends WC_Memberships_Meta_
 
 
 	/**
-	 * Display the membership notes meta box
+	 * Displays the membership notes meta box.
+	 *
+	 * @since 1.0.0
 	 *
 	 * @param \WP_Post $post
-	 * @since 1.0.0
 	 */
 	public function output( WP_Post $post ) {
 
@@ -100,10 +102,11 @@ class WC_Memberships_Meta_Box_User_Membership_Notes extends WC_Memberships_Meta_
 		$notes = $user_membership->get_notes();
 
 		/**
-		 * Fires at the beginning of the user membership notes meta box
+		 * Fires at the beginning of the user membership notes meta box.
 		 *
 		 * @since 1.0.0
-		 * @param \WC_Memberships_User_Membership $user_membership The user membership
+		 *
+		 * @param \WC_Memberships_User_Membership $user_membership the user membership
 		 */
 		do_action( 'wc_memberships_before_user_membership_notes', $user_membership );
 
@@ -118,7 +121,8 @@ class WC_Memberships_Meta_Box_User_Membership_Notes extends WC_Memberships_Meta_
 					name="user_membership_note"
 					id="user-membership-note"
 					class="input-text"
-					cols="100" rows="5"></textarea>
+					cols="100"
+					rows="5"></textarea>
 			</p>
 
 			<p class="note-controls">
@@ -169,10 +173,11 @@ class WC_Memberships_Meta_Box_User_Membership_Notes extends WC_Memberships_Meta_
 		<?php
 
 		/**
-		 * Fires at the end of the user membership notes meta box
+		 * Fires at the end of the user membership notes meta box.
 		 *
 		 * @since 1.0.0
-		 * @param \WC_Memberships_User_Membership $user_membership The user membership
+		 *
+		 * @param \WC_Memberships_User_Membership $user_membership the user membership
 		 */
 		do_action( 'wc_memberships_after_user_membership_notes', $user_membership );
 	}

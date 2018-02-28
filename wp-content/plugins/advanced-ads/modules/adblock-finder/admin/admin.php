@@ -20,7 +20,7 @@ class Advanced_Ads_Adblock_Finder_Admin {
 
 		add_settings_field(
 			'GA-tracking-id',
-			__( 'Ad Block counter', 'advanced-ads' ),
+			__( 'Ad blocker counter', 'advanced-ads' ),
 			array( $this, 'render_settings_ga' ),
 			$hook,
 			'advanced_ads_adblocker_setting_section'

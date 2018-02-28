@@ -19,7 +19,7 @@
  * @package   WC-Memberships/Admin/Meta-Boxes
  * @author    SkyVerge
  * @category  Admin
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
@@ -34,7 +34,7 @@ class WC_Memberships_Meta_Box_User_Membership_Data extends WC_Memberships_Meta_B
 
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
 	 * @since 1.7.0
 	 */
@@ -49,9 +49,10 @@ class WC_Memberships_Meta_Box_User_Membership_Data extends WC_Memberships_Meta_B
 
 
 	/**
-	 * Get the meta box title
+	 * Returns the meta box title.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @return string
 	 */
 	public function get_title() {
@@ -60,9 +61,10 @@ class WC_Memberships_Meta_Box_User_Membership_Data extends WC_Memberships_Meta_B
 
 
 	/**
-	 * Get membership plan options
+	 * Returns membership plan options.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param \WC_Memberships_User_Membership $user_membership User Membership object
 	 * @param int $user_id WP User id
 	 * @return array
@@ -81,31 +83,28 @@ class WC_Memberships_Meta_Box_User_Membership_Data extends WC_Memberships_Meta_B
 			// get all the user memberships
 			$user_memberships = wc_memberships_get_user_memberships( $user->ID );
 
-			if ( ! empty( $membership_plans ) ) {
+			foreach ( $membership_plans as $membership_plan ) {
+				$exists = false;
 
-				foreach ( $membership_plans as $membership_plan ) {
-					$exists = false;
+				// each user can only have 1 membership per plan.
+				// check if user already has a membership for this plan
+				if ( ! empty( $user_memberships ) ) {
 
-					// each user can only have 1 membership per plan.
-					// check if user already has a membership for this plan
-					if ( ! empty( $user_memberships ) ) {
+					foreach ( $user_memberships as $membership ) {
 
-						foreach ( $user_memberships as $membership ) {
-
-							if ( $membership->get_plan_id() === $membership_plan->get_id() ) {
-								$exists = true;
-								break;
-							}
+						if ( $membership->get_plan_id() === $membership_plan->get_id() ) {
+							$exists = true;
+							break;
 						}
 					}
+				}
 
-					// only add plan to options if user is not a member of this plan or
-					// if the current membership has this plan.
-					// TODO: instead of removing, disable the option once {FN 2016-07-04}
-					// see: https://github.com/woocommerce/woocommerce/pull/8024 lands in stable (maybe WC 3.0?)
-					if ( ! $exists || $user_membership->get_plan_id() === $membership_plan->get_id() ) {
-						$membership_plan_options[ $membership_plan->get_id() ] = $membership_plan->get_name();
-					}
+				// only add plan to options if user is not a member of this plan or
+				// if the current membership has this plan.
+				// TODO: instead of removing, disable the option once {FN 2016-07-04}
+				// see: https://github.com/woocommerce/woocommerce/pull/8024 lands in stable (maybe WC 3.0?)
+				if ( ! $exists || $user_membership->get_plan_id() === $membership_plan->get_id() ) {
+					$membership_plan_options[ $membership_plan->get_id() ] = $membership_plan->get_name();
 				}
 			}
 		}
@@ -115,10 +114,11 @@ class WC_Memberships_Meta_Box_User_Membership_Data extends WC_Memberships_Meta_B
 
 
 	/**
-	 * Display the membership data meta box
+	 * Displays the membership data meta box.
+	 *
+	 * @since 1.0.0
 	 *
 	 * @param \WP_Post $post
-	 * @since 1.0.0
 	 */
 	public function output( WP_Post $post ) {
 
@@ -144,9 +144,10 @@ class WC_Memberships_Meta_Box_User_Membership_Data extends WC_Memberships_Meta_B
 		}
 
 		/**
-		 * Filter status options that appear in the edit user membership screen
+		 * Filters status options that appear in the edit user membership screen.
 		 *
 		 * @since 1.0.0
+		 *
 		 * @param array $options Associative array of option value => label pairs
 		 * @param int $user_membership_id User membership ID
 		 */
@@ -199,11 +200,12 @@ class WC_Memberships_Meta_Box_User_Membership_Data extends WC_Memberships_Meta_B
 
 
 	/**
-	 * Output the membership actions HTML
+	 * Outputs the membership actions HTML.
 	 *
 	 * @since 1.7.0
-	 * @param \WC_Memberships_User_Membership $user_membership Membership object
-	 * @param \WP_Post $post Post object
+	 *
+	 * @param \WC_Memberships_User_Membership $user_membership user membership object
+	 * @param \WP_Post $post post object
 	 */
 	private function output_membership_actions( $user_membership, $post ) {
 
@@ -212,10 +214,11 @@ class WC_Memberships_Meta_Box_User_Membership_Data extends WC_Memberships_Meta_B
 			<?php
 
 			/**
-			 * Fires at the start of the user membership actions meta box
+			 * Fires at the start of the user membership actions meta box.
 			 *
 			 * @since 1.0.0
-			 * @param int $post_id The post id of the wc_user_membership post
+			 *
+			 * @param int $post_id the post id of the wc_user_membership post
 			 */
 			do_action( 'wc_memberships_user_membership_actions_start', $user_membership->get_id() );
 
@@ -251,11 +254,12 @@ class WC_Memberships_Meta_Box_User_Membership_Data extends WC_Memberships_Meta_B
 				}
 
 				/**
-				 * Actions for user membership actions meta box
+				 * Actions for user membership actions meta box.
 				 *
 				 * @since 1.4.0
-				 * @param array $user_membership_actions Membership admin actions
-				 * @param int $post_id The post id of the wc_user_membership post
+				 *
+				 * @param array $user_membership_actions membership admin actions
+				 * @param int $post_id the post id of the wc_user_membership post
 				 */
 				$user_membership_actions = apply_filters( 'wc_memberships_user_membership_actions', $user_membership_actions, $user_membership->get_id() );
 
@@ -288,19 +292,21 @@ class WC_Memberships_Meta_Box_User_Membership_Data extends WC_Memberships_Meta_B
 				endif;
 
 				?>
-				<input type="submit"
-				       class="button save_user_membership save_action button-primary tips"
-				       value="<?php esc_attr_e( 'Save', 'woocommerce-memberships' ); ?>"
-				       data-tip="<?php esc_attr_e( 'Save/update the membership', 'woocommerce-memberships' ); ?>"
+				<input
+					type="submit"
+					class="button save_user_membership save_action button-primary tips"
+					value="<?php esc_attr_e( 'Save', 'woocommerce-memberships' ); ?>"
+					data-tip="<?php esc_attr_e( 'Save/update the membership', 'woocommerce-memberships' ); ?>"
 				/>
 			</li>
 			<?php
 
 			/**
-			 * Fires at the end of the user membership actions meta box
+			 * Fires at the end of the user membership actions meta box.
 			 *
 			 * @since 1.0.0
-			 * @param int $post_id The post id of the wc_user_membership post
+			 *
+			 * @param int $post_id the post id of the wc_user_membership post
 			 */
 			do_action( 'wc_memberships_user_membership_actions_end', $user_membership->get_id() );
 
@@ -311,11 +317,12 @@ class WC_Memberships_Meta_Box_User_Membership_Data extends WC_Memberships_Meta_B
 
 
 	/**
-	 * Output the membership plan details panel
+	 * Outputs the membership plan details panel.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param \WC_Memberships_User_Membership $user_membership
-	 * @param array $status_options Associative array
+	 * @param array $status_options associative array
 	 */
 	private function output_plan_details_panel( $user_membership, $status_options ) {
 		global $post, $pagenow;
@@ -327,9 +334,10 @@ class WC_Memberships_Meta_Box_User_Membership_Data extends WC_Memberships_Meta_B
 				<?php
 
 				/**
-				 * Fires before the membership details in edit user membership screen
+				 * Fires before the membership details in edit user membership screen.
 				 *
 				 * @since 1.0.0
+				 *
 				 * @param \WC_Memberships_User_Membership
 				 */
 				do_action( 'wc_memberships_before_user_membership_details', $user_membership );
@@ -429,9 +437,10 @@ class WC_Memberships_Meta_Box_User_Membership_Data extends WC_Memberships_Meta_B
 				endif;
 
 				/**
-				 * Fires after the membership details in edit user membership screen
+				 * Fires after the membership details in edit user membership screen.
 				 *
 				 * @since 1.0.0
+				 *
 				 * @param \WC_Memberships_User_Membership
 				 */
 				do_action( 'wc_memberships_after_user_membership_details', $user_membership );
@@ -444,11 +453,12 @@ class WC_Memberships_Meta_Box_User_Membership_Data extends WC_Memberships_Meta_B
 
 
 	/**
-	 * Get the billing details panel
+	 * Returns the billing details panel.
 	 *
 	 * @since 1.7.0
-	 * @param \WC_Memberships_User_Membership $user_membership Membership object
-	 * @param \WC_Order $order Order object
+	 *
+	 * @param \WC_Memberships_User_Membership $user_membership user membership object
+	 * @param \WC_Order $order order object
 	 */
 	private function output_billing_details_panel( $user_membership, $order ) {
 
@@ -461,9 +471,10 @@ class WC_Memberships_Meta_Box_User_Membership_Data extends WC_Memberships_Meta_B
 				<?php
 
 				/**
-				 * Fires before the billing details in edit user membership screen
+				 * Fires before the billing details in edit user membership screen.
 				 *
 				 * @since 1.0.0
+				 *
 				 * @param \WC_Memberships_User_Membership
 				 */
 				do_action( 'wc_memberships_before_user_membership_billing_details', $user_membership );
@@ -486,11 +497,12 @@ class WC_Memberships_Meta_Box_User_Membership_Data extends WC_Memberships_Meta_B
 				}
 
 				/**
-				 * Filter the User Membership billing details fields
+				 * Filters the User Membership billing details fields.
 				 *
 				 * @since 1.7.0
-				 * @param array $billing_fields Associative array of labels and data or inputs
-				 * @param \WC_Memberships_User_Membership $user_membership
+				 *
+				 * @param array $billing_fields associative array of labels and data or inputs
+				 * @param \WC_Memberships_User_Membership $user_membership the user membership
 				 */
 				$billing_fields = apply_filters( 'wc_memberships_user_membership_billing_details', $billing_fields, $user_membership );
 
@@ -506,9 +518,10 @@ class WC_Memberships_Meta_Box_User_Membership_Data extends WC_Memberships_Meta_B
 				endforeach;
 
 				/**
-				 * Fires after the billing details in edit user membership screen
+				 * Fires after the billing details in edit user membership screen.
 				 *
 				 * @since 1.0.0
+				 *
 				 * @param \WC_Memberships_User_Membership
 				 */
 				do_action( 'wc_memberships_after_user_membership_billing_details', $user_membership );
@@ -521,15 +534,17 @@ class WC_Memberships_Meta_Box_User_Membership_Data extends WC_Memberships_Meta_B
 
 
 	/**
-	 * Save user membership data.
+	 * Saves user membership data.
 	 *
 	 * @since 1.0.0
-	 * @param int $post_id The post id of the corresponding user membership post.
-	 * @param \WP_Post $post The user membership post object.
+	 *
+	 * @param int $post_id the post id of the corresponding user membership post
+	 * @param \WP_Post $post the user membership post object
 	 */
 	public function update_data( $post_id, WP_Post $post ) {
 
 		$user_membership = wc_memberships_get_user_membership( $post );
+		$membership_plan = $user_membership->get_plan();
 		$timezone        = wc_timezone_string();
 		$date_format     = 'Y-m-d H:i:s';
 
@@ -558,8 +573,10 @@ class WC_Memberships_Meta_Box_User_Membership_Data extends WC_Memberships_Meta_B
 			if ( $previous_end_date != $end_date ) {
 
 				// if end date is now set to a past date,
-				// automatically set status to expired
-				$user_membership->update_status( 'expired' );
+				// automatically set status to expired, unless cancelled
+				if ( ! $user_membership->is_cancelled() ) {
+					$user_membership->update_status( 'expired' );
+				}
 
 			} elseif ( in_array( $user_membership->get_status(), array( 'active', 'free_trial', 'complimentary' ), true ) ) {
 
@@ -578,7 +595,7 @@ class WC_Memberships_Meta_Box_User_Membership_Data extends WC_Memberships_Meta_B
 		}
 
 		// finally set the end date (UTC)
-		$user_membership->set_end_date( $end_date );
+		$user_membership->set_end_date( $membership_plan && $membership_plan->is_access_length_type( 'fixed' ) ? wc_memberships_adjust_date_by_timezone( $end_date, 'mysql', 'UTC' ) : $end_date );
 	}
 
 

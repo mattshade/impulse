@@ -18,14 +18,14 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * AJAX class
+ * Memberships AJAX handler.
  *
  * @since 1.0.0
  */
@@ -33,7 +33,7 @@ class WC_Memberships_AJAX {
 
 
 	/**
-	 * Constructor
+	 * Hooks in WordPress AJAX to add Memberships callbacks.
 	 *
 	 * @since 1.0.0
 	 */
@@ -48,8 +48,10 @@ class WC_Memberships_AJAX {
 		add_action( 'wp_ajax_wc_memberships_add_user_membership_note',    array( $this, 'add_user_membership_note' ) );
 		add_action( 'wp_ajax_wc_memberships_delete_user_membership_note', array( $this, 'delete_user_membership_note' ) );
 
+		// create a user to be added as member, when adding or transferring a user membership
+		add_action( 'wp_ajax_wc_memberships_create_user_for_membership', array( $this, 'create_user_for_membership' ) );
 		// transfer a membership from a user to another
-		add_action( 'wp_ajax_wc_memberships_transfer_user_membership', array( $this, 'transfer_user_membership' ) );
+		add_action( 'wp_ajax_wc_memberships_transfer_user_membership',   array( $this, 'transfer_user_membership' ) );
 
 		// enhanced select
 		add_action( 'wp_ajax_wc_memberships_json_search_posts', array( $this, 'json_search_posts' ) );
@@ -61,10 +63,11 @@ class WC_Memberships_AJAX {
 
 
 	/**
-	 * Get a user membership date based on plan details
+	 * Returns a user membership date based on plan details.
 	 *
 	 * @since 1.7.0
-	 * @param string $which_date Either 'start' or 'end' date
+	 *
+	 * @param string $which_date either 'start' or 'end' date
 	 */
 	private function get_membership_date( $which_date ) {
 
@@ -103,7 +106,7 @@ class WC_Memberships_AJAX {
 
 
 	/**
-	 * Determine user membership start date based on plan start date
+	 * Determines the user membership start date based on a plan start date.
 	 *
 	 * @internal
 	 *
@@ -116,7 +119,7 @@ class WC_Memberships_AJAX {
 
 
 	/**
-	 * Get membership expiration date
+	 * Returns a membership expiration date.
 	 *
 	 * @internal
 	 *
@@ -129,7 +132,7 @@ class WC_Memberships_AJAX {
 
 
 	/**
-	 * Search for posts and echo json
+	 * Searches for posts and echoes JSON data.
 	 *
 	 * @internal
 	 *
@@ -180,20 +183,20 @@ class WC_Memberships_AJAX {
 		}
 
 		/**
-		 * Filter posts found for JSON (AJAX) search
+		 * Filters posts found for JSON (AJAX) search.
 		 *
 		 * @since 1.0.0
-		 * @param array $found_posts Array of the found posts
+		 *
+		 * @param array $found_posts associative array of the found posts
 		 */
 		$found_posts = apply_filters( 'wc_memberships_json_search_found_posts', $found_posts );
 
 		wp_send_json( $found_posts );
-
 	}
 
 
 	/**
-	 * Search for taxonomy terms and echo json
+	 * Searches for taxonomy terms and echoes JSON data.
 	 *
 	 * @internal
 	 *
@@ -238,10 +241,11 @@ class WC_Memberships_AJAX {
 		}
 
 		/**
-		 * Filter terms found for JSON (AJAX) search
+		 * Filters taxonomy terms found for JSON (AJAX) search.
 		 *
 		 * @since 1.0.0
-		 * @param array $found_terms Array of the found terms
+		 *
+		 * @param array $found_terms associative array of the found terms
 		 */
 		$found_terms = apply_filters( 'wc_memberships_json_search_found_terms', $found_terms );
 
@@ -250,7 +254,7 @@ class WC_Memberships_AJAX {
 
 
 	/**
-	 * Add user membership note
+	 * Adds a user membership note.
 	 *
 	 * @internal
 	 *
@@ -305,7 +309,7 @@ class WC_Memberships_AJAX {
 
 
 	/**
-	 * Delete user membership note
+	 * Deletees a user membership note.
 	 *
 	 * @internal
 	 *
@@ -326,11 +330,14 @@ class WC_Memberships_AJAX {
 
 
 	/**
-	 * Remove grouped products from json search results
+	 * Removes grouped products from JSON search results.
+	 *
+	 * Memberships is not compatible with Grouped products.
 	 *
 	 * @internal
 	 *
 	 * @since 1.0.0
+	 *
 	 * @param array $products
 	 * @return array $products
 	 */
@@ -353,10 +360,76 @@ class WC_Memberships_AJAX {
 
 
 	/**
-	 * Transfer a membership from one user to another
+	 * Creates a user while adding or transferring a user membership.
 	 *
-	 * If successful also stores the previous users history
-	 * in a membership post meta '_previous_owners'
+	 * @internal
+	 *
+	 * @since 1.9.0
+	 */
+	public function create_user_for_membership() {
+
+		check_ajax_referer( 'create-user-for-membership', 'security' );
+
+		$username   = isset( $_POST['username']   ) ? trim( $_POST['username']   ) : '';
+		$email      = isset( $_POST['email']      ) ? trim( $_POST['email']      ) : '';
+		$first_name = isset( $_POST['first_name'] ) ? trim( $_POST['first_name'] ) : '';
+		$last_name  = isset( $_POST['last_name']  ) ? trim( $_POST['last_name']  ) : '';
+		$password   = isset( $_POST['password']   ) ? $_POST['password']           : '';
+		$user_id    = wc_create_new_customer( $email, $username, $password );
+
+		if ( ! is_numeric( $user_id ) ) {
+
+			$error_message  = '';
+			$error_messages = $user_id instanceof WP_Error ? $user_id->get_error_messages() : null;
+
+			if ( ! empty( $error_messages ) ) {
+
+				// note: the following textdomain is not incorrect, this is to rectify a WC core message which would be unfit for the admin context here
+				$login_message = __( 'An account is already registered with your email address. Please log in.', 'woocommerce' );
+
+				foreach ( $error_messages as $message ) {
+					if ( $login_message === $message ) {
+						$error_message .= __( 'An account is already registered with this email address.', 'woocommerce-memberships' ) . '<br />';
+					} else {
+						$error_message .= $message . '<br />';
+					}
+				}
+
+			} else {
+
+				$error_message .= __( 'Please ensure you have entered valid user information.', 'woocommerce-memberships' );
+			}
+
+			wp_send_json_error( $error_message );
+
+		} elseif ( $user_id > 0 ) {
+
+			$user_full_name = array();
+
+			if ( '' !== $first_name ) {
+				$user_full_name['first_name'] = $first_name;
+			}
+
+			if ( '' !== $last_name ) {
+				$user_full_name['last_name'] = $last_name;
+			}
+
+			if ( ! empty( $user_full_name ) ) {
+
+				$user_full_name['ID'] = $user_id;
+
+				wp_update_user( $user_full_name );
+			}
+		}
+
+		wp_send_json_success( (int) $user_id );
+	}
+
+
+	/**
+	 * Transfers a membership from one user to another.
+	 *
+	 * If successful also stores the previous users history in a membership post meta '_previous_owners'.
 	 *
 	 * @internal
 	 *
@@ -364,26 +437,31 @@ class WC_Memberships_AJAX {
 	 */
 	public function transfer_user_membership() {
 
-		if ( ! empty( $_POST['prev_user'] ) && ! empty( $_POST['new_user'] ) && ! empty( $_POST['membership'] ) ) {
+		check_ajax_referer( 'transfer-user-membership', 'security' );
+
+		if ( isset( $_POST['prev_user'], $_POST['new_user'] ) && ! empty( $_POST['membership'] ) ) {
 
 			$prev_user          = (int) $_POST['prev_user'];
 			$new_user           = (int) $_POST['new_user'];
 			$user_membership_id = (int) $_POST['membership'];
 			$user_membership    = wc_memberships_get_user_membership( $user_membership_id );
 
-			if (    $user_membership
-			     && $prev_user !== $new_user
-			     && (int) $user_membership->get_user_id() === $prev_user ) {
+			if ( $user_membership && $user_membership->get_user_id() === $prev_user ) {
 
-				$transferred = $user_membership->transfer_ownership( $new_user );
+				try {
 
-				if ( true === $transferred ) {
-					wp_send_json_success( $user_membership->get_previous_owners() );
+					if ( $user_membership->transfer_ownership( $new_user ) ) {
+						wp_send_json_success( $user_membership->get_previous_owners() );
+					}
+
+				} catch ( SV_WC_Plugin_Exception $exception ) {
+
+					wp_send_json_error( $exception->getMessage() );
 				}
 			}
 		}
 
-		die();
+		wp_send_json_error( __( 'An error occurred.', 'woocommerce-memberships' ) );
 	}
 
 

@@ -16,9 +16,9 @@ get_header(); ?>
 	<div id="primary" class="container">
 		<div class="row content-area">
 
-			<?php get_sidebar( 'archive-job_listing' ); ?>
+			<?php //get_sidebar( 'archive-job_listing' ); ?>
 
-			<main id="main" class="site-main <?php if ( listify_job_listing_archive_has_sidebar() ) : ?>col-md-8 col-sm-12 <?php endif; ?>col-xs-12 job_filters--<?php echo get_theme_mod( 'listing-filters-style', 'content-box' ); ?>" role="main">
+			<main id="main" class="site-main <?php if ( listify_job_listing_archive_has_sidebar() ) : ?> col-sm-12 <?php endif; ?>col-xs-12 job_filters--<?php echo get_theme_mod( 'listing-filters-style', 'content-box' ); ?>" role="main">
 				<?php do_action( 'listify_output_results' ); ?>
 			</main>
 

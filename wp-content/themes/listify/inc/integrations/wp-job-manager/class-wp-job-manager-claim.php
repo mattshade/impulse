@@ -77,7 +77,7 @@ class Listify_WP_Job_Manager_Claim extends Listify_WP_Job_Manager {
 	?>
 </div>
 
-<a href="#claim-listing-<?php echo $post->ID; ?>" class="popup-trigger"><i class="ion-thumbsup"></i> <?php _e( 'Claim Listing', 'listify' ); ?></a>
+<a href="#claim-listing-<?php echo $post->ID; ?>" class="popup-trigger photos button button-secondary"><i class="ion-thumbsup"></i> <?php _e( 'Claim Listing', 'listify' ); ?></a>
 
 <?php
 	}

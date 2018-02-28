@@ -1,22 +1,22 @@
 # WooCommerce Name Your Price #
 
 **Contributors:** [Kathy Darling](https://profiles.wordpress.org/Kathy Darling)  
-**Requires at least:** 3.8      
-**Tested up to:** 4.6.1      
-**Stable tag:** 2.6.0  
+**Requires at least:** 4.4.0      
+**Tested up to:** 4.9.0      
+**Stable tag:** 2.7.1  
 **License:** GPLv3      
 **License URI:** http://www.gnu.org/licenses/gpl-3.0.html      
-**WC requires at least:** 2.1.0      
-**WC tested up to:** 2.6.4      
+**WC requires at least:** 3.0.0      
+**WC tested up to:** 3.3.0      
 
 Allow customers to set their own prices for WooCommerce products
 
 ## Upgrade Notice ##
-WooCommerce 2.0 is no longer supported. Do not upgrade unless you are using at least WooCommerce 2.1.
+WooCommerce 2.6.x is no longer supported. Do not upgrade unless you are using at least WooCommerce 3.0.
 
 ## Description ##
 
-The WooCommerce Name Your Price extension lets you be flexible in what price you are willing to accept for selected products. You can use this extension to accept user-determined donations, gather pricing data or to take a new approach to selling products!  You can *suggest* a price to your customers and optionally enforce a minimum acceptable price, but otherwise this extension allows the customer to enter the price he's willing to pay.
+The WooCommerce Name Your Price extension lets you be flexible in what price you are willing to accept for selected products. You can use this extension to accept user-determined donations, gather pricing data or to take a new approach to selling products!  You can *suggest* a price to your customers and optionally enforce a minimum acceptable price, but otherwise this extension allows the customer to enter the price they are willing to pay.
 
 [https://raw.githubusercontent.com/woothemes/woocommerce-name-your-price/master/screenshots/screenshot1.png]
 
@@ -31,12 +31,6 @@ To install Name Your Price:
 3. Click the "Choose File" button, select the zip file you just downloaded to your computer and then click "Install Now"
 
 4. After installation has completed you can activate the plugin right away or you can activate the 'WooCommerce Name Your Price' extension through the 'Plugins' menu in WordPress at any time
-
-## Upgrading to Name Your Price 2.0 ##
-
-Please be advised that Name Your Price 2.0 is a very major update and if you were previously using Name Your Price 1.x you might want to consider testing your theme in a developmental environment first. This is a must if you were using the $wc_name_your_price variable or overriding old templates.  
-
-Name Your Price will continue to work with WooCommerce 2.0.20, but WooCommerce 2.1 is preferred. Support for variable products and variable subscriptions will not function until WooCommerce is upgraded to version 2.1. WooCommerce 2.1 also better handles entering prices with localized decimal points. 
 
 ## Plugin Settings ##
 

@@ -18,9 +18,9 @@ abstract class WP_Job_Manager_REST_Data_Store_Abstract implements WP_Job_Manager
 	/**
 	 * Definition
 	 *
-	 * @var WP_Job_Manager_REST_Model_Factory
+	 * @var WP_Job_Manager_REST_Model
 	 */
-	protected $model_factory;
+	protected $model_prototype;
 
 	/**
 	 * Type Serializers
@@ -32,26 +32,25 @@ abstract class WP_Job_Manager_REST_Data_Store_Abstract implements WP_Job_Manager
 	/**
 	 * WP_Job_Manager_REST_Data_Store_Abstract constructor.
 	 *
-	 * @param null|WP_Job_Manager_REST_Model_Factory $model_factory Def.
-	 * @param array                 $args Args.
+	 * @param null|WP_Job_Manager_REST_Model $model_prototype Def.
+	 * @param array         $args Args.
 	 */
-	public function __construct( $model_factory = null, $args = array() ) {
+	public function __construct( $model_prototype = null, $args = array() ) {
 		$this->type_serializers = array();
 		$this->args = $args;
-		if ( is_a( $model_factory, 'WP_Job_Manager_REST_Model_Factory' ) ) {
-			$this->set_model_factory( $model_factory );
-		}
+		WP_Job_Manager_REST_Expect::is_a( $model_prototype, 'WP_Job_Manager_REST_Interfaces_Model' );
+		$this->set_model_factory( $model_prototype );
 	}
 
 	/**
 	 * Set Definition
 	 *
-	 * @param WP_Job_Manager_REST_Model_Factory $factory Def.
+	 * @param WP_Job_Manager_REST_Model $factory Def.
 	 *
 	 * @return WP_Job_Manager_REST_Interfaces_Data_Store $this
 	 */
 	private function set_model_factory( $factory ) {
-		$this->model_factory = $factory;
+		$this->model_prototype = $factory;
 		$this->configure();
 		return $this;
 	}
@@ -65,9 +64,9 @@ abstract class WP_Job_Manager_REST_Data_Store_Abstract implements WP_Job_Manager
 	/**
 	 * Get Definition
 	 *
-	 * @return WP_Job_Manager_REST_Model_Factory
+	 * @return WP_Job_Manager_REST_Model
 	 */
-	public function get_model_factory() {
-		return $this->model_factory;
+	public function get_model_prototype() {
+		return $this->model_prototype;
 	}
 }

@@ -327,12 +327,13 @@ function listify_the_listing_category( $post = null ) {
 	$types = false;
 
 	if ( ! listify_theme_mod( 'categories-only', true ) ) {
+		echo "<div class='capabilities-label'>Capabilities:</div>";
 		$types = get_the_term_list(
 			get_post()->ID,
-			'job_listing_type',
-			'<span>',
-			'<span class="ion-chevron-right"></span>',
-			'</span>'
+			'job_listing_type'//,
+			//'<span>'//,
+			// '<span class="ion-chevron-right"></span>',
+			//'</span>'
 		);
 	}
 
@@ -340,8 +341,8 @@ function listify_the_listing_category( $post = null ) {
 
 	if ( get_option( 'job_manager_enable_categories' ) ) {
 		$crumbs = new Listify_Taxonomy_Breadcrumbs( apply_filters( 'listify_taxonomy_breadcrumbs', array(
-			'taxonomy' => 'job_listing_category',
-			'sep' => '<span class="ion-chevron-right"></span>',
+			'taxonomy' => 'job_listing_category'//,
+			// 'sep' => '<span class="ion-chevron-right"></span>',
 		) ) );
 	}
 ?>
@@ -349,8 +350,8 @@ function listify_the_listing_category( $post = null ) {
 <div class="content-single-job_listing-title-category">
 
 	<?php if ( $types && ! is_wp_error( $types ) ) : ?>
-		<?php echo $types; // WPCS: XSS ok. ?>
-		<span class="ion-chevron-right"></span>
+		<?php echo $types;  ?>
+		<!-- <span class="ion-chevron-right"></span> -->
 	<?php endif; ?>
 
 	<?php if ( ! empty( $crumbs->crumbs ) ) : ?>
@@ -514,6 +515,9 @@ function listify_the_listing_rating( $post = null ) {
 
 	$context = is_singular( 'job_listing' ) ? 'single' : 'card';
 ?>
+<?php
+if( wc_memberships_is_user_active_member( null, 'claim' ) || wc_memberships_is_user_active_member( null, 'annual' ) ) {?>
+
 
 <div class="listing-rating listing-rating--<?php echo esc_attr( $context ); ?>">
 
@@ -533,6 +537,12 @@ function listify_the_listing_rating( $post = null ) {
 	</span>
 
 </div>
+
+<?php
+}else{
+echo '<div class="no-impulse-score"><h3 class="choose-text">To see the Impulse Score<sup>TM</sup> you must subscribe.</h3><div class="choose-btn"><a href="/choose-a-plan/" type="submit" class="single_add_to_cart_button button alt">Choose A Plan</a></div></div>';
+}
+?>
 
 <?php
 }
@@ -868,29 +878,29 @@ function listify_comment( $comment, $args, $depth ) {
 
 		<section class="comment-content comment col-md-10 col-sm-9 col-xs-12">
 
-			<cite itemprop="author">
-				<b class="fn"><?php echo esc_html( get_comment_author() ); ?></b> 
+			<!-- <cite itemprop="author">
+				<b class="fn"><?php //echo esc_html( get_comment_author() ); ?></b>
 
-				<?php if ( is_singular() && ( $comment->user_id === $post->post_author && $post->post_author > 0 ) ) : ?>
-					<span class="listing-owner"><?php esc_html_e( 'Listing Owner', 'listify' ); ?></span>
-				<?php endif; ?>
-			</cite>
+				<?php //if ( is_singular() && ( $comment->user_id === $post->post_author && $post->post_author > 0 ) ) : ?>
+					<span class="listing-owner"><?php //esc_html_e( 'Listing Owner', 'listify' ); ?></span>
+				<?php //endif; ?>
+			</cite> -->
 
 			<div class="comment-meta">
-				<?php do_action( 'listify_comment_meta_before', $comment ); ?>
+				<?php //do_action( 'listify_comment_meta_before', $comment ); ?>
 
 				<?php
-					comment_reply_link( wp_parse_args(
-						array(
-							'reply_text' => '<i class="ion-ios-chatboxes-outline"></i>',
-							'after'      => ' ',
-							'depth'      => $depth,
-							'max_depth'  => $args['max_depth'],
-						)
-					, $args ) );
+					//comment_reply_link( wp_parse_args(
+						//array(
+							//'reply_text' => '<i class="ion-ios-chatboxes-outline"></i>',
+							//'after'      => ' ',
+							//'depth'      => $depth,
+							//'max_depth'  => $args['max_depth'],
+						//)
+					//, $args ) );
 				?>
 
-				<?php edit_comment_link( __( '<span class="ion-edit"></span>', 'listify' ) ); ?>
+				<?php //edit_comment_link( __( '<span class="ion-edit"></span>', 'listify' ) ); ?>
 
 				<?php do_action( 'listify_comment_meta_after', $comment ); ?>
 			</div>

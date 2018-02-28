@@ -18,17 +18,16 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Membership Plan class
+ * Membership Plan object.
  *
- * This class represents a single membership plan, eg "silver" or "gold"
- * with it's specific configuration.
+ * This class represents a single membership plan, eg "silver" or "gold" with its specific configuration.
  *
  * @since 1.0.0
  */
@@ -71,14 +70,15 @@ class WC_Memberships_Membership_Plan {
 	/** @var string email content meta */
 	protected $email_content_meta = '';
 
-	/** @var array lazy rules getter */
+	/** @var array cached plan rules by memoization */
 	private $rules = array();
 
 
 	/**
-	 * Constructor
+	 * Membership Plan Constructor.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @param int|string|\WP_Post|\WC_Memberships_Membership_Plan $id Membership Plan slug, post object or related post ID
 	 */
 	public function __construct( $id ) {
@@ -125,9 +125,10 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get the id
+	 * Returns the plan ID.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @return int
 	 */
 	public function get_id() {
@@ -136,9 +137,10 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get the name
+	 * Returns the plan name.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @return string
 	 */
 	public function get_name() {
@@ -147,9 +149,10 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get the slug
+	 * Returns the plan slug.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @return string
 	 */
 	public function get_slug() {
@@ -158,10 +161,11 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get product ids that grant access to this plan
+	 * Returns the product ids that grant access to this plan.
 	 *
 	 * @since 1.0.0
-	 * @return array Array of product ids
+	 *
+	 * @return int[]
 	 */
 	public function get_product_ids() {
 
@@ -172,11 +176,12 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get products that grant access to plan
+	 * Returns products that grant access to plan.
 	 *
 	 * @since 1.7.0
-	 * @param bool $exclude_subscriptions Optional, whether to exclude subscription products (default false, include them)
-	 * @return \WC_Product[] Array of products
+	 *
+	 * @param bool $exclude_subscriptions optional, whether to exclude subscription products (default false, include them)
+	 * @return \WC_Product[] array of products
 	 */
 	public function get_products( $exclude_subscriptions = false ) {
 
@@ -186,17 +191,25 @@ class WC_Memberships_Membership_Plan {
 
 			foreach ( $this->get_product_ids() as $product_id ) {
 
-				if ( ! is_numeric( $product_id ) || ! $product_id ) {
-					continue;
+
+				if ( $product = wc_get_product( $product_id ) ) {
+
+					if ( true === $exclude_subscriptions ) {
+
+						// by using Subscriptions method we can account for custom subscription product types
+						if ( is_callable( 'WC_Subscriptions_Product::is_subscription' ) ) {
+							$is_subscription = WC_Subscriptions_Product::is_subscription( $product );
+						} else {
+							$is_subscription = $product->is_type( array( 'subscription', 'variable-subscription', 'subscription_variation' ) );
+						}
+
+						if ( $is_subscription ) {
+							continue;
+						}
+					}
+
+					$products[ $product_id ] = $product;
 				}
-
-				$product = wc_get_product( $product_id );
-
-				if ( ! $product || ( true === $exclude_subscriptions && $product->is_type( array( 'subscription', 'subscription_variation', 'variable-subscription' ) ) ) ) {
-					continue;
-				}
-
-				$products[ $product_id ] = $product;
 			}
 		}
 
@@ -205,11 +218,12 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Set ids of products that can grant access to this plan
+	 * Sets ids of products that can grant access to this plan.
 	 *
 	 * @since 1.7.0
-	 * @param string|int|int[] $product_ids Array or comma separated string of product ids or single id (numeric)
-	 * @param bool $merge Whether to merge the specified product ids to the existing ones, rather than replace values
+	 *
+	 * @param string|int|int[] $product_ids array or comma separated string of product ids or single id (numeric)
+	 * @param bool $merge whether to merge the specified product ids to the existing ones, rather than replace values
 	 */
 	public function set_product_ids( $product_ids, $merge = false ) {
 
@@ -223,7 +237,6 @@ class WC_Memberships_Membership_Plan {
 		foreach ( $product_ids as $index => $product_id ) {
 
 			if ( $product_id <= 0 || ! wc_get_product( $product_id ) ) {
-
 				// remove invalid product
 				unset( $product_ids[ $index ] );
 			}
@@ -238,11 +251,11 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Delete product ids meta
+	 * Deletes product ids meta.
 	 *
 	 * @since 1.7.0
-	 * @param null|string|int|int[] $product_ids Optional, if an array or single numeric value is passed,
-	 *                                           one or more ids will be removed from the product ids meta
+	 *
+	 * @param null|string|int|int[] $product_ids optional, if an array or single numeric value is passed, one or more ids will be removed from the product ids meta
 	 */
 	public function delete_product_ids( $product_ids = null ) {
 
@@ -265,9 +278,10 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Check if this plan has any products that grant access
+	 * Checks if this plan has any products that grant access.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @return bool
 	 */
 	public function has_products() {
@@ -279,9 +293,10 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Check if this plan has a specified product that grant access
+	 * Checks if this plan has a specified product that grant access.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @param int $product_id Product ID to search for
 	 * @return bool
 	 */
@@ -291,11 +306,12 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Ensures that an access method is one of the accepted types
+	 * Ensures that an access method is one of the accepted types.
 	 *
 	 * @since 1.7.0
-	 * @param string $method Either 'manual-only', 'signup' or 'purchase'
-	 * @return string Defaults to manual-only if an invalid method is supplied
+	 *
+	 * @param string $method either 'manual-only', 'signup' or 'purchase'
+	 * @return string defaults to manual-only if an invalid method is supplied
 	 */
 	private function validate_access_method( $method ) {
 
@@ -306,10 +322,11 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Set the method to grant access to the membership
+	 * Sets the method to grant access to the membership.
 	 *
 	 * @since 1.7.0
-	 * @param string $method Either 'manual-only', 'signup' or 'purchase'
+	 *
+	 * @param string $method either 'manual-only', 'signup' or 'purchase'
 	 */
 	public function set_access_method( $method ) {
 
@@ -318,9 +335,10 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get the method to grant access to the membership
+	 * Returns the method to grant access to the membership.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return string
 	 */
 	public function get_access_method() {
@@ -342,8 +360,9 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Removes the access method meta
-	 * (will default the access method to manual-only)
+	 * Removes the access method meta.
+	 *
+	 * Will default the access method to manual-only.
 	 *
 	 * @since 1.7.0
 	 */
@@ -354,22 +373,24 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Check the plan's access method
+	 * Checks the plan's access method.
 	 *
 	 * @since 1.7.0
-	 * @param array|string $type Either 'manual-only', 'signup' or 'purchase'
+	 *
+	 * @param array|string $method either 'manual-only', 'signup' or 'purchase'
 	 * @return bool
 	 */
-	public function is_access_method( $type ) {
-		return is_array( $type ) ? in_array( $this->get_access_method(), $type, true ) : $type === $this->get_access_method();
+	public function is_access_method( $method ) {
+		return is_array( $method ) ? in_array( $this->get_access_method(), $method, true ) : $method === $this->get_access_method();
 	}
 
 
 	/**
-	 * Set access length
+	 * Sets the plan access length.
 	 *
 	 * @since 1.7.0
-	 * @param string $access_length An access period defined as "2 weeks", "5 months", "1 year" etc.
+	 *
+	 * @param string $access_length an access period defined as "2 weeks", "5 months", "1 year" etc.
 	 */
 	public function set_access_length( $access_length ) {
 
@@ -383,13 +404,14 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get access length amount
+	 * Returns the access length amount.
 	 *
 	 * Returns the amount part of the access length.
 	 * For example, returns '5' for the period '5 days'
 	 *
 	 * @since 1.0.0
-	 * @return int|string Amount or empty string if no schedule
+	 *
+	 * @return int|string amount or empty string if no schedule
 	 */
 	public function get_access_length_amount() {
 		return wc_memberships_parse_period_length( $this->get_access_length(), 'amount' );
@@ -397,13 +419,14 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get access length period
+	 * Returns the access length period.
 	 *
 	 * Returns the period part of the access length.
 	 * For example, returns 'days' for the period '5 days'
 	 *
 	 * @since 1.0.0
-	 * @return string Period
+	 *
+	 * @return string a period
 	 */
 	public function get_access_length_period() {
 		return wc_memberships_parse_period_length( $this->get_access_length(), 'period' );
@@ -411,9 +434,10 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Whether this plan has a specific period length set
+	 * Checks whether this plan has a specific period length set.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return bool
 	 */
 	public function has_access_length() {
@@ -426,11 +450,11 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get access length
+	 * Returns the plan's access length.
 	 *
 	 * @since 1.0.0
-	 * @return string Access length in strtotime-friendly format,
-	 *                eg. "5 days", or empty string when unlimited
+	 *
+	 * @return string access length in strtotime-friendly format, eg. "5 days", or empty string when unlimited
 	 */
 	public function get_access_length() {
 
@@ -452,13 +476,13 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get the membership plan access length in a human readable format
+	 * Returns the membership plan access length in a human readable format.
 	 *
-	 * Note: this may result in approximations, e.g. "2 months (57 days)" and so on
+	 * Note: this may result in approximations, e.g. "2 months (57 days)" and so on.
 	 *
 	 * @since 1.7.0
-	 * @return string Parses the access length and returns the number of years, months, etc.
-	 *                and the total number of days of a membership plan length
+	 *
+	 * @return string parses the access length and returns the number of years, months, etc.and the total number of days of a membership plan length
 	 */
 	public function get_human_access_length() {
 
@@ -485,23 +509,22 @@ class WC_Memberships_Membership_Plan {
 		}
 
 		/**
-		 * Filter a User Membership access length in a human friendly form
+		 * Filters a User Membership access length in a human friendly form.
 		 *
 		 * @since 1.7.2
-		 * @param string $human_length The length in human friendly format
-		 * @param string $standard_length The length in machine friendly format
-		 * @param int $user_membership_id The User Membership ID
+		 *
+		 * @param string $human_length the length in human friendly format
+		 * @param string $standard_length the length in machine friendly format
+		 * @param int $user_membership_id the User Membership ID
 		 */
 		return apply_filters( 'wc_memberships_membership_plan_human_access_length', $human_length, $standard_length, $this->id );
 	}
 
 
 	/**
-	 * Removes the access length information
+	 * Removes the access length information.
 	 *
-	 * Note this only removes the access length for specific-length membership plans
-	 * if the membership has a fixed length, use the following methods:
-	 *
+	 * Note this only removes the access length for specific-length membership plans if the membership has a fixed length, use the following methods:
 	 * @see \WC_Memberships_Membership_Plan::delete_access_start_date()
 	 * @see \WC_Memberships_Membership_Plan::delete_access_end_date()
 	 *
@@ -514,9 +537,10 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get access length type
+	 * Returns the plan's access length type.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return string
 	 */
 	public function get_access_length_type() {
@@ -535,10 +559,11 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Check the plan's access length type
+	 * Checks the plan's access length type
 	 *
 	 * @since 1.7.0
-	 * @param array|string $type Either 'specific', 'fixed' or 'unlimited'
+	 *
+	 * @param array|string $type either 'specific', 'fixed' or 'unlimited'
 	 * @return bool
 	 */
 	public function is_access_length_type( $type ) {
@@ -547,12 +572,13 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Set the plan access start date
+	 * Sets the plan access start date
 	 *
 	 * Note: this only affects memberships of fixed length
 	 *
 	 * @since 1.7.0
-	 * @param string|null $date Optional, defaults to now, otherwise a date in mysql format
+	 *
+	 * @param string|null $date optional, defaults to now, otherwise a date in mysql format
 	 */
 	public function set_access_start_date( $date = null ) {
 
@@ -564,15 +590,14 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get access start date
+	 * Returns the plan's access start date.
 	 *
-	 * This is usually 'today', but for fixed membership plans
-	 * it could be a date in the future or in the past
-	 *
-	 * Note: this does not reflect a user membership start date
+	 * This is usually 'today', but for fixed membership plans it could be a date in the future or in the past.
+	 * Note: this does not reflect a user membership start date.
 	 *
 	 * @since 1.7.0
-	 * @param string $format Optional, either 'mysql' (default) or 'timestamp' for timestamp
+	 *
+	 * @param string $format optional, either 'mysql' (default) or 'timestamp' for timestamp
 	 * @return string|int
 	 */
 	public function get_access_start_date( $format = 'mysql' ) {
@@ -590,12 +615,14 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Checks if the start access date is set after the end access date
-	 * if so, rolls back the start access date to one day before the end access date
+	 * Checks if the start access date is set after the end access date.
+	 *
+	 * If so, rolls back the start access date to one day before the end access date.
 	 *
 	 * @since 1.7.0
-	 * @param string $access_start_date A date in mysql format
-	 * @return false|string False on error or mysql date upon validation
+	 *
+	 * @param string $access_start_date a date in mysql format
+	 * @return false|string false on error or MySQL date upon validation
 	 */
 	private function validate_access_start_date( $access_start_date ) {
 
@@ -622,10 +649,11 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get access start date, adjusted for the local site timezone
+	 * Returns the access start date, adjusted for the local site timezone.
 	 *
 	 * @since 1.7.0
-	 * @param string $format Optional, the date format: either 'mysql' (default) or 'timestamp'
+	 *
+	 * @param string $format optional, the date format: either 'mysql' (default) or 'timestamp'
 	 * @return string|int
 	 */
 	public function get_local_access_start_date( $format = 'mysql' ) {
@@ -639,9 +667,9 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Delete the access start date meta
+	 * Deletes the access start date meta
 	 *
-	 * Note: this only affects membership plans of fixed length
+	 * Note: this only affects membership plans of fixed length.
 	 *
 	 * @since 1.7.0
 	 */
@@ -652,12 +680,13 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Set access end date
+	 * Sets the plan's access end date
 	 *
-	 * Note: this only affects membership plans of fixed length
+	 * Note: this only affects membership plans of fixed length.
 	 *
 	 * @since 1.7.0
-	 * @param string $date A date in mysql format
+	 *
+	 * @param string $date a date in MySQL format
 	 */
 	public function set_access_end_date( $date ) {
 
@@ -669,15 +698,15 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get access end date
+	 * Returns the plan's access end date.
 	 *
-	 * Note: this will return the access end date for fixed length membership plans
-	 * otherwise it will return the expiration date
+	 * Note: this will return the access end date for fixed length membership plans otherwise it will return the expiration date.
 	 *
 	 * @since 1.7.0
-	 * @param string $format Optional, the date format: either 'mysql' (default) or 'timestamp'
-	 * @param array $args Optional arguments passed to fallback method
-	 * @return string|int Returns empty string regardless of $format for unlimited memberships
+	 *
+	 * @param string $format optional, the date format: either 'mysql' (default) or 'timestamp'
+	 * @param array $args optional arguments passed to fallback method
+	 * @return string|int returns empty string regardless of $format for unlimited memberships
 	 */
 	public function get_access_end_date( $format = 'mysql', $args = array() ) {
 
@@ -689,11 +718,12 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get access end date, adjusted for the local site timezone
+	 * Returns the plan's access end date, adjusted for the local site timezone.
 	 *
 	 * @since 1.7.0
-	 * @param string $format Optional, the date format: either 'mysql' (default) or 'timestamp'
-	 * @return string|int Returns empty string regardless of $format for unlimited memberships
+	 *
+	 * @param string $format optional, the date format: either 'mysql' (default) or 'timestamp'
+	 * @return string|int returns empty string regardless of $format for unlimited memberships
 	 */
 	public function get_local_access_end_date( $format = 'mysql' ) {
 
@@ -704,11 +734,12 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get the access end date meta
+	 * Returns the plan's access end date meta.
 	 *
 	 * @see \WC_Memberships_Membership_Plan::get_expiration_date()
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return string|null
 	 */
 	protected function get_access_end_date_meta() {
@@ -720,7 +751,7 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Delete the access end date meta
+	 * Deletes the access end date meta.
 	 *
 	 * @since 1.7.0
 	 */
@@ -731,15 +762,15 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get membership plan expiration date
+	 * Returns the plan's expiration date.
 	 *
-	 * Calculates when a membership plan will expire relatively to a start date
+	 * Calculates when a membership plan will expire relatively to a start date.
 	 *
 	 * @since 1.3.8
-	 * @param int|string $start Optional: a date string or timestamp as the start time
-	 *                          relative to the expiry date to calculate expiration for (default: current time)
-	 * @param array $args Optional: additional arguments passed in hooks
-	 * @return string Date in Y-m-d H:i:s format or empty for unlimited plans (no expiry)
+	 *
+	 * @param int|string $start optional: a date string or timestamp as the start time relative to the expiry date to calculate expiration for (default: current time)
+	 * @param array $args optional: additional arguments passed in hooks
+	 * @return string date in MySQL Y-m-d H:i:s format or empty for unlimited plans (no expiry)
 	 */
 	public function get_expiration_date( $start = '', $args = array() ) {
 
@@ -790,31 +821,33 @@ class WC_Memberships_Membership_Plan {
 		}
 
 		/**
-		 * Plan expiration date
+		 * Filters the plan's expiration date.
 		 *
 		 * @since 1.5.3
-		 * @param int|string $expiration_date Date in Y-m-d H:i:s format (or optionally timestamp), empty string for unlimited plans
-		 * @param int|string $expiration_timestamp Timestamp, empty string for unlimited plans
-		 * @param array $args Associative array of additional arguments as passed to get expiration method
+		 *
+		 * @param int|string $expiration_date date in MySQL Y-m-d H:i:s format (or optionally timestamp), empty string for unlimited plans
+		 * @param int|string $expiration_timestamp timestamp, empty string for unlimited plans
+		 * @param array $args associative array of additional arguments as passed to get expiration method
 		 */
 		return apply_filters( 'wc_memberships_plan_expiration_date', $end_date, $end, $args );
 	}
 
 
 	/**
-	 * Set members area sections for this plan.
+	 * Sets members area sections for this plan.
 	 *
-	 * @see \wc_memberships_get_members_area_sections()
+	 * @see wc_memberships_get_members_area_sections()
 	 *
 	 * @since 1.7.0
-	 * @param null|string|array $sections Array of section keys or single section key (string).
+	 *
+	 * @param null|string|array $sections array of section keys or single section key (string).
 	 */
 	public function set_members_area_sections( $sections = null ) {
 
 		$default_sections = wc_memberships_get_members_area_sections( $this->id );
 		$sections         = null === $sections ? array_keys( $default_sections ) : $sections;
 
-		// Validate sections.
+		// validate sections
 		if ( is_string( $sections ) ) {
 			$sections = array_key_exists( $sections, $default_sections ) ? (array) $sections : array();
 		} elseif ( ! empty( $sections ) && is_array( $sections ) ) {
@@ -828,29 +861,13 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Set members area sections for this plan.
+	 * Returns members area sections for this plan.
 	 *
-	 * TODO remove this method by version 2.0.0 or before WC 2.8 compatibility release update {FN 2016-12-27}
-	 *
-	 * @deprecated since 1.7.4
-	 * @see \WC_Memberships_Membership_Plan::set_members_area_sections()
-	 *
-	 * @since 1.7.0
-	 * @param null|string|array $sections
-	 */
-	public function set_member_area_sections( $sections = null ) {
-		_deprecated_function( __CLASS__ . '::set_member_area_sections()', '1.7.4', __CLASS__ . 'set_members_area_sectinos()' );
-		$this->set_members_area_sections( $sections );
-	}
-
-
-	/**
-	 * Get members area sections for this plan.
-	 *
-	 * @see \wc_memberships_get_members_area_sections()
+	 * @see wc_memberships_get_members_area_sections()
 	 *
 	 * @since 1.4.0
-	 * @return array
+	 *
+	 * @return string[] array of section IDs
 	 */
 	public function get_members_area_sections() {
 
@@ -859,8 +876,9 @@ class WC_Memberships_Membership_Plan {
 		return is_array( $members_area_sections ) ? $members_area_sections : array();
 	}
 
+
 	/**
-	 * Remove the members area sections for this plan.
+	 * Removes the members area sections for this plan.
 	 *
 	 * @since 1.7.4
 	 */
@@ -871,27 +889,12 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Remove the members area sections for this plan.
-	 *
-	 * TODO remove this method by version 2.0.0 or before WC 2.8 compatibility release update {FN 2016-12-27}
-	 *
-	 * @deprecated since 1.7.4
-	 * @see \WC_Memberships_Membership_Plan::delete_members_area_sections()
+	 * Sets the plan's email content.
 	 *
 	 * @since 1.7.0
-	 */
-	public function delete_member_area_sections() {
-		_deprecated_function( __CLASS__ . '::delete_member_area_sections()', '1.7.4',  __CLASS__ . '::delete_members_area_sections()' );
-		$this->delete_members_area_sections();
-	}
-
-
-	/**
-	 * Set memberships plan email content
 	 *
-	 * @since 1.7.0
-	 * @param array|string $email Email to update, or associative array with all emails to update
-	 * @param string $content Content to set, default empty string
+	 * @param array|string $email email to update, or associative array with all emails to update
+	 * @param string $content content to set, default empty string
 	 */
 	public function set_email_content( $email, $content = '' ) {
 
@@ -937,11 +940,12 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get membership plan email content
+	 * Returns the plan's email content.
 	 *
 	 * @since 1.7.0
-	 * @param string $email Which email content to retrieve
-	 * @return string May contain HTML
+	 *
+	 * @param string $email which email content to retrieve
+	 * @return string may contain HTML
 	 */
 	public function get_email_content( $email ) {
 
@@ -956,18 +960,21 @@ class WC_Memberships_Membership_Plan {
 		$email_content = get_post_meta( $this->id, $this->email_content_meta, true );
 
 		if ( empty( $email_content ) || ! isset( $email_content[ $email ] ) ) {
-			return wc_memberships()->get_emails_instance()->get_email_default_content( $email );
+			$email_content = wc_memberships()->get_emails_instance()->get_email_default_content( $email );
 		} else {
-			return is_string( $email_content[ $email ] ) ? $email_content[ $email ] : '';
+			$email_content = is_string( $email_content[ $email ] ) ? $email_content[ $email ] : '';
 		}
+
+		return $email_content;
 	}
 
 
 	/**
-	 * Delete membership plan email content
+	 * Deletes the plan's email content.
 	 *
 	 * @since 1.7.0
-	 * @param string $email Email to delete content for, 'all' or 'any' for all
+	 *
+	 * @param string $email email to delete content for, 'all' or 'any' for all
 	 */
 	public function delete_email_content( $email = '' ) {
 
@@ -998,37 +1005,26 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get membership plan rules
-	 *
-	 * General rules builder & getter.
+	 * Returns the plan's current rules.
 	 *
 	 * @since 1.0.0
-	 * @param string $rule_type Rule type. One of 'content_restriction', 'product_restriction' or 'purchasing_discount'.
-	 * @return array|bool $rules Array of rules or false on error
+	 *
+	 * @param string $rule_type optional rule type: one of 'content_restriction', 'product_restriction' or 'purchasing_discount' (default 'all' to return every rule)
+	 * @param bool $edit fetch all rules when editing or only consider rules applicable when a plan is published (default true)
+	 * @return \WC_Memberships_Membership_Plan_Rule[]
 	 */
-	private function get_rules( $rule_type ) {
+	public function get_rules( $rule_type = 'all', $edit = true ) {
 
 		if ( ! isset( $this->rules[ $rule_type ] ) ) {
 
-			$all_rules = get_option( 'wc_memberships_rules' );
-
 			$this->rules[ $rule_type ] = array();
 
-			if ( ! empty( $all_rules ) ) {
+			$plan_rules = wc_memberships()->get_rules_instance()->get_plan_rules( $this->id, $edit );
 
-				foreach ( $all_rules as $rule ) {
-
-					// skip empty items
-					if ( empty( $rule ) || ! is_array( $rule ) ) {
-						continue;
-					}
-
-					$rule = new WC_Memberships_Membership_Plan_Rule( $rule );
-
-					if ( $rule_type === $rule->get_rule_type()
-					     && (int) $rule->get_membership_plan_id() === (int) $this->id ) {
-
-						$this->rules[ $rule_type ][] = $rule;
+			if ( ! empty( $plan_rules ) ) {
+				foreach ( $plan_rules as $rule_id => $plan_rule ) {
+					if ( 'all' === $rule_type || $plan_rule->is_type( $rule_type ) ) {
+						$this->rules[ $rule_type ][ $rule_id ] = $plan_rule;
 					}
 				}
 			}
@@ -1039,108 +1035,302 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get content restriction rules
+	 * Returns a rule that is part of this plan.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param string $rule_id rule alphanumeric identifier
+	 * @return null|\WC_Memberships_Membership_Plan_Rule
+	 */
+	public function get_rule( $rule_id ) {
+
+		$rule = wc_memberships()->get_rules_instance()->get_rule( $rule_id );
+
+		return $rule && $this->id === $rule->get_membership_plan_id() ? $rule : null;
+	}
+
+
+	/**
+	 * Returns the plan's content restriction rules.
 	 *
 	 * @since 1.0.0
-	 * @return array Array of content restriction rules
+	 *
+	 * @return \WC_Memberships_Membership_Plan_Rule[]
 	 */
 	public function get_content_restriction_rules() {
-		return $this->get_rules( 'content_restriction' );
+		return $this->get_rules( 'content_restriction', false );
 	}
 
 
 	/**
-	 * Get product restriction rules
+	 * Returns the plan's product restriction rules.
 	 *
 	 * @since 1.0.0
-	 * @return array Array of product restriction rules
+	 *
+	 * @return \WC_Memberships_Membership_Plan_Rule[]
 	 */
 	public function get_product_restriction_rules() {
-		return $this->get_rules( 'product_restriction' );
+		return $this->get_rules( 'product_restriction', false );
 	}
 
 
 	/**
-	 * Get purchasing discount rules
+	 * Returns the plan's purchasing discount rules.
 	 *
 	 * @since 1.0.0
-	 * @return array Array of purchasing discount rules
+	 *
+	 * @return \WC_Memberships_Membership_Plan_Rule[]
 	 */
 	public function get_purchasing_discount_rules() {
-		return $this->get_rules( 'purchasing_discount' );
+		return $this->get_rules( 'purchasing_discount', false );
 	}
 
 
 	/**
-	 * Get restricted posts (content or products)
+	 * Sets rules for the plan.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param array|string|\WC_Memberships_Membership_Plan_Rule $rules one or more rules to add or update
+	 */
+	public function set_rules( $rules ) {
+
+		// if matching rules are found they will be updated instead
+		wc_memberships()->get_rules_instance()->add_rules( is_array( $rules ) ? $rules : (array) $rules );
+
+		// clear cached rules
+		$this->rules = array();
+	}
+
+
+	/**
+	 * Removes rules from the plan.
+	 *
+	 * If no rules are specified, will delete all rules for this plan.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param null|array|string|\WC_Memberships_Membership_Plan_Rule $rules optional, specific rules to delete or leave null to wipe all
+	 */
+	public function delete_rules( $rules = null ) {
+
+		if ( null === $rules ) {
+			$rules = $this->get_rules();
+		}
+
+		$rules        = is_array( $rules ) ? $rules : (array) $rules;
+		$delete_rules = array();
+
+		foreach ( $rules as $rule ) {
+
+			if ( is_array( $rule ) && isset( $rule['id'] ) ) {
+				$rule = wc_memberships()->get_rules_instance()->get_rule( $rule['id'] );
+			} elseif ( is_string( $rule ) ) {
+				$rule = wc_memberships()->get_rules_instance()->get_rule( $rule );
+			} elseif ( $rule instanceof WC_Memberships_Membership_Plan_Rule ) {
+				$rule = $rule->get_id();
+			}
+
+			// validate if the rule belongs to the plan
+			if ( $rule instanceof WC_Memberships_Membership_Plan_Rule && $this->id === $rule->get_membership_plan_id() ) {
+				$delete_rules[] = $rule;
+			}
+		}
+
+		if ( ! empty( $delete_rules ) ) {
+
+			wc_memberships()->get_rules_instance()->delete_rules( $delete_rules );
+
+			// clear cached rules
+			$this->rules = array();
+		}
+	}
+
+
+	/**
+	 * Compresses and merges similar rules that could be applied to multiple objects.
+	 *
+	 * As a result deletes redundant rules or discarded duplicates.
+	 *
+	 * @since 1.9.0
+	 */
+	public function compact_rules() {
+
+		$compact_rules = $this->get_compact_rules();
+		$compact_array = array();
+		$all_rules     = $this->get_rules();
+		$rules_array   = array();
+
+		// to be safely deleted as a merge result, we need to convert the objects to arrays
+		foreach ( $compact_rules as $compact_rule ) {
+			$compact_array[ $compact_rule->get_id() ] = $compact_rule->get_raw_data();
+		}
+		foreach ( $all_rules as $rule ) {
+			$rules_array[ $rule->get_id() ] = $rule->get_raw_data();
+		}
+
+		$delete_rules = array_diff_key( $rules_array, $compact_array );
+
+		if ( ! empty( $delete_rules ) ) {
+			$this->delete_rules( $delete_rules );
+		}
+
+		$this->set_rules( $compact_rules );
+	}
+
+
+	/**
+	 * Compacts rules meant for general content and product restriction.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @return \WC_Memberships_Membership_Plan_Rule[]
+	 */
+	private function get_compact_rules() {
+
+		$rules         = $this->get_rules(); // array with all rules
+		$common_rules  = array();            // temporary array to sort rules temporarily
+		$compact_rules = array();            // final array maybe with merged rules
+
+		foreach ( $rules as $rule_id => $rule ) {
+
+			// sanity checks
+			if ( $this->id !== $rule->get_membership_plan_id() ) {
+				continue;
+			} elseif ( $rule->is_new() ) {
+				$rule->set_id();
+			}
+
+			// Build an array key with property values that might be shared by multiple rules.
+			// This leaves out the object IDs (if any) and the membership plan id (presumed to be the same).
+			$common_values = http_build_query( array(
+				'access_schedule'               => $rule->get_access_schedule(),
+				'access_schedule_exclude_trial' => $rule->is_access_schedule_excluding_trial(),
+				'access_type'                   => $rule->get_access_type(),
+				'active'                        => $rule->is_active(),
+				'content_type'                  => $rule->get_content_type(),
+				'content_type_name'             => $rule->get_content_type_name(),
+				'discount_amount'               => $rule->get_discount_amount(),
+				'discount_type'                 => $rule->get_discount_type(),
+				'rule_type'                     => $rule->get_rule_type(),
+			) );
+
+			// Further subdivide rules between those that target higher level content (e.g. a whole taxonomy or post type) and those that target individual objects (posts, terms):
+			if ( ! isset( $common_rules[ $common_values ] ) ) {
+				$common_rules[ $common_values ] = array( 'parent' => array(), 'children' => array() );
+			}
+			if ( $rule->has_objects() ) {
+				$common_rules[ $common_values ]['children'][] = $rule;
+			} else {
+				$common_rules[ $common_values ]['parent'][]   = $rule;
+			}
+		}
+
+		foreach ( $common_rules as $common_group ) {
+
+			/* @type $parent \WC_Memberships_Membership_Plan_Rule[] */
+			$parent   = $common_group['parent'];
+			/* @type $children \WC_Memberships_Membership_Plan_Rule[] */
+			$children = $common_group['children'];
+
+			// If there are rules pertaining higher level content (e.g. a whole post type or taxonomy) then we can discard rules targeting individual objects.
+			// Also, if there are multiple parent groups with the same conditions, we can keep only the first one to avoid duplicates.
+			if ( ! empty( $parent ) ) {
+
+				$rule = reset( $parent );
+
+				$compact_rules[ $rule->get_id() ] = $rule;
+
+				continue;
+			}
+
+			$object_ids = array();
+
+			foreach ( $children as $rule ) {
+				$object_ids = array_unique( array_merge( $object_ids, $rule->get_object_ids() ) );
+			}
+
+			// Similarly, we don't need multiple copies of the rule with the same condition, we only add more IDs to a single one.
+			$rule = reset( $children );
+
+			$rule->set_object_ids( $object_ids );
+
+			$compact_rules[ $rule->get_id() ] = $rule;
+		}
+
+		return $compact_rules;
+	}
+
+
+	/**
+	 * Returns restricted posts (content or products) for the plan.
 	 *
 	 * @since 1.4.0
+	 *
 	 * @param string $type 'content_restriction', 'product_restriction', 'purchasing_discount'
-	 * @param int $paged Pagination (optional)
-	 * @return null|\WP_Query Query results of restricted posts accessible to this membership
+	 * @param int $paged pagination (optional)
+	 * @param array $custom_query_args optional arguments to pass while querying posts before returning results
+	 * @return null|\WP_Query query results of restricted posts accessible to this membership
 	 */
-	private function get_restricted( $type, $paged = 1 ) {
+	private function get_restricted( $type, $paged = 1, $custom_query_args = array() ) {
 
 		$query    = null;
 		$post_ids = array();
-		$rules    = $this->get_rules( $type );
+		$rules    = $this->get_rules( $type, false );
 
 		// sanity check
 		if ( empty( $rules ) || ! is_array( $rules ) ) {
 			return $query;
 		}
 
-		foreach ( $rules as $data ) {
+		foreach ( $rules as $rule ) {
 
-			$plan_rules = (array) $data;
+			if ( $rule->is_content_type( 'post_type' ) ) {
 
-			foreach ( $plan_rules as $rule ) {
+				if ( $rule->has_objects() ) {
 
-				if ( 'post_type' === $rule['content_type'] ) {
+					// specific posts are restricted for this rule
+					$post_ids = array_merge( $post_ids, $rule->get_object_ids() );
 
-					if ( ! empty( $rule['object_ids'] ) ) {
+				} else {
 
-						// specific posts are restricted for this rule
-						$post_ids = array_merge( $post_ids, array_map( 'intval', array_values( $rule['object_ids'] ) ) );
+					// all posts of a type are restricted
+					$post_ids_query = new WP_Query( array(
+						'fields'    => 'ids',
+						'nopaging'  => true,
+						'post_type' => $rule->get_content_type_name(),
+					) );
 
+					$post_ids = ! empty( $post_ids_query->posts ) ? array_merge( $post_ids, array_map( 'intval', $post_ids_query->posts ) ) : $post_ids;
+				}
+
+			} elseif ( $rule->is_content_type( 'taxonomy' ) ) {
+
+				$content_type_name = $rule->get_content_type_name();
+
+				if ( ! empty( $content_type_name ) ) {
+
+					if ( ! $rule->has_objects() ) {
+						$terms = get_terms( $content_type_name, array(
+							'fields' => 'ids',
+						) );
 					} else {
-
-						// all posts of a type are restricted
-						$post_ids_query = new WP_Query( array(
-							'fields'    => 'ids',
-							'nopaging'  => true,
-							'post_type' => $rule['content_type_name'],
-						) );
-
-						$post_ids = ! empty( $post_ids_query->posts ) ? array_merge( $post_ids, array_map( 'intval', $post_ids_query->posts ) ) : $post_ids;
+						$terms = $rule->get_object_ids();
 					}
 
-				} elseif ( 'taxonomy' === $rule['content_type'] ) {
-
-					if ( ! empty( $rule['content_type_name'] ) ) {
-
-						if ( empty( $rule['object_ids'] ) ) {
-							$terms = get_terms( $rule['content_type_name'], array(
-								'fields' => 'ids',
-							) );
-						} else {
-							$terms = $rule['object_ids'];
-						}
-
-						$taxonomy = new WP_Query( array(
-							'fields'    => 'ids',
-							'nopaging'  => true,
-							'tax_query' => array(
-								array(
-									'taxonomy' => $rule['content_type_name'],
-									'field'    => 'term_id',
-									'terms'    => $terms,
-								),
+					$taxonomy = new WP_Query( array(
+						'fields'    => 'ids',
+						'nopaging'  => true,
+						'tax_query' => array(
+							array(
+								'taxonomy' => $content_type_name,
+								'field'    => 'term_id',
+								'terms'    => $terms,
 							),
-						) );
+						),
+					) );
 
-						$post_ids = ! empty( $taxonomy->posts ) ? array_merge( $post_ids, array_map( 'intval', $taxonomy->posts ) ) : $post_ids;
-					}
+					$post_ids = ! empty( $taxonomy->posts ) ? array_merge( $post_ids, array_map( 'intval', $taxonomy->posts ) ) : $post_ids;
 				}
 			}
 		}
@@ -1189,14 +1379,14 @@ class WC_Memberships_Membership_Plan {
 							// but the parent variable product is being restricted
 							// by the rules of another plan the user is not member of
 							if ( ! in_array( $parent_id, $post_ids, false ) ) {
-								$can_list_product = wc_memberships_user_can( get_current_user_id(), 'view', array( 'product' => $parent_id ) );
+								$can_list_product = current_user_can( 'wc_memberships_view_restricted_product', $parent_id );
 							}
 
 							if ( $can_list_product ) {
 								$parent_ids[] = $parent_id;
 							}
 
-						} elseif ( $this->has_product_discount( $product ) || ( 'product_restriction' === $type && wc_memberships_user_can( get_current_user_id(), 'view', array( 'product' => $product_id ) ) ) ) {
+						} elseif ( $this->has_product_discount( $product ) || ( 'product_restriction' === $type && current_user_can( 'wc_memberships_view_restricted_product', $product_id ) ) ) {
 
 							$parent_ids[] = $product_id;
 						}
@@ -1239,18 +1429,17 @@ class WC_Memberships_Membership_Plan {
 				}
 
 				/**
-				 * Filter restricted content query args
+				 * Filters restricted content query args
 				 *
 				 * @since 1.6.3
-				 * @param array $query_args Args passed to WP_Query
-				 * @param string $query_type Type of request: 'content_restriction', 'product_restriction', 'purchasing_discount'
-				 * @param int $query_paged Pagination request
+				 *
+				 * @param array $query_args args passed to WP_Query
+				 * @param string $query_type type of request: 'content_restriction', 'product_restriction', 'purchasing_discount'
+				 * @param int $query_paged pagination request
 				 */
-				$query_args = apply_filters( 'wc_memberships_get_restricted_posts_query_args', $query_args, $type, $paged );
+				$query_args = apply_filters( 'wc_memberships_get_restricted_posts_query_args', array_merge( $query_args, $custom_query_args ), $type, $paged );
 
 				$query = new WP_Query( $query_args );
-
-				return $query;
 			}
 		}
 
@@ -1259,17 +1448,16 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Filters out from an array of products ids
-	 * the products that are marked to ignore member discounts
+	 * Filters out from an array of products IDs the products that are marked to ignore member discounts.
 	 *
 	 * @since 1.7.0
-	 * @param int[] $product_ids Array of WC_Product post ids
-	 * @return int[] Array of product ids
+	 *
+	 * @param int[] $product_ids array of WC_Product post IDs
+	 * @return int[] array of product IDs
 	 */
 	private function filter_products_excluding_member_discounts( array $product_ids ) {
 
-		// get products that are individually marked to be excluded
-		// from member discounts
+		// get products that are individually marked to be excluded from member discounts
 		$excluded_product_ids = get_posts( array(
 			'post_type' => 'product',
 			'post__in'  => $product_ids,
@@ -1283,12 +1471,11 @@ class WC_Memberships_Membership_Plan {
 			),
 		) );
 
-		// subtract products marked as excluded from member discounts
-		// from array of product ids
+		// subtract products marked as excluded from member discounts from array of product ids
 		$product_ids = array_diff( $product_ids, (array) $excluded_product_ids );
 
-		// if we are excluding products on sale from member discounts
-		// we must also check if any of the remainder products are on sale
+		// If we are excluding products on sale from member discounts,
+		// we must also check if any of the remainder products are on sale.
 		$discounts = wc_memberships()->get_member_discounts_instance();
 
 		if ( $discounts && ! empty( $product_ids ) && ( $exclude_on_sale_products = $discounts->excluding_on_sale_products_from_member_discounts() ) ) {
@@ -1298,7 +1485,6 @@ class WC_Memberships_Membership_Plan {
 				if ( $exclude_on_sale_products && $discounts->product_is_on_sale_before_discount( $product_id ) ) {
 
 					foreach ( array_keys( $product_ids, $product_id, true ) as $key ) {
-
 						unset( $product_ids[ $key ] );
 					}
 				}
@@ -1310,46 +1496,53 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get restricted content
+	 * Returns the plan's restricted content.
 	 *
 	 * @since 1.4.0
-	 * @param int $paged Pagination (optional)
+	 *
+	 * @param int $paged pagination (optional)
+	 * @param array $args optional arguments to query posts
 	 * @return \WP_Query
 	 */
-	public function get_restricted_content( $paged = 1 ) {
-		return $this->get_restricted( 'content_restriction', $paged );
+	public function get_restricted_content( $paged = 1, $args = array() ) {
+		return $this->get_restricted( 'content_restriction', $paged, $args  );
 	}
 
 
 	/**
-	 * Get restricted products
+	 * Returns the plan's restricted products.
 	 *
 	 * @since 1.4.0
-	 * @param int $paged Pagination (optional)
+	 *
+	 * @param int $paged pagination (optional)
+	 * @param array $args optional arguments to query posts
 	 * @return \WP_Query
 	 */
-	public function get_restricted_products( $paged = 1 ) {
-		return $this->get_restricted( 'product_restriction', $paged );
+	public function get_restricted_products( $paged = 1, $args = array() ) {
+		return $this->get_restricted( 'product_restriction', $paged, $args  );
 	}
 
 
 	/**
-	 * Get discounted products
+	 * Returns the plan's discounted products.
 	 *
 	 * @since 1.4.0
-	 * @param int $paged Pagination (optional)
+	 *
+	 * @param int $paged pagination (optional)
+	 * @param array $args optional arguments to query posts
 	 * @return \WP_Query
 	 */
-	public function get_discounted_products( $paged = 1 ) {
-		return $this->get_restricted( 'purchasing_discount', $paged );
+	public function get_discounted_products( $paged = 1, $args = array() ) {
+		return $this->get_restricted( 'purchasing_discount', $paged, $args );
 	}
 
 
 	/**
-	 * Check whether the plan offers a discount for the specified product
+	 * Checks whether the plan offers a discount for the specified product.
 	 *
 	 * @since 1.7.1
-	 * @param int|\WC_Product $product The product
+	 *
+	 * @param int|\WC_Product $product the product
 	 * @return bool
 	 */
 	public function has_product_discount( $product ) {
@@ -1358,34 +1551,33 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get product discount fixed amount or percentage
+	 * Returns a product discount fixed amount or percentage based on the current plan rules.
 	 *
 	 * @since 1.4.0
-	 * @param int|\WC_Product $product Product to check discounts for
-	 * @return float|int|string A number as a fixed amount or % percentage amount
+	 *
+	 * @param int|\WC_Product $product product to check discounts for
+	 * @return float|int|string a number as a fixed amount or % percentage amount
 	 */
 	public function get_product_discount( $product ) {
 
 		$member_discount = '';
+		$product_id      = $product instanceof WC_Product ? SV_WC_Product_Compatibility::get_prop( $product, 'id' ) : $product;
+		$discount_rules  = wc_memberships()->get_rules_instance()->get_product_purchasing_discount_rules( $product_id );
 
-		// get all available discounts for this product
-		$product_id    = $product instanceof WC_Product ? SV_WC_Product_Compatibility::get_prop( $product, 'id' ) : $product;
-		$all_discounts = wc_memberships()->get_rules_instance()->get_product_purchasing_discount_rules( $product_id );
-
-		foreach ( $all_discounts as $discount ) {
+		foreach ( $discount_rules as $discount_rule ) {
 
 			// only get discounts that match the current membership plan & are active
-			if ( $discount->is_active() && $this->id == $discount->get_membership_plan_id() ) {
+			if ( $discount_rule->is_active() && $this->id === $discount_rule->get_membership_plan_id() ) {
 
-				switch( $discount->get_discount_type() ) {
+				switch( $discount_rule->get_discount_type() ) {
 
 					case 'percentage' :
-						$member_discount = abs( $discount->get_discount_amount() ) . '%';
+						$member_discount = abs( $discount_rule->get_discount_amount() ) . '%';
 					break;
 
 					case 'amount' :
 					default :
-						$member_discount = abs( $discount->get_discount_amount() );
+						$member_discount = abs( $discount_rule->get_discount_amount() );
 					break;
 				}
 			}
@@ -1396,11 +1588,14 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get the formatted product discount
+	 * Returns the formatted product discount based on current plan rules.
+	 *
+	 * @see \WC_Memberships_Membership_Plan::get_product_discount()
 	 *
 	 * @since 1.7.1
-	 * @param \WC_Product|\WC_Product_Variation $product The product object
-	 * @return string
+	 *
+	 * @param \WC_Product|\WC_Product_Variation $product the product object
+	 * @return string HTML
 	 */
 	public function get_formatted_product_discount( $product ) {
 
@@ -1408,8 +1603,8 @@ class WC_Memberships_Membership_Plan {
 
 		if ( empty( $member_discount ) && ( $child_products = $product->get_children() ) ) {
 
-			// if the product has no discount and it's variable,
-			// check if the variations have direct discounts
+			// If the product has no discount and it's variable,
+			// check if the variations have direct discounts.
 			$child_discounts               = array();
 			$children_fixed_discounts      = array();
 			$children_percentage_discounts = array();					;
@@ -1451,14 +1646,15 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get product discounts range (used for variations)
+	 * Returns a product discounts range (used for variations).
 	 *
 	 * @see \WC_Memberships_Membership_Plan::get_formatted_product_discount()
 	 *
 	 * @since 1.7.1
-	 * @param int[]|float[] $discounts Array of numbers
-	 * @param string $type Type of discount range, 'fixed' amount or 'percentage' amount
-	 * @return string Formatted range
+	 *
+	 * @param int[]|float[] $discounts array of numbers
+	 * @param string $type type of discount range, 'fixed' amount or 'percentage' amount
+	 * @return string HTML formatted range
 	 */
 	private function get_product_from_to_discount( $discounts, $type ) {
 
@@ -1490,11 +1686,12 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get related user memberships
+	 * Returns related user memberships for the current plan.
 	 *
 	 * @since 1.0.0
-	 * @param array $args Optional arguments to pass to `get_posts()` with defaults
-	 * @return \WC_Memberships_User_Membership[] Array of user memberships
+	 *
+	 * @param array $args optional arguments to pass to `get_posts()` with defaults
+	 * @return \WC_Memberships_User_Membership[] array of user memberships
 	 */
 	public function get_memberships( $args = array() ) {
 
@@ -1521,10 +1718,11 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Get number of related memberships
+	 * Returns the number of user memberships related to the current plan.
 	 *
 	 * @since 1.0.0
-	 * @param string|array $status Members statuses to count - optional, defaults to 'any'
+	 *
+	 * @param string|array $status members statuses to count (optional, defaults to 'any')
 	 * @return int
 	 */
 	public function get_memberships_count( $status = 'any' ) {
@@ -1568,9 +1766,10 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Check if the plan has any active user memberships
+	 * Checks if the plan has any active user memberships.
 	 *
 	 * @since 1.0.0
+	 *
 	 * @return bool
 	 */
 	public function has_active_memberships() {
@@ -1579,13 +1778,14 @@ class WC_Memberships_Membership_Plan {
 
 
 	/**
-	 * Grant a user access to this plan from a purchase
+	 * Grants a user access to this plan from a purchase.
 	 *
 	 * @since 1.0.0
-	 * @param int $user_id User ID
-	 * @param int $product_id Product ID
-	 * @param int $order_id Order ID
-	 * @return int|null New/Existing User Membership ID or null on failure
+	 *
+	 * @param int $user_id user ID
+	 * @param int $product_id product ID
+	 * @param int $order_id order ID
+	 * @return int|null new/existing User Membership ID or null on failure
 	 */
 	public function grant_access_from_purchase( $user_id, $product_id, $order_id ) {
 
@@ -1606,13 +1806,12 @@ class WC_Memberships_Membership_Plan {
 		// check if user is perhaps a member, but membership is expired/cancelled
 		if ( wc_memberships_is_user_member( $user_id, $this->id, false ) ) {
 
-			$user_membership    = wc_memberships_get_user_membership( $user_id, $this->id );
-			$user_membership_id = $user_membership->get_id();
-			$past_order_id      = $user_membership->get_order_id();
+			$existing_membership = wc_memberships_get_user_membership( $user_id, $this->id );
+			$user_membership_id  = $existing_membership->get_id();
+			$past_order_id       = $existing_membership->get_order_id();
 
-			// do not allow the same order to renew or reactivate the membership:
-			// this prevents admins changing order statuses
-			// from extending/reactivating the membership
+			// Do not allow the same order to renew or reactivate the membership:
+			// this prevents admins changing order statuses from extending/reactivating the membership.
 			if ( ! empty( $past_order_id ) && (int) $order_id === $past_order_id ) {
 
 				// however, there is an exception when the intended behaviour
@@ -1639,15 +1838,16 @@ class WC_Memberships_Membership_Plan {
 			// otherwise... continue as usual
 			$action = 'renew';
 
-			if ( $user_membership->is_active() || $user_membership->is_delayed() ) {
+			if ( $existing_membership->is_active() || $existing_membership->is_delayed() ) {
 
 				/**
-				 * Filter whether an already active (or delayed) membership will be renewed
+				 * Filter whether an already active (or delayed) membership will be renewed.
 				 *
 				 * @since 1.0.0
-				 * @param bool $renew
-				 * @param WC_Memberships_Membership_Plan $plan
-				 * @param array $args
+				 *
+				 * @param bool $renew whether to renew
+				 * @param WC_Memberships_Membership_Plan $plan the current membership plan
+				 * @param array $args contextual arguments
 				 */
 				$renew_membership = apply_filters( 'wc_memberships_renew_membership', (bool) $this->get_access_length_amount(), $this, array(
 					'user_id'    => $user_id,
@@ -1662,13 +1862,17 @@ class WC_Memberships_Membership_Plan {
 		}
 
 		// create/update the user membership
-		$user_membership = wc_memberships_create_user_membership( array(
-			'user_membership_id' => $user_membership_id,
-			'user_id'            => $user_id,
-			'product_id'         => $product_id,
-			'order_id'           => $order_id,
-			'plan_id'            => $this->id,
-		), $action );
+		try {
+			$user_membership = wc_memberships_create_user_membership( array(
+				'user_membership_id' => $user_membership_id,
+				'user_id'            => $user_id,
+				'product_id'         => $product_id,
+				'order_id'           => $order_id,
+				'plan_id'            => $this->id,
+			), $action );
+		} catch ( SV_WC_Plugin_Exception $e ) {
+			return null;
+		}
 
 		// Add a membership note.
 		if ( 'create' === $action ) {
@@ -1706,11 +1910,12 @@ class WC_Memberships_Membership_Plan {
 		}
 
 		/**
-		 * Fires after a user has been granted membership access from a purchase
+		 * Fires after a user has been granted membership access from a purchase.
 		 *
 		 * @since 1.0.0
-		 * @param \WC_Memberships_Membership_Plan $membership_plan The plan that user was granted access to
-		 * @param array $args
+		 *
+		 * @param \WC_Memberships_Membership_Plan $membership_plan the plan that user was granted access to
+		 * @param array $args contextual arguments
 		 */
 		do_action( 'wc_memberships_grant_membership_access_from_purchase', $this, array(
 			'user_id'            => $user_id,

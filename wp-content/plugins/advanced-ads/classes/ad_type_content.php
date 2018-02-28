@@ -37,8 +37,6 @@ class Advanced_Ads_Ad_Type_Content extends Advanced_Ads_Ad_Type_Abstract{
 		$this->parameters = array(
 			'content' => ''
 		);
-
-		add_filter( 'advanced-ads-save-options', array( $this, 'save_ad_options' ), 10, 2);
 	}
 
 
@@ -75,7 +73,7 @@ class Advanced_Ads_Ad_Type_Content extends Advanced_Ads_Ad_Type_Abstract{
 				'drag_drop_upload' => true
 			);
 			wp_editor( $content, 'advanced-ad-parameters-content', $args );
-		} ?><br class="clear"/><?php
+		} ?><br class="clear"/> <input type="hidden" name="advanced_ad[output][allow_shortcodes]" value="1" /><?php
 		include ADVADS_BASE_PATH . 'admin/views/ad-info-after-textarea.php';
 	}
 
@@ -137,42 +135,4 @@ class Advanced_Ads_Ad_Type_Content extends Advanced_Ads_Ad_Type_Abstract{
 
 		return $output;
 	}
-
-	/**
-	 * Add ad options.
-	 *
-	 * @param array $options Ad options.
-	 * @param obj $ad Advanced_Ads_Ad.
-	 * @retutn array $options Ad options.
-	 */
-	public function save_ad_options( $options, $ad ) {
-		if ( $ad->type === $this->ID ) {
-			$pattern = get_shortcode_regex( array( 'the_ad', 'the_ad_group', 'the_ad_placement' ) );
-			if ( preg_match( '/' . $pattern . '/s', $ad->content, $matches ) ) {
-				$options['output']['has_shortcode'] = true;
-			};
-		}
-		return $options;
-	}
-
-	/**
-	 * Process shortcodes.
-	 *
-	 * @param str $output Ad content.
-	 * @return obj Advanced_Ads_Ad
-	 */
-	private function do_shortcode( $output, Advanced_Ads_Ad $ad ) {
-		$ad_options = $ad->options();
-
-		if ( ! empty( $ad_options['output']['has_shortcode'] ) ) {
-			// Store arguments so that shortcode hooks can access it.
-			$ad_args = $ad->args;
-			$ad_args['shortcode_ad_id'] = $ad->id;
-			$output = preg_replace( '/\[(the_ad_group|the_ad_placement|the_ad)/', '[$1 ad_args="' . urlencode( json_encode( $ad_args ) )  . '"', $output );
-		}
-
-		$output = do_shortcode( $output );
-		return $output;
-	}
-
 }

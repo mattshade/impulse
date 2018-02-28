@@ -121,7 +121,7 @@ class Listify_WP_Job_Manager_Template_Filters {
 			return;
 		}
 
-		echo '<p class="filter-by-type-label">' . __( 'Filter by type:', 'listify' ) . '</p>';
+		echo '<p class="filter-by-type-label">' . __( 'Filter by Capabilities:', 'listify' ) . '</p>';
 	}
 
 	/**

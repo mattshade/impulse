@@ -108,6 +108,7 @@ class Advanced_Ads_Groups_List {
 		$weights = $group->get_ad_weights();
 		$ad_form_rows = $weights;
 		arsort( $ad_form_rows );
+		$max_weight = Advanced_Ads_Group::get_max_ad_weight( $ads->post_count );
 
 		// The Loop
 		if ( $ads->post_count ) {
@@ -116,8 +117,8 @@ class Advanced_Ads_Groups_List {
 				$ad_id = $_ad->ID;
 				$row .= '<tr data-ad-id="'. $ad_id . '"><td>' . $_ad->post_title . '</td><td>';
 				$row .= '<select name="advads-groups['. $group->id . '][ads]['.$_ad->ID.']">';
-				$ad_weight = (isset($weights[$ad_id])) ? $weights[$ad_id] : Advanced_Ads_Group::MAX_AD_GROUP_WEIGHT;
-				for ( $i = 0; $i <= Advanced_Ads_Group::MAX_AD_GROUP_WEIGHT; $i++ ) {
+				$ad_weight = (isset($weights[$ad_id])) ? $weights[$ad_id] : Advanced_Ads_Group::MAX_AD_GROUP_DEFAULT_WEIGHT;
+				for ( $i = 0; $i <= $max_weight; $i++ ) {
 					$row .= '<option ' . selected( $ad_weight, $i, false ) . '>' . $i . '</option>';
 				}
 				$row .= '</select</td><td><button type="button" class="advads-remove-ad-from-group button">x</button></td></tr>';
@@ -130,7 +131,7 @@ class Advanced_Ads_Groups_List {
 
 		$ads_for_select = $this->ads_for_select();
 		$new_ad_weights = '<select class="advads-group-add-ad-list-weights">';
-		for ( $i = 0; $i <= Advanced_Ads_Group::MAX_AD_GROUP_WEIGHT; $i++ ) {
+		for ( $i = 0; $i <= $max_weight; $i++ ) {
 			$new_ad_weights .= '<option ' . selected( 10, $i, false ) . '>' . $i . '</option>';
 		}
 		$new_ad_weights .= '</select>';
@@ -159,39 +160,33 @@ class Advanced_Ads_Groups_List {
 				$ads->the_post();
 				$line_output = '<li><a href="' . get_edit_post_link( get_the_ID() ) . '">' . get_the_title() . '</a>';
 
-				$_weight = (isset($weights[get_the_ID()])) ? $weights[get_the_ID()] : Advanced_Ads_Group::MAX_AD_GROUP_WEIGHT;
+				$_weight = (isset($weights[get_the_ID()])) ? $weights[get_the_ID()] : Advanced_Ads_Group::MAX_AD_GROUP_DEFAULT_WEIGHT;
 				if ( $group->type == 'default' && $weight_sum ) {
 					$line_output .= '<span class="ad-weight" title="'.__( 'Ad weight', 'advanced-ads' ).'">' . number_format( ($_weight / $weight_sum) * 100 ) .'%</span>';
 				}
 
 				$ad = new Advanced_Ads_Ad( get_the_ID() );
 				$expiry_date_format = get_option( 'date_format' ). ', ' . get_option( 'time_format' );
-				$post_start = get_the_date('Y-m-d H:i:s', $ad->id );
+				
+				$post_start = get_post_time( 'U', true, $ad->id );
 				
 				$tz_option = get_option( 'timezone_string' );
-				if ( $tz_option ) {
-					$post_start = date_create( $post_start, Advanced_Ads_Admin::get_wp_timezone() );
-					$post_start = absint( $post_start->format( 'U' ) );
-				} else {
-					$post_start = date_create( $post_start );
-					$post_start = absint( $post_start->format( 'U' ) );
-					$tz_name = Advanced_Ads_Admin::timezone_get_name( Advanced_Ads_Admin::get_wp_timezone() );
-					$tz_offset = substr( $tz_name, 3 );
-					$off_time = date_create( '2017-09-21 T10:44:02' . $tz_offset );
-					$offset_in_sec = date_offset_get( $off_time );
-					$post_start -= $offset_in_sec;
-				}
 				
 				if ( $post_start > time() ) {
-					$line_output .= '<br />' . sprintf( __( 'starts %s', 'advanced-ads' ), date( $expiry_date_format, $post_start ) );
+					$line_output .= '<br />' . sprintf( __( 'starts %s', 'advanced-ads' ), get_date_from_gmt( date( 'Y-m-d H:i:s', $post_start ), $expiry_date_format ) );
 				}
 				if ( isset( $ad->expiry_date ) && $ad->expiry_date ) {
 					$expiry = $ad->expiry_date;
                     $expiry_date = date_create( '@' . $expiry );
                     
+					
                     if ( $tz_option ) {
                         $expiry_date->setTimezone( Advanced_Ads_Admin::get_wp_timezone() );
                     } else {
+						$tz_name = Advanced_Ads_Admin::timezone_get_name( Advanced_Ads_Admin::get_wp_timezone() );
+						$tz_offset = substr( $tz_name, 3 );
+						$off_time = date_create( '2017-09-21 T10:44:02' . $tz_offset );
+						$offset_in_sec = date_offset_get( $off_time );
                         $expiry_date = date_create( '@' . ( $expiry + $offset_in_sec ) );
                     }
 					
@@ -398,7 +393,7 @@ class Advanced_Ads_Groups_List {
 
 			return new WP_Error( 'invalid_ad_group', __( 'Invalid Ad Group', 'advanced-ads' ) );
 		}
-
+		
 		// check user rights
 		if( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads') ) ) {
 			return new WP_Error( 'invalid_ad_group_rights', __( 'You don’t have permission to change the ad groups', 'advanced-ads' ) );
@@ -430,12 +425,27 @@ class Advanced_Ads_Groups_List {
 
 				$group = new Advanced_Ads_Group( $_group['id'] );
 				if ( isset( $_group['ads'] ) && is_array( $_group['ads'] ) ) {
+					foreach ( $_group['ads'] as $_ad_id => $_ad_weight ) {
+						
+						/**
+						 * check if this ad is representing the current group and remove it in this case
+						 * could cause an infinite loop otherwise
+						 * see also /classes/ad_type_group.php::remove_from_ad_group()
+						 */
+						$ad = new Advanced_Ads_Ad( $_ad_id );
+						if( isset( $ad->type ) 
+							&& 'group' === $ad->type 
+							&& isset( $ad->output['group_id'] )
+							&& absint( $ad->output['group_id'] ) == $_group_id
+							){
+						    unset( $_group['ads'][ $_ad_id ] );
+						} else {
+						    $ad_groups_assoc[ $_ad_id ][] = (int) $_group_id;
+						}
+					}
+					
 					// save ad weights
 					$group->save_ad_weights( $_group['ads'] );
-
-					foreach ( $_group['ads'] as $_ad_id => $_ad_weight ) {
-						$ad_groups_assoc[ $_ad_id ][] = (int) $_group_id;
-					}
 				}
 
 				// save other attributes

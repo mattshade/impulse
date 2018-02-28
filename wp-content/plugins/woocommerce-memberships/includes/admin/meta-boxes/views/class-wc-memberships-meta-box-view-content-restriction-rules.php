@@ -19,7 +19,7 @@
  * @package   WC-Memberships/Admin/Meta-Boxes
  * @author    SkyVerge
  * @category  Admin
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
@@ -98,7 +98,7 @@ class WC_Memberships_Meta_Box_View_Content_Restriction_Rules extends WC_Membersh
 			$membership_plans = $this->meta_box->get_available_membership_plans();
 
 			?>
-			<tbody class="norules <?php if ( count( $content_restriction_rules ) > 1 ) : ?>hide<?php endif; ?>">
+			<tbody class="norules <?php if ( count( $membership_plans ) > 0 && count( $content_restriction_rules ) > 1 ) : ?>hide<?php endif; ?>">
 				<tr>
 					<td colspan="<?php echo ( 'wc_membership_plan' === $this->post->post_type ) ? 4 : 3; ?>">
 						<?php

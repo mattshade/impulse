@@ -18,16 +18,16 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Memberships shortcodes
+ * Memberships shortcodes.
  *
- * This class is responsible for adding and handling shortcodes for Memberships
+ * This class is responsible for adding and handling shortcodes for Memberships.
  *
  * @since 1.0.0
  */
@@ -35,7 +35,7 @@ class WC_Memberships_Shortcodes {
 
 
 	/**
-	 * Initialize and register the Memberships post types
+	 * Initializes and registers Memberships shortcodes.
 	 *
 	 * @since 1.0.0
 	 */
@@ -50,26 +50,27 @@ class WC_Memberships_Shortcodes {
 		foreach ( $shortcodes as $shortcode => $function ) {
 
 			/**
-			 * Filter the shortcode tag
+			 * Filter a Memberships shortcode tag.
 			 *
 			 * @since 1.0.0
-			 * @param string $shortcode Shortcode tag
+			 *
+			 * @param string $shortcode shortcode tag
 			 */
 			add_shortcode( apply_filters( "{$shortcode}_shortcode_tag", $shortcode ), $function );
 		}
-
 	}
 
 
 	/**
-	 * Restrict content shortcode
+	 * Restrict content shortcode.
 	 *
 	 * @internal
 	 *
 	 * @since 1.0.0
-	 * @param array $atts Shortcode attributes
-	 * @param string|null $content
-	 * @return string Shortcode result
+	 *
+	 * @param array $atts shortcode attributes
+	 * @param string|null $content the content
+	 * @return string HTML output
 	 */
 	public static function restrict( $atts, $content = null ) {
 
@@ -78,7 +79,7 @@ class WC_Memberships_Shortcodes {
 		}
 
 		if ( isset( $atts['start_after_trial'] ) ) {
-			$atts['start_after_trial'] = 'yes' == $atts['start_after_trial'];
+			$atts['start_after_trial'] = 'yes' === $atts['start_after_trial'];
 		}
 
 		$atts = shortcode_atts( array(
@@ -96,102 +97,92 @@ class WC_Memberships_Shortcodes {
 
 
 	/**
-	 * Nonmember content shortcode
+	 * Nonmember content shortcode.
+	 *
+	 * When no attributes are specified, only non-members (including non-active members of any plan) will see shortcode content.
+	 * When a `plans` attribute is used, non-members but also members who are not in the plans specified will see the content.
 	 *
 	 * @internal
 	 *
 	 * @since 1.1.0
-	 * @param array $atts Shortcode attributes
-	 * @param string|null $content
-	 * @return string Shortcode result
+	 *
+	 * @param array $atts shortcode attributes
+	 * @param string|null $content the shortcode content
+	 * @return string content intended to non-members (or empty string)
 	 */
 	public static function nonmember( $atts, $content = null ) {
 
-		// Hide non-member messages for super users
-		if ( current_user_can( 'wc_memberships_access_all_restricted_content' ) ) {
-			return '';
+		$non_member_content = '';
+
+		// hide non-member messages for super users
+		if ( ! current_user_can( 'wc_memberships_access_all_restricted_content' ) ) {
+
+			$plans         = wc_memberships_get_membership_plans();
+			$exclude_plans = array();
+			$non_member    = true;
+
+			// handle optional shortcode attribute
+			if ( ! empty( $atts['plans'] ) ) {
+				$exclude_plans = array_map( 'trim', explode( ',', $atts['plans'] ) );
+			}
+
+			foreach ( $plans as $plan ) {
+
+				// excluded plans can use plan IDs or slugs
+				if ( ! empty( $exclude_plans ) && ! in_array( $plan->get_id(), $exclude_plans, false ) && ! in_array( $plan->get_slug(), $exclude_plans, false ) ) {
+					continue;
+				}
+
+				if ( wc_memberships_is_user_active_member( get_current_user_id(), $plan ) ) {
+					$non_member = false;
+					break;
+				}
+			}
+
+			if ( $non_member ) {
+				$non_member_content = do_shortcode( $content );
+			}
 		}
 
-		$plans         = wc_memberships_get_membership_plans();
-		$active_member = array();
-
-		foreach ( $plans as $plan ) {
-			$active_member[] = wc_memberships_is_user_active_member( get_current_user_id(), $plan );
-		}
-
-		ob_start();
-
-		if ( ! in_array( true, $active_member, true ) ) {
-			echo do_shortcode( $content );
-		}
-
-		return ob_get_clean();
+		return $non_member_content;
 	}
 
 
 	/**
-	 * Restricted content messages
+	 * Restricted content messages shortcode.
 	 *
 	 * @internal
 	 *
 	 * @since 1.0.0
-	 * @param array $atts Shortcode attributes
-	 * @param string|null $content
-	 * @return string Shortcode result
+	 *
+	 * @param array $atts shortcode attributes
+	 * @param string|null $content content
+	 * @return string HTML shortcode result
 	 */
 	public static function content_restricted( $atts, $content = null ) {
 
-		// Get the restricted post
-		$post_id = isset( $_GET['r'] ) ? absint( $_GET['r'] ) : null;
-
-		// Skip if post ID not provided
-		if ( ! $post_id ) {
-			return '';
-		}
-
-		$post = get_post( $post_id );
-
-		// Skip if post was not found
-		if ( ! $post ) {
-			return '';
-		}
-
 		$output = '';
 
-		// Special handling for products
-		if ( in_array( get_post_type( $post_id ), array( 'product', 'product_variation' ), true ) ) {
+		if ( $post_id = isset( $_GET['r'] ) ? absint( $_GET['r'] ) : null ) {
 
-			if ( 'yes' === get_option( 'wc_memberships_show_excerpts' ) ) {
-				$output = apply_filters( 'woocommerce_short_description', $post->post_excerpt );
-			}
+			$post    = get_post( $post_id );
+			$product = wc_get_product( $post_id );
 
-			// Check if user has access to viewing restricted content
-			if ( ! current_user_can( 'wc_memberships_view_restricted_product', $post->ID ) ) {
-				$output .= '<div class="wc-memberships-content-restricted-message">' . wc_memberships()->get_frontend_instance()->get_product_viewing_restricted_message( $post->ID ) . '</div>';
-			}
+			if ( $product instanceof WC_Product ) {
 
-			// Check if user has access to delayed content
-			else if ( ! current_user_can( 'wc_memberships_view_delayed_post_content', $post->ID ) ) {
-				$output .= '<div class="wc-memberships-content-delayed-message">' . wc_memberships()->get_frontend_instance()->get_content_delayed_message( get_current_user_id(), $post->ID, 'view' ) . '</div>';
-			}
+				if ( ! current_user_can( 'wc_memberships_view_restricted_product', $product->get_id() ) ) {
+					$output .= WC_Memberships_User_Messages::get_message_html( 'product_viewing_restricted', array( 'post' => $post ) );
+				} elseif ( ! current_user_can( 'wc_memberships_view_delayed_post_content', $product->get_id() ) ) {
+					$output .= WC_Memberships_User_Messages::get_message_html( 'product_access_delayed', array( 'post' => $post ) );
+				}
 
-		// All other content
-		} else {
+			} elseif ( $post instanceof WP_Post ) {
 
-			if ( 'yes' === get_option( 'wc_memberships_show_excerpts' ) ) {
-				$output = apply_filters( 'get_the_excerpt', $post->post_excerpt );
-			}
-
-			// Check if user has access to restricted content
-			if ( ! current_user_can( 'wc_memberships_view_restricted_post_content', $post->ID ) ) {
-
-				$output .= '<div class="wc-memberships-content-restricted-message">' . wc_memberships()->get_frontend_instance()->get_content_restricted_message( $post->ID ) . '</div>';
-
-			// Check if user has access to delayed content
-			} elseif ( ! current_user_can( 'wc_memberships_view_delayed_post_content', $post->ID ) ) {
-
-				$output .= '<div class="wc-memberships-content-delayed-message">' . wc_memberships()->get_frontend_instance()->get_content_delayed_message( get_current_user_id(), $post->ID ) . '</div>';
-
+				if ( ! current_user_can( 'wc_memberships_view_restricted_post_content', $post->ID ) ) {
+					$output .= WC_Memberships_User_Messages::get_message_html( 'content_restricted', array( 'post' => $post ) );
+				} elseif ( ! current_user_can( 'wc_memberships_view_delayed_post_content', $post->ID ) ) {
+					$output .= WC_Memberships_User_Messages::get_message_html( 'content_delayed', array( 'post' => $post ) );
+				}
 			}
 		}
 

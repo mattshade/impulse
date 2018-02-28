@@ -18,7 +18,7 @@ get_header(); ?>
 	<div id="primary" class="container">
 		<div class="row content-area">
 
-			<main id="main" class="site-main col-md-8 col-sm-7 col-xs-12" role="main">
+			<main id="main" class="site-main  col-xs-12" role="main">
 
 				<?php if ( listify_has_integration( 'woocommerce' ) ) : ?>
 					<?php wc_print_notices(); ?>

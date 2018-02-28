@@ -121,4 +121,25 @@ class Advanced_Ads_Ad_Type_Abstract {
 		return $ad->content;
 	}
 
+	/**
+	 * Process shortcodes.
+	 *
+	 * @param str $output Ad content.
+	 * @return obj Advanced_Ads_Ad
+	 * @return bool force_aa Whether to force Advanced ads shortcodes processing.
+	 */
+	protected function do_shortcode( $output, Advanced_Ads_Ad $ad ) {
+		$ad_options = $ad->options();
+
+		if ( ! isset( $ad_options['output']['has_shortcode'] ) || $ad_options['output']['has_shortcode'] ) {
+			// Store arguments so that shortcode hooks can access it.
+			$ad_args = $ad->args;
+			$ad_args['shortcode_ad_id'] = $ad->id;
+			$output = preg_replace( '/\[(the_ad_group|the_ad_placement|the_ad)/', '[$1 ad_args="' . urlencode( json_encode( $ad_args ) )  . '"', $output );
+		}
+
+		$output = do_shortcode( $output );
+		return $output;
+	}
+
 }

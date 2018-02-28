@@ -7,19 +7,35 @@ jQuery( document ).ready(function () {
 	 * ADMIN NOTICES
 	 */
 	// close button
-	jQuery(document).on('click', '.advads-admin-notice button.notice-dismiss', function(){
+	// .advads-notice-dismiss class can be used to add a custom close button (e.g., link)
+	jQuery(document).on('click', '.advads-admin-notice button.notice-dismiss, .advads-admin-notice .advads-notice-dismiss', function(){
 	    var messagebox = jQuery(this).parents('.advads-admin-notice');
 	    if( messagebox.attr('data-notice') === undefined) return;
 
 	    var query = {
 		action: 'advads-close-notice',
-		notice: messagebox.attr('data-notice')
+		notice: messagebox.attr('data-notice'),
+		nonce: advadsglobal.ajax_nonce
 	    };
 	    // send query
 	    jQuery.post(ajaxurl, query, function (r) {
-		// messagebox.fadeOut();
+		messagebox.fadeOut();
 	    });
+	});
+	// hide notice for 7 days
+	jQuery(document).on('click', '.advads-admin-notice .advads-notice-hide', function(){
+	    var messagebox = jQuery(this).parents('.advads-admin-notice');
+	    if( messagebox.attr('data-notice') === undefined) return;
 
+	    var query = {
+		action: 'advads-hide-notice',
+		notice: messagebox.attr('data-notice'),
+		nonce: advadsglobal.ajax_nonce
+	    };
+	    // send query
+	    jQuery.post(ajaxurl, query, function (r) {
+		messagebox.fadeOut();
+	    });
 	});
 	// autoresponder button
 	jQuery('.advads-notices-button-subscribe').click(function(){
@@ -29,7 +45,8 @@ jQuery( document ).ready(function () {
 
 	    var query = {
 		action: 'advads-subscribe-notice',
-		notice: this.dataset.notice
+		notice: this.dataset.notice,
+		nonce: advadsglobal.ajax_nonce
 	    };
 	    // send and close message
 	    jQuery.post(ajaxurl, query, function (r) {
@@ -80,7 +97,6 @@ jQuery( document ).ready(function () {
 		document.cookie = "advads_hide_deactivate_feedback=1; expires=" + exdate.toUTCString() + "; path=/";
 		// save if plugin should be disabled
 		var disable_plugin = self.hasClass('advanced-ads-feedback-not-deactivate') ? false : true;
-		
 			
 		jQuery( '#advanced-ads-feedback-overlay' ).hide();
 		if ( self.hasClass('advanced-ads-feedback-submit') ) {
@@ -140,6 +156,7 @@ function advads_load_dashboard_rss_widget_content(){
 		url: ajaxurl,
 		data: {
 		    action: 'advads_load_rss_widget_content',
+		    nonce: advadsglobal.ajax_nonce
 		},
 		success: function (data, textStatus, XMLHttpRequest) {
 			if (data) {

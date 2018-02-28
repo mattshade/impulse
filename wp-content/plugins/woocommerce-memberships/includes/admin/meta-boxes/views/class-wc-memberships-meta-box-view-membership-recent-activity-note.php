@@ -19,14 +19,14 @@
  * @package   WC-Memberships/Admin/Meta-Boxes
  * @author    SkyVerge
  * @category  Admin
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * View for a membership recent activity note
+ * View for a membership recent activity note.
  *
  * @since 1.7.0
  */
@@ -34,19 +34,20 @@ class WC_Memberships_Meta_Box_View_Membership_Recent_Activity_Note extends WC_Me
 
 
 	/**
-	 * HTML Output
+	 * Outputs HTML.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param array $args
 	 */
 	public function output( $args = array() ) {
 
-		// get args
-		$membership_plan = isset( $args['plan'] )            ? $args['plan']            : null;
-		$note            = isset( $args['note'] )            ? $args['note']            : null;
-		$note_classes    = isset( $args['note_classes'] )    ? $args['note_classes']    : array( 'note' );
+		// parse args
+		$membership_plan = isset( $args['plan'] )         ? $args['plan']         : null;
+		$note            = isset( $args['note'] )         ? $args['note']         : null;
+		$note_classes    = isset( $args['note_classes'] ) ? $args['note_classes'] : array( 'note' );
 
-		if ( is_object( $membership_plan ) && is_object( $note ) ) :
+		if ( $membership_plan instanceof WC_Memberships_Membership_Plan && is_object( $note ) ) :
 
 			?>
 			<li rel="<?php echo absint( $note->comment_ID ) ; ?>" class="<?php echo implode( ' ', array_map( 'sanitize_html_class', $note_classes ) ); ?>">

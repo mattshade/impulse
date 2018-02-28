@@ -12,6 +12,9 @@
  */
 class WC_NYP_Meta_Box_Product_Data {
 
+	/**
+	 * Deprecated 2.7.0, use WC_Name_Your_Price_Helpers::get_simple_supported_types()
+	 */
 	static $simple_supported_types = array( 'simple', 'subscription', 'bundle', 'composite', 'deposit', 'mix-and-match' );
 
 	/**
@@ -21,22 +24,22 @@ class WC_NYP_Meta_Box_Product_Data {
 	 */
 	public static function init() {
 
-		// Product Meta boxes
+		// Product Meta boxes.
 		add_filter( 'product_type_options', array( __CLASS__, 'product_type_options' ) );
 		add_action( 'woocommerce_product_options_general_product_data', array( __CLASS__, 'add_to_metabox' ) );
 		add_action( 'woocommerce_admin_process_product_object', array( __CLASS__, 'save_product_meta' ) );
 
-		// Variable Product
+		// Variable Product.
 		add_action( 'woocommerce_variation_options', array( __CLASS__, 'product_variations_options' ), 10, 3 );
 		add_action( 'woocommerce_product_after_variable_attributes', array( __CLASS__, 'add_to_variations_metabox'), 10, 3 );
 
-		// save NYP variations
+		// Save NYP variations.
 		add_action( 'woocommerce_save_product_variation', array( __CLASS__, 'save_product_variation' ), 30, 2 );
 
-		// Variable Bulk Edit
+		// Variable Bulk Edit.
 		add_action( 'woocommerce_variable_product_bulk_edit_actions', array( __CLASS__, 'bulk_edit_actions' ) );
 
-		// Handle bulk edits to data in WC 2.4+
+		// Handle bulk edits to data in WC 2.4+.
 		add_action( 'woocommerce_bulk_edit_variations', array( __CLASS__, 'bulk_edit_variations' ), 10, 4 );
 
 	}
@@ -46,7 +49,7 @@ class WC_NYP_Meta_Box_Product_Data {
 	/* Write Panel / metabox */
 	/*-----------------------------------------------------------------------------------*/
 
-	/*
+	/**
 	 * Add checkbox to product data metabox title
 	 *
 	 * @param array $options
@@ -67,7 +70,7 @@ class WC_NYP_Meta_Box_Product_Data {
 
 	}
 
-	/*
+	/**
 	 * Add text inputs to product metabox
 	 *
 	 * @return print HTML
@@ -78,14 +81,14 @@ class WC_NYP_Meta_Box_Product_Data {
 
 		$product = wc_get_product( $post->ID );
 
-		// if variable billing is enabled, continue to show options. otherwise, deprecate
-		$show_billing_period_options = wc_string_to_bool( $product->get_meta( '_variable_billing' ) );
+		// If variable billing is enabled, continue to show options. Otherwise, deprecate.
+		$show_billing_period_options = apply_filters( 'wc_nyp_supports_variable_billing_period', wc_string_to_bool( $product->get_meta( '_variable_billing' ) ), $post->ID );
 		
 		echo '<div class="options_group show_if_nyp">';
 
 			if( class_exists( 'WC_Subscriptions' ) && $show_billing_period_options ) {
 
-				// make billing period variable
+				// Make billing period variable.
 				woocommerce_wp_checkbox( array(
 						'id' => '_variable_billing',
 						'wrapper_class' => 'show_if_subscription',
@@ -93,7 +96,7 @@ class WC_NYP_Meta_Box_Product_Data {
 						'description' => __( 'Allow the customer to set the billing period.', 'wc_name_your_price' ) ) );
 			}
 
-			// Suggested Price
+			// Suggested Price.
 			woocommerce_wp_text_input( array(
 				'id' => '_suggested_price',
 				'class' => 'wc_input_price short',
@@ -105,34 +108,44 @@ class WC_NYP_Meta_Box_Product_Data {
 
 			if( class_exists( 'WC_Subscriptions' ) && $show_billing_period_options ) {
 
-				// Suggested Billing Period
+				// Suggested Billing Period.
 				woocommerce_wp_select( array(
 					'id'          => '_suggested_billing_period',
 					'label'       => __( 'per', 'wc_name_your_price' ),
+					'wrapper_class' => 'show_if_subscription',
 					'options'     => WC_Name_Your_Price_Helpers::get_subscription_period_strings()
 					)
 				);
 			}
 
-			// Minimum Price
+			// Minimum Price.
 			woocommerce_wp_text_input( array(
 				'id' => '_min_price',
 				'class' => 'wc_input_price short',
-				'label' => __( 'Minimum Price', 'wc_name_your_price') . ' ('.get_woocommerce_currency_symbol().')',
+				'label' => __( 'Minimum Price', 'wc_name_your_price') . ' (' . get_woocommerce_currency_symbol() . ')',
 				'desc_tip' => 'true',
 				'description' =>  __( 'Lowest acceptable price for product. Leave blank to not enforce a minimum. Must be less than or equal to the set suggested price.', 'wc_name_your_price' ),
 				'data_type' => 'price'
 			) );
 
 			if( class_exists( 'WC_Subscriptions' ) && $show_billing_period_options ) {
-				// Minimum Billing Period
+				// Minimum Billing Period.
 				woocommerce_wp_select( array(
 					'id'          => '_minimum_billing_period',
 					'label'       => __( 'per', 'wc_name_your_price' ),
+					'wrapper_class' => 'show_if_subscription',
 					'options'     => WC_Name_Your_Price_Helpers::get_subscription_period_strings()
 					)
 				);
 			}
+
+
+			// Option to hide minimum price.
+			woocommerce_wp_checkbox( array(
+				'id' => '_hide_nyp_minimum',
+				'label' => __( 'Hide the minimum price', 'wc_name_your_price' ),
+				'description' => __( 'Option to not show the minimum price on the front end.', 'wc_name_your_price' ) ) 
+			);
 
 			do_action( 'woocommerce_name_your_price_options_pricing' );
 
@@ -141,7 +154,7 @@ class WC_NYP_Meta_Box_Product_Data {
 	  }
 
 
-	/*
+	/**
 	 * Save extra meta info
 	 *
 	 * @param object $product
@@ -152,10 +165,10 @@ class WC_NYP_Meta_Box_Product_Data {
 
 	   	$suggested = $minimum = '';
 
-	   	if ( isset( $_POST['_nyp'] ) && in_array( $product->get_type(), self::$simple_supported_types) ) {
+	   	if ( isset( $_POST['_nyp'] ) && in_array( $product->get_type(), WC_Name_Your_Price_Helpers::get_simple_supported_types() ) ) {
 			$product->update_meta_data( '_nyp', 'yes' );
 			// Removing the sale price removes NYP items from Sale shortcodes.
-			$product->update_meta_data( '_sale_price', '' );
+			$product->set_sale_price( '' );
 			$product->delete_meta_data( '_has_nyp' );
 		} else {
 			$product->update_meta_data( '_nyp', 'no' );
@@ -194,7 +207,7 @@ class WC_NYP_Meta_Box_Product_Data {
 		if ( isset( $_POST['_variable_billing'] ) && $product->is_type( 'subscription' ) ) {
 			$product->update_meta_data( '_variable_billing', 'yes' );
 		} else {
-			$product->update_meta_data( '_variable_billing', 'no' );
+			$product->delete_meta_data( '_variable_billing' );
 		}
 
 		// Suggested period - don't save if no suggested price.
@@ -203,6 +216,8 @@ class WC_NYP_Meta_Box_Product_Data {
 			$suggested_period = wc_clean( $_POST['_suggested_billing_period'] );
 
 			$product->update_meta_data( '_suggested_billing_period', $suggested_period );
+		} else {
+			$product->delete_meta_data( '_suggested_billing_period' );
 		}
 
 		// Minimum period - don't save if no minimum price.
@@ -211,12 +226,14 @@ class WC_NYP_Meta_Box_Product_Data {
 			$minimum_period = wc_clean( $_POST['_minimum_billing_period'] );
 
 			$product->update_meta_data( '_minimum_billing_period', $minimum_period );
+		} else {
+			$product->delete_meta_data( '_minimum_billing_period' );
 		}
 
 	}
 
 
-	/*
+	/**
 	 * Add NYP checkbox to each variation
 	 *
 	 * @param string $loop
@@ -237,7 +254,7 @@ class WC_NYP_Meta_Box_Product_Data {
 
 	}
 
-	/*
+	/**
 	 * Add NYP price inputs to each variation
 	 *
 	 * @param string $loop
@@ -269,7 +286,7 @@ class WC_NYP_Meta_Box_Product_Data {
 
 	}
 
-	/*
+	/**
 	 * Save extra meta info for variable products
 	 *
 	 * @param int $variation_id
@@ -297,7 +314,7 @@ class WC_NYP_Meta_Box_Product_Data {
 			$variation_min_price = ( trim( $_POST['variation_min_price'][$i]  ) === '' ) ? '' : wc_format_decimal( $_POST['variation_min_price'][$i] );
 			$variation->update_meta_data( '_min_price', $variation_min_price );
 
-			// if NYP, set prices to minimum.
+			// If NYP, set prices to minimum.
 			if( $variation_is_nyp == 'yes' ){
 				$new_price = $variation_min_price === '' ? 0 : wc_format_decimal( $variation_min_price );
 				$variation->set_price( $new_price );
@@ -315,7 +332,7 @@ class WC_NYP_Meta_Box_Product_Data {
 			WC_Admin_Meta_Boxes::add_error( __( 'The minimum price should not be higher than the suggested price for Name Your Price variations. Please review your prices.', 'wc_name_your_price' ) );
 		}
 
-		// save the meta
+		// Save the meta.
 		$variation->save();
 
 	}
@@ -324,7 +341,7 @@ class WC_NYP_Meta_Box_Product_Data {
 	/* Bulk Edit */
 	/*-----------------------------------------------------------------------------------*/
 
-	/*
+	/**
 	 * Add options to variations bulk edit
 	 *
 	 * @return print HTML
@@ -362,7 +379,7 @@ class WC_NYP_Meta_Box_Product_Data {
 				foreach ( $variation_ids as $variation_id ) {
 					$variation = wc_get_product( $variation_id );
 					$_nyp = $variation->get_meta( '_nyp' );
-					// check for definitive 'yes' as new variations will have null values for _nyp meta key
+					// Check for definitive 'yes' as new variations will have null values for _nyp meta key.
 					$is_nyp = 'yes' === $_nyp ? 'no' : 'yes';
 					$variation->update_meta_data( '_nyp', wc_clean( $is_nyp ) );
 					$variation->save_meta_data();
@@ -390,7 +407,7 @@ class WC_NYP_Meta_Box_Product_Data {
 					$variation = wc_get_product( $variation_id );
 					if( WC_Name_Your_Price_Helpers::is_nyp( $variation ) ) {
 						$variation->update_meta_data( $meta_key, wc_format_decimal( $new_price ) );
-						// set minimum price as regular price
+						// Set minimum price as regular price.
 						$variation->set_price( $new_price );
 						$variation->set_regular_price( $new_price );
 						$variation->set_sale_price( '' );
@@ -433,7 +450,7 @@ class WC_NYP_Meta_Box_Product_Data {
 							$new_price = $price + $data['value'];
 						}
 						$variation->update_meta_data( $meta_key, wc_format_decimal( $new_price ) );
-						// set minimum price as regular price
+						// Set minimum price as regular price.
 						$variation->set_price( $new_price );
 						$variation->set_regular_price( $new_price );
 						$variation->set_sale_price( '' );
@@ -476,7 +493,7 @@ class WC_NYP_Meta_Box_Product_Data {
 							$new_price = $price - $data['value'];
 						}
 						$variation->update_meta_data( $meta_key, wc_format_decimal( $new_price ) );
-						// set minimum price as regular price
+						// Set minimum price as regular price.
 						$variation->set_price( $new_price );
 						$variation->set_regular_price( $new_price );
 						$variation->set_sale_price( '' );

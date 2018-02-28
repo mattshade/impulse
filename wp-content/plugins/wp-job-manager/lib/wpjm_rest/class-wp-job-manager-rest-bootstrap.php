@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * This is the entry point for.
  */
 class WP_Job_Manager_REST_Bootstrap {
-	const MINIMUM_PHP_VERSION = '5.3.0';
+	const MINIMUM_PHP_VERSION = '5.2.0';
 
 	/**
 	 * The Environment we will use
@@ -48,8 +48,17 @@ class WP_Job_Manager_REST_Bootstrap {
 	 *
 	 * @return bool
 	 */
-	public function is_compatible() {
+	public static function is_compatible() {
 		return version_compare( phpversion(), self::MINIMUM_PHP_VERSION, '>=' );
+	}
+
+	/**
+	 * Get Base Dir
+	 *
+	 * @return string
+	 */
+	public static function get_base_dir() {
+		return untrailingslashit( dirname( __FILE__ ) );
 	}
 
 	/**
@@ -63,10 +72,24 @@ class WP_Job_Manager_REST_Bootstrap {
 			include_once( 'interfaces/class-wp-job-manager-rest-interfaces-classloader.php' );
 			include_once( 'class-wp-job-manager-rest-classloader.php' );
 			$prefix = str_replace( '_Bootstrap', '', __CLASS__ );
-			$base_dir = untrailingslashit( dirname( __FILE__ ) );
+			$base_dir = self::get_base_dir();
 			$class_loader = new WP_Job_Manager_REST_Classloader( $prefix, $base_dir );
 		}
 		return new self( $class_loader );
+	}
+
+	/**
+	 * Run the app
+	 *
+	 * @return bool
+	 */
+	public function run() {
+		if ( ! self::is_compatible() ) {
+			return false;
+		}
+		$this->load()
+			->environment()->start();
+		return true;
 	}
 
 	/**
@@ -101,6 +124,7 @@ class WP_Job_Manager_REST_Bootstrap {
 			->load_class( 'Interfaces_Permissions_Provider' )
 			->load_class( 'Exception' )
 			->load_class( 'Expect' )
+			->load_class( 'Events' )
 			->load_class( 'Environment' )
 			->load_class( 'Type' )
 			->load_class( 'Type_String' )
@@ -110,6 +134,7 @@ class WP_Job_Manager_REST_Bootstrap {
 			->load_class( 'Type_Array' )
 			->load_class( 'Type_TypedArray' )
 			->load_class( 'Type_Nullable' )
+			->load_class( 'Type_Model' )
 			->load_class( 'Type_Registry' )
 			->load_class( 'Data_Store_Nil' )
 			->load_class( 'Data_Store_Abstract' )
@@ -119,7 +144,6 @@ class WP_Job_Manager_REST_Bootstrap {
 			->load_class( 'Field_Declaration' )
 			->load_class( 'Field_Declaration_Builder' )
 			->load_class( 'Model' )
-			->load_class( 'Model_Factory' )
 			->load_class( 'Model_Settings' )
 			->load_class( 'Model_Collection' )
 			->load_class( 'Controller' )
@@ -164,6 +188,7 @@ class WP_Job_Manager_REST_Bootstrap {
 	 */
 	public function environment() {
 		if ( null === $this->environment ) {
+			$this->load();
 			$this->environment = new WP_Job_Manager_REST_Environment( $this );
 		}
 		return $this->environment;

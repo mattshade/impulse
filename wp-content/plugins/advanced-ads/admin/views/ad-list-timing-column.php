@@ -1,7 +1,7 @@
 <fieldset class="inline-edit-col-left">
 	<div class="inline-edit-col <?php echo $html_classes; ?>">
 		<?php if ( $post_future ) : ?>
-			<p><?php printf( __( 'starts %s', 'advanced-ads' ), date_i18n( $expiry_date_format, $post_future ) ); ?></p>
+			<p><?php printf( __( 'starts %s', 'advanced-ads' ), get_date_from_gmt( date( 'Y-m-d H:i:s', $post_future ), $expiry_date_format ) ); ?></p>
 		<?php endif; ?>
         <?php if ( $expiry ) : ?>
             <?php

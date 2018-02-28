@@ -1,5 +1,97 @@
 *** WooCommerce Memberships Changelog ***
 
+2018.02.01 - version 1.9.8
+ * Fix - Correctly resumes paused memberships which may have not been reactivated after a subscription is renewed
+ * Fix - Addresses PHP notices that may be triggered in related product queries in WooCommerce 3.3
+
+2018.01.24 - version 1.9.7
+ * Tweak - Improve the plugin performance when loading user memberships
+ * Tweak - Allow cancelling a membership from the admin with a date beyond or matching expiration without expiring the membership
+ * Fix - Avoid possible PHP warnings when using the recent comments widget
+ * Fix - When saving in admin a user membership that belongs to a plan with fixed dates, the end date may have been offset one day upon each update due to a timezone issue
+ * Fix - When using redirection as restriction mode but not hiding products from catalog, product category pages containing one restricted product along other public ones would have been restricted as well
+ * Misc - Add support for WooCommerce 3.3
+
+2018.01.10 - version 1.9.6
+ * Fix - In some circumstances, product variations not purchasable may have been made purchasable by a membership plan rule for logged in members
+ * Fix - When restricting only certain variations of products from purchase and not the parent variable product, some variations could still be purchased
+ * Fix - Address a rare issue where a member user which is also an admin would be logged out when renewing a membership from the frontend while following a renewal link
+ * Fix - Correctly restrict related product queries in WooCommerce 3.3+
+ * Fix - Allow iframe HTML elements in user-facing membership messages
+ * Fix - Allow form and iframe HTML elements in user-facing membership messages
+ * Fix - Do not link directly to the member area if there are no sections to display
+ * Fix - Filter the WP_Comment_Query to ensure that the recent comments widget does not show comments from restricted posts
+ * Dev - Added wc_memberships_message_allowed_html filter hook to extend allowed HTML elements in user messages
+
+2017.12.06 - version 1.9.5
+ * Tweak - Add additional body and post CSS classes when viewing membership content
+ * Fix - Discounted prices are rounded down to the store currency decimals before they are passed to WooCommerce to avoid rare rounding issues when other plugins or coupons further discount the price
+ * Fix - Individual variations of variable products that had been restricted from purchase may have been purchased by non-members
+ * Fix - When restricting a parent category, ensure the same restriction mode is inherited by child categories
+ * Fix - Address a potential PHP error in the plans edit screen with product variations while using WooCommerce versions older than v3.0
+ * Dev - Improve compatibility with custom Subscriptions product types
+ * Dev - Make the Members Area navigation HTML filterable
+
+2017.11.15 - version 1.9.4
+ * Fix - Allow usage of dates in plans and user memberships before 1970
+ * Fix - Issue where product category widget list could be incorrect if not hiding restricted products
+ * Fix - When "Hide Completely" is the restriction mode and when two or more plans restrict different bbPress forums, the main topic in a discussion thread may have not been made visible to members
+ * Fix - If a plan rule sets a discounts for all product categories, the discount may not have applied to variations of variable products
+ * Fix - Individual variations of variable products manually excluded from restrictions may have not been purchasable by non members
+ * Dev - Added wc_memberships_user_membership_transferred action hook
+ * Dev - Added wc_memberships_force_checkout_registration filter hook
+
+2017.11.01 - version 1.9.3
+ * Fix - If a member has only membership, the link to the Members Area could end with a double trailing slash which might cause issues on some hosts
+ * Fix - When an admin wipes a message content, the frontend would have still displayed the default message content, while it should display nothing at all as if the message were disabled
+ * Fix - Ensure custom restriction messages are only displayed when enabled
+ * Fix - Display issue with sortable members area columns on mobile, no more ghost HTML!
+ * Fix - Ensure product description/excerpt is not appended to the product discount message for variation products
+ * Fix - Ensure product discount message is not displayed when a product does not have any active purchasing discounts
+ * Fix - Start and end dates for fixed length membership plans would be pushed back by 1 day on certain timezones upon saving
+ * Fix - When restriction mode is set to "Hide Completely" an infinite loop error may have occurred in some circumstances
+
+2017.10.12 - version 1.9.2
+ * Fix - Allow custom product taxonomies to be used for restriction rules
+ * Fix - Repair any corrupted rules using custom taxonomies after saving in v1.9
+
+2017.10.04 - version 1.9.1
+ * Fix - When using WooCommerce shortcodes to display products, member restrictions weren't handled correctly
+ * Fix - Missing "Active Memberships" information in orders and subscriptions admin screens
+ * Fix - Ensure user membership search results can be filtered by status
+ * Fix - Do not show Memberships account tab when "My Memberships" endpoint setting is blank
+ * Fix - Ensure that plan rules that target taxonomy terms extend to term children in each content restriction mode
+ * Fix - When creating a new user while adding or transferring a user membership, the user first and last name fields were ignored
+ * Fix - Ensure subscription-tied memberships show the correct actions under "Manage" in the member area
+ * Fix - Ensure generic restriction rules are not overridden with post-specific rules when saving a post in admin
+ * Fix - Address an issue where new product discount rules added on edit product screen were not being saved
+ * Fix - Discounted subscription products didn't show correct initial totals when an amount-based discount was applied
+ * Fix - When redirecting to a content restricted page, ensure the correct restriction message is shown
+ * Fix - Discount login reminders did not show the correct message
+ * Dev - Reintroduces `wc_memberships_the_restricted_content`; this is deprecated in favor of HTML restriction message filters to alter the restricted content
+
+2017.09.20 - version 1.9.0
+ * Feature - Create new users while adding new members from the user membership admin edit screen or transferring memberships between users
+ * Feature - Plans can now be specified in the `wcm_nonmember` shortcode, to display messages to non-members of specific plans
+ * Tweak - Automatically group together rules that target content belonging to the same group type
+ * Tweak - Automatically merge overlapping plan rules or merge specific rules that are being overridden by more broad ones
+ * Tweak - Hide rules belonging to plans in the trash from Memberships panels in posts or product edit screens
+ * Tweak - Product restriction and purchasing discount rules concerning individual variations are now visible from the variable product admin edit screen
+ * Tweak - Allow usage of shortcodes in restriction messages displayed to non members
+ * Tweak - Better organized restriction and non-member messages in Memberships Settings
+ * Tweak - Improved Members Area layout and endpoints for better compatibility and integration with third party code
+ * Tweak - The shop page is now correctly redirected to 404 when is restricted by rules and "Hiding completely" or "Redirect to page" is the restriction mode
+ * Fix - Ensure expiration events scheduled prior to version 1.7 are always ignored to avoid incorrect expiration of renewed memberships
+ * Fix - Ensure loop/member-discount-badge.php template and its overrides are being used
+ * Fix - In some rare circumstances, the cumulative purchase of products that granted access to the same membership plan could have duplicated the user membership's expiration events
+ * Fix - Address an issue with WooCommerce Measurement Price Calculator where some discounted products with calculator settings enabled might have shown an incorrect original price
+ * Dev - Refactored restrictions and rules handling for performance, scalability and improved third party code compatibility
+ * Dev - Improvements with restriction messages handling and more flexibility to filter the messages CSS classes and HTML content
+ * Dev - Extended WC CLI support for managing plan rules from the command line
+ * Dev - Introduce new admin hooks for handling tabs, screen IDs, meta boxes, modals
+ * Dev - The 'myaccount/my-membership-tabs.php' template has been deprecated in favor of 'myaccount/my-membership-navigation.php'
+ * Misc - Removed support for WooCommerce 2.5
+
 2017.08.15 - version 1.8.9
  * Fix - Security issue in validating member login with renewal links
 
@@ -227,7 +319,7 @@
  * Fix - Checkout error when a user switches between subscription variations
  * Fix - Membership dates are adjusted by site timezone setting
  * Fix - Datepicker not showing when manually creating a user membership plan in admin
- * Fix - Properly handle subscript switches by cancelling the old user membership ( Subscriptions 2.0.6+ only )
+ * Fix - Properly handle subscription switches by cancelling the old user membership ( Subscriptions 2.0.6+ only )
  * Fix - Adjust membership dates handling according to site timezone
 
 2015.11.02 - version 1.3.7

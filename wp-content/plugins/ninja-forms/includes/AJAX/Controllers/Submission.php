@@ -42,6 +42,13 @@ class NF_AJAX_Controllers_Submission extends NF_Abstracts_Controller
 
         $this->_form_id = $this->_form_data['id'];
 
+        // If we don't have a numeric form ID...
+        if ( ! is_numeric( $this->_form_id ) ) {
+            // Kick the request out without processing.
+            $this->_errors[] = __( 'Form does not exist.', 'ninja-forms' );
+            $this->_respond();
+        }
+
         if( $this->is_preview() ) {
 
             $this->_form_cache = get_user_option( 'nf_form_preview_' . $this->_form_id );
@@ -205,7 +212,7 @@ class NF_AJAX_Controllers_Submission extends NF_Abstracts_Controller
              */
             
             global $wpdb;
-            $sql = $wpdb->prepare( "SELECT COUNT(meta_id) FROM `" . $wpdb->prefix . "postmeta` WHERE meta_key = '_field_%d' AND meta_value = '%s'", $unique_field_id, $unique_field_value );
+            $sql = $wpdb->prepare( "SELECT COUNT(m.meta_id) FROM `" . $wpdb->prefix . "postmeta` AS m LEFT JOIN `" . $wpdb->prefix . "posts` AS p ON p.id = m.post_id WHERE m.meta_key = '_field_%d' AND m.meta_value = '%s' AND p.post_status = 'publish'", $unique_field_id, $unique_field_value );
             $result = $wpdb->get_results( $sql, 'ARRAY_N' );
             if ( intval( $result[ 0 ][ 0 ] ) > 0 ) {
                 $this->_errors['fields'][ $unique_field_id ] = array( 'slug' => 'unique_field', 'message' => $unique_field_error );
@@ -447,7 +454,7 @@ class NF_AJAX_Controllers_Submission extends NF_Abstracts_Controller
         if( $this->_form_data ) return;
 
         if( function_exists( 'json_last_error' ) // Function not supported in php5.2
-            && function_exists( 'json_last_error_msg' )// Function not supported in php5.2
+            && function_exists( 'json_last_error_msg' )// Function not supported in php5.4
             && json_last_error() ){
             $this->_errors[] = json_last_error_msg();
         } else {
@@ -461,5 +468,16 @@ class NF_AJAX_Controllers_Submission extends NF_Abstracts_Controller
     {
         if( ! isset( $this->_form_data[ 'settings' ][ 'is_preview' ] ) ) return false;
         return $this->_form_data[ 'settings' ][ 'is_preview' ];
+    }
+
+    /*
+     * Overwrite method for parent class.
+     */
+    protected function _respond( $data = array() )
+    {
+        // Set a content type of JSON for the purpose of previnting XSS attacks.
+        header( 'Content-Type: application/json' );
+        // Call the parent method.
+        parent::_respond();
     }
 }

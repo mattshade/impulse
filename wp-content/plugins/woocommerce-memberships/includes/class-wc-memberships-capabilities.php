@@ -18,43 +18,420 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Membership Capabilities class
+ * Membership Capabilities Handler.
  *
- * This class handles all capability-related functionality, as well as providing
- * start times for when a user can access a specific piece of content
+ * This class handles all capability-related functionality.
+ * It also provides start access times for member-restricted content.
  *
  * @since 1.0.0
  */
 class WC_Memberships_Capabilities {
 
 
-	/** @var array helper for user post access start time results */
-	private $_user_access_start_time = array();
+	/** @var array memoized cache helper for user post access start time results */
+	private $user_access_start_time = array();
 
 
 	/**
-	 * Constructor
+	 * Adds new capabilities.
 	 *
 	 * @since 1.0.0
 	 */
 	public function __construct() {
 
-		// Adjust user capabilities
+		// adjust user capabilities
 		add_filter( 'user_has_cap', array( $this, 'user_has_cap' ), 9, 3 );
 	}
 
 
 	/**
-	 * Check if the passed in caps contain a positive 'manage_woocommerce' capability
+	 * Checks if a user has a certain capability.
+	 *
+	 * @internal
 	 *
 	 * @since 1.0.0
+	 *
+	 * @param array $all_caps all capabilities
+	 * @param array $caps capabilities
+	 * @param array $args capability arguments
+	 * @return array all capabilities
+	 */
+	public function user_has_cap( $all_caps, $caps, $args ) {
+		global $pagenow, $typenow;
+
+		if ( ! empty( $caps ) ) {
+			foreach ( $caps as $cap ) {
+
+				switch ( $cap ) {
+
+					case 'wc_memberships_access_all_restricted_content':
+
+						if ( $this->can_manage_woocommerce( $all_caps ) ) {
+							$all_caps[ $cap ] = true;
+							break;
+						}
+
+					break;
+
+					case 'wc_memberships_view_restricted_post_content' :
+
+						if ( $this->can_manage_woocommerce( $all_caps ) ) {
+							$all_caps[ $cap ] = true;
+							break;
+						}
+
+						$user_id = (int) $args[1];
+						$post_id = (int) $args[2];
+
+						if ( $this->is_post_public( $post_id ) ) {
+							$all_caps[ $cap ] = true;
+							break;
+						}
+
+						$rules            = wc_memberships()->get_rules_instance()->get_post_content_restriction_rules( $post_id );
+						$all_caps[ $cap ] = $this->user_has_content_access_from_rules( $user_id, $rules, $post_id );
+
+					break;
+
+					case 'wc_memberships_view_restricted_product' :
+
+						if ( $this->can_manage_woocommerce( $all_caps ) ) {
+							$all_caps[ $cap ] = true;
+							break;
+						}
+
+						$user_id    = (int) $args[1];
+						$product_id = (int) $args[2];
+
+						if ( $this->is_post_public( $product_id ) ) {
+							$all_caps[ $cap ] = true;
+							break;
+						}
+
+						$rules            = wc_memberships()->get_rules_instance()->get_product_restriction_rules( $product_id );
+						$all_caps[ $cap ] = $this->user_has_product_view_access_from_rules( $user_id, $rules, $product_id );
+
+					break;
+
+					case 'wc_memberships_purchase_restricted_product' :
+
+						if ( $this->can_manage_woocommerce( $all_caps ) ) {
+							$all_caps[ $cap ] = true;
+							break;
+						}
+
+						$user_id = (int) $args[1];
+						$post_id = (int) $args[2];
+
+						if ( $this->is_post_public( $post_id ) ) {
+							$all_caps[ $cap ] = true;
+							break;
+						}
+
+						$rules            = wc_memberships()->get_rules_instance()->get_product_restriction_rules( $post_id );
+						$all_caps[ $cap ] = $this->user_has_product_purchase_access_from_rules( $user_id, $rules );
+
+					break;
+
+					case 'wc_memberships_view_restricted_product_taxonomy_term':
+
+						if ( $this->can_manage_woocommerce( $all_caps ) ) {
+							$all_caps[ $cap ] = true;
+							break;
+						}
+
+						$user_id          = (int) $args[1];
+						$taxonomy         = $args[2];
+						$term_id          = (int) $args[3];
+						$rules            = wc_memberships()->get_rules_instance()->get_taxonomy_term_product_restriction_rules( $taxonomy, $term_id );
+						$all_caps[ $cap ] = $this->user_has_content_access_from_rules( $user_id, $rules, $term_id );
+
+					break;
+
+					case 'wc_memberships_view_delayed_product_taxonomy_term';
+
+						if ( $this->can_manage_woocommerce( $all_caps ) ) {
+							$all_caps[ $cap ] = true;
+							break;
+						}
+
+						$user_id     = (int) $args[1];
+						$taxonomy    = $args[2];
+						$term_id     = (int) $args[3];
+						$has_access  = false;
+						$access_time = $this->get_user_access_start_time_for_taxonomy_term( $user_id, $taxonomy, $term_id );
+
+						if ( $access_time && current_time( 'timestamp', true ) >= $access_time ) {
+							$has_access = true;
+						}
+
+						$all_caps[ $cap ] = $has_access;
+
+					break;
+
+					case 'wc_memberships_view_restricted_taxonomy_term' :
+
+						if ( $this->can_manage_woocommerce( $all_caps ) ) {
+							$all_caps[ $cap ] = true;
+							break;
+						}
+
+						$user_id          = (int) $args[1];
+						$taxonomy         = $args[2];
+						$term_id          = (int) $args[3];
+						$rules            = wc_memberships()->get_rules_instance()->get_taxonomy_term_content_restriction_rules( $taxonomy, $term_id );
+						$all_caps[ $cap ] = $this->user_has_content_access_from_rules( $user_id, $rules, $term_id );
+
+					break;
+
+					case 'wc_memberships_view_restricted_taxonomy' :
+
+						if ( $this->can_manage_woocommerce( $all_caps ) ) {
+							$all_caps[ $cap ] = true;
+							break;
+						}
+
+						$user_id          = (int) $args[1];
+						$taxonomy         = (int) $args[2];
+						$rules            = wc_memberships()->get_rules_instance()->get_taxonomy_content_restriction_rules( $taxonomy );
+
+						$all_caps[ $cap ] = $this->user_has_content_access_from_rules( $user_id, $rules );
+
+					break;
+
+					case 'wc_memberships_view_restricted_post_type' :
+
+						if ( $this->can_manage_woocommerce( $all_caps ) ) {
+							$all_caps[ $cap ] = true;
+							break;
+						}
+
+						$user_id   = (int) $args[1];
+						$post_type = $args[2];
+
+						if ( in_array( $post_type, array( 'product', 'product_variation' ), true ) ) {
+
+							// get all product restriction rules
+							$rules = wc_memberships()->get_rules_instance()->get_rules( array(
+								'rule_type'         => 'product_restriction',
+								'content_type'      => 'post_type',
+								'content_type_name' => 'product',
+							) );
+
+							$all_caps[ $cap ] = $this->user_has_product_view_access_from_rules( $user_id, $rules );
+
+						} else {
+
+							$rules            = wc_memberships()->get_rules_instance()->get_post_type_content_restriction_rules( $post_type );
+							$all_caps[ $cap ] = $this->user_has_content_access_from_rules( $user_id, $rules );
+						}
+
+					break;
+
+					case 'wc_memberships_view_delayed_post_type';
+
+						if ( $this->can_manage_woocommerce( $all_caps ) ) {
+							$all_caps[ $cap ] = true;
+							break;
+						}
+
+						$user_id     = (int) $args[1];
+						$post_type   = $args[2];
+						$has_access  = false;
+						$access_time = $this->get_user_access_start_time_for_post_type( $user_id, $post_type );
+
+						if ( $access_time && current_time( 'timestamp', true ) >= $access_time ) {
+							$has_access = true;
+						}
+
+						$all_caps[ $cap ] = $has_access;
+
+						break;
+
+					case 'wc_memberships_view_delayed_taxonomy';
+
+						if ( $this->can_manage_woocommerce( $all_caps ) ) {
+							$all_caps[ $cap ] = true;
+							break;
+						}
+
+						$user_id     = (int) $args[1];
+						$taxonomy    = $args[2];
+						$has_access  = false;
+						$access_time = $this->get_user_access_start_time_for_taxonomy( $user_id, $taxonomy );
+
+						if ( $access_time && current_time( 'timestamp', true ) >= $access_time ) {
+							$has_access = true;
+						}
+
+						$all_caps[ $cap ] = $has_access;
+						break;
+
+					case 'wc_memberships_view_delayed_taxonomy_term';
+
+						if ( $this->can_manage_woocommerce( $all_caps ) ) {
+							$all_caps[ $cap ] = true;
+							break;
+						}
+
+						$user_id     = (int) $args[1];
+						$taxonomy    = $args[2];
+						$term        = is_numeric( $args[3] ) ? (int) $args[3] : $args[3];
+						$has_access  = false;
+						$access_time = $this->get_user_access_start_time_for_taxonomy_term( $user_id, $taxonomy, $term );
+
+						if ( $access_time && current_time( 'timestamp', true ) >= $access_time ) {
+							$has_access = true;
+						}
+
+						$all_caps[ $cap ] = $has_access;
+						break;
+
+					case 'wc_memberships_view_delayed_post_content' :
+					case 'wc_memberships_view_delayed_product' :
+
+						if ( $this->can_manage_woocommerce( $all_caps ) ) {
+							$all_caps[ $cap ] = true;
+							break;
+						}
+
+						$user_id    = (int) $args[1];
+						$post_id    = (int) $args[2];
+						$has_access = false;
+
+						if ( $this->is_post_public( $post_id ) ) {
+							$all_caps[ $cap ] = true;
+							break;
+						}
+
+						$access_time = $this->get_user_access_start_time_for_post( $user_id, $post_id, 'view' );
+
+						if ( $access_time && current_time( 'timestamp', true ) >= $access_time ) {
+							$has_access = true;
+						}
+
+						$all_caps[ $cap ] = $has_access;
+
+					break;
+
+					case 'wc_memberships_purchase_delayed_product' :
+
+						if ( $this->can_manage_woocommerce( $all_caps ) ) {
+							$all_caps[ $cap ] = true;
+							break;
+						}
+
+						$user_id    = (int) $args[1];
+						$post_id    = (int) $args[2];
+						$has_access = false;
+
+						if ( $this->is_post_public( $post_id ) ) {
+							$all_caps[ $cap ] = true;
+							break;
+						}
+
+						$access_time = $this->get_user_access_start_time_for_post( $user_id, $post_id, 'purchase' );
+
+						if ( $access_time && current_time( 'timestamp', true ) >= $access_time ) {
+							$has_access = true;
+						}
+
+						$all_caps[ $cap ] = $has_access;
+
+					break;
+
+					// Editing a rule depends on the rule's content type and related capabilities
+					case 'wc_memberships_edit_rule' :
+
+						$rule_id  = $args[2];
+						$can_edit = false;
+						$rule     = wc_memberships()->get_rules_instance()->get_rule( $rule_id );
+
+						if ( $rule ) {
+
+							switch ( $rule->get_content_type() ) {
+
+								case 'post_type':
+
+									$post_type = get_post_type_object( $rule->get_content_type_name() );
+
+									if ( ! $post_type ) {
+										/* @see \WP_User::has_cap() handling */
+										return array();
+									}
+
+									$can_edit = current_user_can( $post_type->cap->edit_posts ) && current_user_can( $post_type->cap->edit_others_posts );
+
+								break;
+
+								case 'taxonomy':
+
+									$taxonomy = get_taxonomy( $rule->get_content_type_name() );
+
+									if ( ! $taxonomy ) {
+										/* @see \WP_User::has_cap() handling */
+										return array();
+									}
+
+									$can_edit = current_user_can( $taxonomy->cap->manage_terms ) && current_user_can( $taxonomy->cap->edit_terms );
+
+								break;
+							}
+						}
+
+						$all_caps[ $cap ] = $can_edit;
+
+					break;
+
+					case 'wc_memberships_cancel_membership' :
+					case 'wc_memberships_renew_membership' :
+
+						$user_id            = (int) $args[1];
+						$user_membership_id = (int) $args[2];
+						$user_membership    = wc_memberships_get_user_membership( $user_membership_id );
+
+						// complimentary memberships cannot be cancelled or renewed by the user
+						$all_caps[ $cap ] = $user_membership && $user_membership->get_user_id() === $user_id && ! $user_membership->has_status( 'complimentary' );
+
+					break;
+
+					// prevent deleting membership plans with active memberships
+					case 'delete_published_membership_plan' :
+					case 'delete_published_membership_plans' :
+
+						// this workaround (*hack*, *cough*) allows displaying the trash/delete link on membership plans list table even if the plan has active members
+						if ( 'edit.php' === $pagenow && 'wc_membership_plan' === $typenow && empty( $_POST ) && is_admin() ) {
+							break;
+						}
+
+						$plan = wc_memberships_get_membership_plan( $args[2] );
+
+						if ( $plan && $plan->has_active_memberships() ) {
+							$all_caps[ $cap ] = false;
+						}
+
+					break;
+
+				}
+			}
+		}
+
+		return $all_caps;
+	}
+
+
+	/**
+	 * Check if the passed in caps contain a positive 'manage_woocommerce' capability.
+	 *
+	 * @since 1.0.0
+	 *
 	 * @param array $caps
 	 * @return bool
 	 */
@@ -64,405 +441,35 @@ class WC_Memberships_Capabilities {
 
 
 	/**
-	 * Checks if a user has a certain capability
-	 *
-	 * @since 1.0.0
-	 * @param array $allcaps
-	 * @param array $caps
-	 * @param array $args
-	 * @return array|bool
-	 */
-	public function user_has_cap( $allcaps, $caps, $args ) {
-		global $pagenow, $typenow;
-
-		if ( isset( $caps[0] ) ) {
-
-			switch ( $caps[0] ) {
-
-				case 'wc_memberships_access_all_restricted_content':
-
-					if ( $this->can_manage_woocommerce( $allcaps ) ) {
-						$allcaps[ $caps[0] ] = true;
-						break;
-					}
-
-				break;
-
-				case 'wc_memberships_view_restricted_post_content' :
-
-					if ( $this->can_manage_woocommerce( $allcaps ) ) {
-						$allcaps[ $caps[0] ] = true;
-						break;
-					}
-
-					$user_id = $args[1];
-					$post_id = $args[2];
-
-					if ( $this->post_is_public( $post_id ) ) {
-						$allcaps[ $caps[0] ] = true;
-						break;
-					}
-
-					$rules               = wc_memberships()->get_rules_instance()->get_post_content_restriction_rules( $post_id );
-					$allcaps[ $caps[0] ] = wc_memberships()->get_rules_instance()->user_has_content_access_from_rules( $user_id, $rules, $post_id );
-
-				break;
-
-				case 'wc_memberships_view_restricted_product' :
-
-					if ( $this->can_manage_woocommerce( $allcaps ) ) {
-						$allcaps[ $caps[0] ] = true;
-						break;
-					}
-
-					$user_id = $args[1];
-					$post_id = $args[2];
-
-					if ( $this->post_is_public( $post_id ) ) {
-						$allcaps[ $caps[0] ] = true;
-						break;
-					}
-
-					$rules               = wc_memberships()->get_rules_instance()->get_the_product_restriction_rules( $post_id );
-					$allcaps[ $caps[0] ] = wc_memberships()->get_rules_instance()->user_has_product_view_access_from_rules( $user_id, $rules, $post_id );
-
-				break;
-
-				case 'wc_memberships_purchase_restricted_product' :
-
-					if ( $this->can_manage_woocommerce( $allcaps ) ) {
-						$allcaps[ $caps[0] ] = true;
-						break;
-					}
-
-					$user_id = $args[1];
-					$post_id = $args[2];
-
-					if ( $this->post_is_public( $post_id ) ) {
-						$allcaps[ $caps[0] ] = true;
-						break;
-					}
-
-					$rules               = wc_memberships()->get_rules_instance()->get_the_product_restriction_rules( $post_id );
-					$allcaps[ $caps[0] ] = wc_memberships()->get_rules_instance()->user_has_product_purchase_access_from_rules( $user_id, $rules, $post_id );
-
-				break;
-
-				case 'wc_memberships_view_restricted_product_taxonomy_term':
-
-					if ( $this->can_manage_woocommerce( $allcaps ) ) {
-						$allcaps[ $caps[0] ] = true;
-						break;
-					}
-
-					$user_id  = $args[1];
-					$taxonomy = $args[2];
-					$term_id  = $args[3];
-
-					$rules               = wc_memberships()->get_rules_instance()->get_taxonomy_term_product_restriction_rules( $taxonomy, $term_id );
-					$allcaps[ $caps[0] ] = wc_memberships()->get_rules_instance()->user_has_content_access_from_rules( $user_id, $rules, $term_id );
-
-				break;
-
-				case 'wc_memberships_view_delayed_product_taxonomy_term';
-
-					if ( $this->can_manage_woocommerce( $allcaps ) ) {
-						$allcaps[ $caps[0] ] = true;
-						break;
-					}
-
-					$user_id    = $args[1];
-					$taxonomy   = $args[2];
-					$term       = $args[3];
-					$has_access = false;
-
-					$access_time = $this->get_user_access_start_time_for_taxonomy_term( $user_id, $taxonomy, $term );
-
-					if ( $access_time && current_time( 'timestamp', true ) >= $access_time ) {
-						$has_access = true;
-					}
-
-					$allcaps[ $caps[0] ] = $has_access;
-
-				break;
-
-				case 'wc_memberships_view_restricted_taxonomy_term' :
-
-					if ( $this->can_manage_woocommerce( $allcaps ) ) {
-						$allcaps[ $caps[0] ] = true;
-						break;
-					}
-
-					$user_id  = $args[1];
-					$taxonomy = $args[2];
-					$term_id  = $args[3];
-
-					$rules               = wc_memberships()->get_rules_instance()->get_taxonomy_term_content_restriction_rules( $taxonomy, $term_id );
-					$allcaps[ $caps[0] ] = wc_memberships()->get_rules_instance()->user_has_content_access_from_rules( $user_id, $rules, $term_id );
-
-				break;
-
-				case 'wc_memberships_view_restricted_taxonomy' :
-
-					if ( $this->can_manage_woocommerce( $allcaps ) ) {
-						$allcaps[ $caps[0] ] = true;
-						break;
-					}
-
-					$user_id  = $args[1];
-					$taxonomy = $args[2];
-
-					$rules               = wc_memberships()->get_rules_instance()->get_taxonomy_content_restriction_rules( $taxonomy );
-					$allcaps[ $caps[0] ] = wc_memberships()->get_rules_instance()->user_has_content_access_from_rules( $user_id, $rules );
-
-				break;
-
-				case 'wc_memberships_view_restricted_post_type' :
-
-					if ( $this->can_manage_woocommerce( $allcaps ) ) {
-						$allcaps[ $caps[0] ] = true;
-						break;
-					}
-
-					$user_id   = $args[1];
-					$post_type = $args[2];
-
-					if ( in_array( $post_type, array( 'product', 'product_variation' ) ) ) {
-
-						$rules = wc_memberships()->get_rules_instance()->get_product_restriction_rules( array(
-							'content_type'      => 'post_type',
-							'content_type_name' => 'product',
-						) );
-
-						$allcaps[ $caps[0] ] = wc_memberships()->get_rules_instance()->user_has_product_view_access_from_rules( $user_id, $rules );
-
-					} else {
-
-						$rules               = wc_memberships()->get_rules_instance()->get_post_type_content_restriction_rules( $post_type );
-						$allcaps[ $caps[0] ] = wc_memberships()->get_rules_instance()->user_has_content_access_from_rules( $user_id, $rules );
-					}
-
-				break;
-
-				case 'wc_memberships_view_delayed_post_type';
-
-					if ( $this->can_manage_woocommerce( $allcaps ) ) {
-						$allcaps[ $caps[0] ] = true;
-						break;
-					}
-
-					$user_id    = $args[1];
-					$post_type  = $args[2];
-					$has_access = false;
-
-					$access_time = $this->get_user_access_start_time_for_post_type( $user_id, $post_type );
-
-					if ( $access_time && current_time( 'timestamp', true ) >= $access_time ) {
-						$has_access = true;
-					}
-
-					$allcaps[ $caps[0] ] = $has_access;
-
-					break;
-
-				case 'wc_memberships_view_delayed_taxonomy';
-
-					if ( $this->can_manage_woocommerce( $allcaps ) ) {
-						$allcaps[ $caps[0] ] = true;
-						break;
-					}
-
-					$user_id    = $args[1];
-					$taxonomy   = $args[2];
-					$has_access = false;
-
-					$access_time = $this->get_user_access_start_time_for_taxonomy( $user_id, $taxonomy );
-
-					if ( $access_time && current_time( 'timestamp', true ) >= $access_time ) {
-						$has_access = true;
-					}
-
-					$allcaps[ $caps[0] ] = $has_access;
-					break;
-
-				case 'wc_memberships_view_delayed_taxonomy_term';
-
-					if ( $this->can_manage_woocommerce( $allcaps ) ) {
-						$allcaps[ $caps[0] ] = true;
-						break;
-					}
-
-					$user_id    = $args[1];
-					$taxonomy   = $args[2];
-					$term       = $args[3];
-					$has_access = false;
-
-					$access_time = $this->get_user_access_start_time_for_taxonomy_term( $user_id, $taxonomy, $term );
-
-					if ( $access_time && current_time( 'timestamp', true ) >= $access_time ) {
-						$has_access = true;
-					}
-
-					$allcaps[ $caps[0] ] = $has_access;
-					break;
-
-				case 'wc_memberships_view_delayed_post_content' :
-				case 'wc_memberships_view_delayed_product' :
-
-					if ( $this->can_manage_woocommerce( $allcaps ) ) {
-						$allcaps[ $caps[0] ] = true;
-						break;
-					}
-
-					$user_id    = $args[1];
-					$post_id    = $args[2];
-					$has_access = false;
-
-					if ( $this->post_is_public( $post_id ) ) {
-						$allcaps[ $caps[0] ] = true;
-						break;
-					}
-
-					$access_time = $this->get_user_access_start_time_for_post( $user_id, $post_id, 'view' );
-
-					if ( $access_time && current_time( 'timestamp', true ) >= $access_time ) {
-						$has_access = true;
-					}
-
-					$allcaps[ $caps[0] ] = $has_access;
-
-				break;
-
-				case 'wc_memberships_purchase_delayed_product' :
-
-					if ( $this->can_manage_woocommerce( $allcaps ) ) {
-						$allcaps[ $caps[0] ] = true;
-						break;
-					}
-
-					$user_id    = $args[1];
-					$post_id    = $args[2];
-					$has_access = false;
-
-					if ( $this->post_is_public( $post_id ) ) {
-						$allcaps[ $caps[0] ] = true;
-						break;
-					}
-
-					$access_time = $this->get_user_access_start_time_for_post( $user_id, $post_id, 'purchase' );
-
-					if ( $access_time && current_time( 'timestamp', true ) >= $access_time ) {
-						$has_access = true;
-					}
-
-					$allcaps[ $caps[0] ] = $has_access;
-
-				break;
-
-				// Editing a rule depends on the rule's content type and related capabilities
-				case 'wc_memberships_edit_rule' :
-
-					$user_id  = $args[1];
-					$rule_id  = $args[2];
-					$can_edit = false;
-
-					$rule = wc_memberships()->get_rules_instance()->get_rule( $rule_id );
-
-					if ( $rule ) {
-
-						switch ( $rule->get_content_type() ) {
-
-							case 'post_type':
-
-								$post_type = get_post_type_object( $rule->get_content_type_name() );
-
-								if ( ! $post_type ) {
-									return false;
-								}
-
-								$can_edit = current_user_can( $post_type->cap->edit_posts ) && current_user_can( $post_type->cap->edit_others_posts );
-
-							break;
-
-							case 'taxonomy':
-
-								$taxonomy = get_taxonomy( $rule->get_content_type_name() );
-
-								if ( ! $taxonomy ) {
-									return false;
-								}
-
-								$can_edit = current_user_can( $taxonomy->cap->manage_terms ) && current_user_can( $taxonomy->cap->edit_terms );
-
-							break;
-
-						}
-
-					}
-
-					$allcaps[ $caps[0] ] = $can_edit;
-
-				break;
-
-				case 'wc_memberships_cancel_membership' :
-				case 'wc_memberships_renew_membership' :
-
-					list( $cap, $user_id, $user_membership_id ) = $args;
-
-					$user_membership = wc_memberships_get_user_membership( $user_membership_id );
-
-					// complimentary memberships cannot be cancelled or renewed by the user
-					$allcaps[ $caps[0] ] = $user_membership && (int) $user_membership->get_user_id() === (int) $user_id && ! $user_membership->has_status( 'complimentary' );
-
-				break;
-
-				// Prevent deleting membership plans with active memberships
-				case 'delete_published_membership_plan' :
-				case 'delete_published_membership_plans' :
-
-					// This workaround (*hack*, *cough*) allows displaying the trash/delete
-					// link on membership plans list table even if the plan has active members
-					if ( is_admin() && 'edit.php' == $pagenow && 'wc_membership_plan' == $typenow && empty( $_POST ) ) {
-						break;
-					}
-
-					$post_id = $args[2];
-
-					$plan = wc_memberships_get_membership_plan( $post_id );
-
-					if ( $plan->has_active_memberships() ) {
-						$allcaps[ $caps[0] ] = false;
-					}
-
-				break;
-
-			}
-		}
-
-		return $allcaps;
-	}
-
-
-	/**
 	 * Check if a given post or page is public and not subject to restrictions.
 	 *
-	 * This can happen either by an except set via post meta on the post,
-	 * or if redirection is used and the content restricted page must be shown.
+	 * This can happen either by an except set via post meta on the post, or if redirection is used and the content restricted page must be shown.
 	 *
 	 * @since 1.3.0
-	 * @param int $post_id ID of a post, page or product.
+	 *
+	 * @param int $post_id ID of a post, page or product
 	 * @return bool
 	 */
-	protected function post_is_public( $post_id ) {
+	private function is_post_public( $post_id ) {
 
 		$is_public = 'yes' === wc_memberships_get_content_meta( $post_id, '_wc_memberships_force_public', true );
 
-		// If using redirect mode, the redirect page must be made public regardless.
+		/**
+		 * Filters whether a post should be public (ie. not subject to any restriction for the current user or anonymous guest).
+		 *
+		 * @since 1.9.0
+		 *
+		 * @param bool $is_public whether the post is public (default false unless explicitly marked as public by an admin)
+		 * @param int $post_id the ID of the post being evaluated
+		 */
+		$is_public = (bool) apply_filters( 'wc_memberships_is_post_public', $is_public, $post_id );
+
+		// if using redirect mode, the redirect page must be made public regardless
 		if (    ! $is_public
 		     &&   'page' === get_post_type( $post_id )
-		     &&    wc_memberships()->get_frontend_instance()->get_restrictions_instance()->is_restriction_mode( 'redirect' ) ) {
+		     &&    wc_memberships()->get_restrictions_instance()->is_restriction_mode( 'redirect' ) ) {
 
-			$is_public = (int) $post_id === wc_memberships()->get_frontend_instance()->get_restrictions_instance()->get_restricted_content_redirect_page_id();
+			$is_public = (int) $post_id === wc_memberships()->get_restrictions_instance()->get_restricted_content_redirect_page_id();
 		}
 
 		return $is_public;
@@ -470,13 +477,147 @@ class WC_Memberships_Capabilities {
 
 
 	/**
-	 * Get user access date for a post
+	 * Checks if a user has content access from rules.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param int $user_id WP_User ID
+	 * @param \WC_Memberships_Membership_Plan_Rule[] $rules array of rules to search access from
+	 * @param int $object_id Optional object ID to check access for (defaults to null)
+	 * @return bool returns true if there are no rules at all (users always have access)
+	 */
+	private function user_has_content_access_from_rules( $user_id, array $rules, $object_id = null ) {
+
+		$has_access = true;
+
+		if ( ! empty( $rules ) ) {
+
+			$has_access = false;
+
+			foreach ( $rules as $rule ) {
+
+				// If no object ID is provided, then we are looking at rules that apply to whole post types or taxonomies.
+				// In this case, rules that apply to specific objects should be skipped.
+				if ( empty( $object_id ) && $rule->has_objects() ) {
+					continue;
+				}
+
+				if ( wc_memberships_is_user_active_or_delayed_member( $user_id, $rule->get_membership_plan_id() ) ) {
+					$has_access = true;
+					break;
+				}
+			}
+		}
+
+		return $has_access;
+	}
+
+
+	/**
+	 * Checks if a user has product view access from rules
+	 *
+	 * Returns true if there are no rules
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param int $user_id WP_User ID
+	 * @param \WC_Memberships_Membership_Plan_Rule[] $rules array of rules to search access from
+	 * @param int $object_id optional object ID to check access for (default null, check for rules that apply to whole content types)
+	 * @return bool
+	 */
+	private function user_has_product_view_access_from_rules( $user_id, array $rules, $object_id = null ) {
+
+		$has_access = true;
+
+		if ( ! empty( $rules ) ) {
+
+			// determine if viewing is restricted at all
+			foreach ( $rules as $rule ) {
+
+				// If no object ID is provided, then we are looking at rules that apply to whole post types or taxonomies.
+				// In this case, rules that apply to specific objects should be skipped.
+				if ( ! $object_id && $rule->has_objects() ) {
+					continue;
+				}
+
+				if ( 'view' === $rule->get_access_type() ) {
+					$has_access = false;
+					break;
+				}
+			}
+
+			// determine if a logged in user has access from view or purchase rules
+			if ( $user_id && ! $has_access ) {
+
+				foreach ( $rules as $rule ) {
+
+					// If no object ID is provided, then we are looking at rules that apply to whole post types or taxonomies.
+					// In this case, rules that apply to specific objects should be skipped.
+					if ( ! $object_id && $rule->has_objects() ) {
+						continue;
+					}
+
+					if (    in_array( $rule->get_access_type(), array( 'view', 'purchase' ), true )
+					     && wc_memberships_is_user_active_or_delayed_member( $user_id, $rule->get_membership_plan_id() ) ) {
+
+						$has_access = true;
+						break;
+					}
+				}
+			}
+		}
+
+		return $has_access;
+	}
+
+
+	/**
+	 * Checks if a user has product purchase access from rules.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param int $user_id user ID to check rules for
+	 * @param \WC_Memberships_Membership_Plan_Rule[] $rules array of rules to search access from
+	 * @return bool returns true if there are no rules at all
+	 */
+	private function user_has_product_purchase_access_from_rules( $user_id, array $rules ) {
+
+		$has_access = true;
+
+		if ( ! empty( $rules ) ) {
+
+			// determine if purchasing is restricted at all
+			foreach ( $rules as $rule ) {
+				if ( 'purchase' === $rule->get_access_type() ) {
+					$has_access = false;
+					break;
+				}
+			}
+
+			// determine if user has access from view or purchase rules
+			if ( ! $has_access ) {
+				foreach ( $rules as $rule ) {
+					if ( 'purchase' === $rule->get_access_type() && wc_memberships_is_user_active_or_delayed_member( $user_id, $rule->get_membership_plan_id() ) ) {
+						$has_access = true;
+						break;
+					}
+				}
+			}
+		}
+
+		return $has_access;
+	}
+
+
+	/**
+	 * Returns the user access date for a post.
 	 *
 	 * @since 1.0.0
-	 * @param int $user_id
-	 * @param int $post_id
-	 * @param string $access_type Optional. Defaults to "view". Applies only to products.
-	 * @return int|null Timestamp of start time or null if no access
+	 *
+	 * @param int $user_id the user (member) ID
+	 * @param int $post_id the post ID
+	 * @param string $access_type optional (applies only to products), defaults to "view"
+	 * @return int|null timestamp of start time or null if no access
 	 */
 	public function get_user_access_start_time_for_post( $user_id, $post_id, $access_type = 'view' ) {
 
@@ -500,13 +641,14 @@ class WC_Memberships_Capabilities {
 
 
 	/**
-	 * Get user access date for a post type
+	 * Returns the user access date for a post type.
 	 *
 	 * @since 1.0.0
-	 * @param int $user_id
-	 * @param string $post_type
-	 * @param string $access_type Optional. Defaults to "view". Applies only to products and variations.
-	 * @return int|null Timestamp of start time or null if no access
+	 *
+	 * @param int $user_id the user (member) ID
+	 * @param string $post_type the post type
+	 * @param string $access_type optional (Applies only to products and variations.), defaults to "view"
+	 * @return int|null timestamp of start time or null if no access
 	 */
 	public function get_user_access_start_time_for_post_type( $user_id, $post_type, $access_type = 'view' ) {
 
@@ -527,16 +669,16 @@ class WC_Memberships_Capabilities {
 
 
 	/**
-	 * Get user access date for a taxonomy
+	 * Returns the user access date for a taxonomy.
 	 *
 	 * @since 1.0.0
-	 * @param int $user_id
-	 * @param string $taxonomy
-	 * @param string $access_type Optional. Defaults to "view". Applies only to product taxonomies.
-	 * @return int|null Timestamp of start time or null if no access
+	 *
+	 * @param int $user_id the user (member) ID
+	 * @param string $taxonomy the taxonomy name
+	 * @param string $access_type optional (applies only to product taxonomies), defaults to "view"
+	 * @return int|null timestamp of start time or null if no access
 	 */
 	public function get_user_access_start_time_for_taxonomy( $user_id, $taxonomy, $access_type = 'view' ) {
-
 		return $this->get_user_access_start_time( array(
 			'user_id'           => $user_id,
 			'content_type'      => 'taxonomy',
@@ -547,19 +689,19 @@ class WC_Memberships_Capabilities {
 
 
 	/**
-	 * Get user access date for a taxonomy term
+	 * Returns the user access date for a taxonomy term.
 	 *
 	 * @internal
 	 *
 	 * @since 1.0.0
-	 * @param int $user_id
-	 * @param string $taxonomy
-	 * @param string|int $term
-	 * @param string $access_type Optional. Defaults to "view". Applies only to product taxonomy terms.
-	 * @return int|null Timestamp of start time or null if no access
+	 *
+	 * @param int $user_id the user (member) ID
+	 * @param string $taxonomy the taxonomy name
+	 * @param string|int $term the term slug or ID
+	 * @param string $access_type optional (applies only to product taxonomy terms), defaults to "view"
+	 * @return int|null timestamp of start time or null if no access
 	 */
 	public function get_user_access_start_time_for_taxonomy_term( $user_id, $taxonomy, $term, $access_type = 'view' ) {
-
 		return $this->get_user_access_start_time( array(
 			'user_id'           => $user_id,
 			'content_type'      => 'taxonomy',
@@ -571,7 +713,7 @@ class WC_Memberships_Capabilities {
 
 
 	/**
-	 * Get user access date for a piece of content.
+	 * Returns the user access date for a piece of content.
 	 *
 	 * @internal
 	 *
@@ -605,12 +747,12 @@ class WC_Memberships_Capabilities {
 		// use memoization to speed up subsequent checks
 		$cache_key = http_build_query( $args );
 
-		if ( ! isset( $this->_user_access_start_time[ $cache_key ] ) ) {
+		if ( ! isset( $this->user_access_start_time[ $cache_key ] ) ) {
 
 			// set defaults, access is immediate
-			$access_time   = current_time( 'timestamp', true );
-			$user_id       = (int) $args['user_id'];
-			$access_type   = $args['access_type'];
+			$access_time = current_time( 'timestamp', true );
+			$user_id     = (int) $args['user_id'];
+			$access_type = $args['access_type'];
 
 			// get rules args
 			$rules_args = $args;
@@ -621,20 +763,27 @@ class WC_Memberships_Capabilities {
 			if ( ! empty( $rules ) ) {
 
 				if ( ! in_array( 'product_restriction', $rules_args['rule_type'], true ) ) {
+
 					// if there are no product restriction rules,
 					// then we can safely say that access is restricted...
 					$access_time = null;
+
 				} else {
+
 					// ...otherwise, we need to check if there are any content restriction rules,
 					// or any product restriction rules that restrict the queried access type
 					foreach ( $rules as $rule ) {
+
 						if ( 'product_restriction' === $rule->get_rule_type() ) {
+
 							// check if the product restriction rule applies to the correct access type
 							if ( $access_type === $rule->get_access_type() ) {
 								$access_time = null;
 								break;
 							}
+
 						} else {
+
 							// content restriction rules indicate that access is restricted
 							$access_time = null;
 							break;
@@ -709,7 +858,7 @@ class WC_Memberships_Capabilities {
 								// - if this rule has higher priority than last rule, override the previous access time
 								// - if this has the same priority as the last rule, and grants earlier access, override previous access time
 								if (    ( $rule_priority > $last_priority )
-								     || ( $rule_priority === $last_priority && ( ! $access_time || $rule_access_time < $access_time ) ) ) {
+								        || ( $rule_priority === $last_priority && ( ! $access_time || $rule_access_time < $access_time ) ) ) {
 
 									$access_time   = $rule_access_time;
 									$last_priority = $rule_priority;
@@ -735,72 +884,74 @@ class WC_Memberships_Capabilities {
 			 */
 			$access_time = apply_filters( 'wc_memberships_user_object_access_start_time', $access_time, $args );
 
-			$this->_user_access_start_time[ $cache_key ] = is_numeric( $access_time ) ? (int) $access_time : null;
+			$this->user_access_start_time[ $cache_key ] = is_numeric( $access_time ) ? (int) $access_time : null;
 		}
 
-		return $this->_user_access_start_time[ $cache_key ];
+		return $this->user_access_start_time[ $cache_key ];
 	}
 
 
 	/**
-	 * Check if user can view a post or a product
+	 * Checks if user can view a post or a product.
 	 *
 	 * @since 1.7.1
-	 * @param int $user_id User id
-	 * @param int $post_id WP_Post or WC_Product id
+	 *
+	 * @param int $user_id user ID
+	 * @param int $post_id WP_Post or WC_Product ID
 	 * @return bool
 	 */
 	private function user_can_view( $user_id, $post_id ) {
 
-		if ( $this->post_is_public( $post_id ) ) {
+		if ( $this->is_post_public( $post_id ) ) {
 			$can_view = true;
 		} else {
 			if ( 'product' === get_post_type( $post_id ) ) {
-				$rules    = wc_memberships()->get_rules_instance()->get_the_product_restriction_rules( $post_id );
-				$can_view = wc_memberships()->get_rules_instance()->user_has_product_view_access_from_rules( $user_id, $rules, $post_id );
+				$rules    = wc_memberships()->get_rules_instance()->get_product_restriction_rules( $post_id );
+				$can_view = $this->user_has_product_view_access_from_rules( $user_id, $rules, $post_id );
 			} else {
 				$rules    = wc_memberships()->get_rules_instance()->get_post_content_restriction_rules( $post_id );
-				$can_view = wc_memberships()->get_rules_instance()->user_has_content_access_from_rules( $user_id, $rules, $post_id );
+				$can_view = $this->user_has_content_access_from_rules( $user_id, $rules, $post_id );
 			}
 		}
 
-		return (bool) $can_view;
+		return $can_view;
 	}
 
 
 	/**
-	 * Check if a user can purchase a product
+	 * Checks if a user can purchase a product.
 	 *
 	 * @since 1.7.1
-	 * @param int $user_id User id
-	 * @param int $product_id WC_Product id
+	 *
+	 * @param int $user_id user ID
+	 * @param int $product_id WC_Product ID
 	 * @return bool
 	 */
 	private function user_can_purchase( $user_id, $product_id )  {
 
-		if ( $this->post_is_public( $product_id ) ) {
+		if ( $this->is_post_public( $product_id ) ) {
 			$can_purchase = true;
 		} else {
-			$rules        = wc_memberships()->get_rules_instance()->get_the_product_restriction_rules( $product_id );
-			$can_purchase = wc_memberships()->get_rules_instance()->user_has_product_purchase_access_from_rules( $user_id, $rules, $product_id );
+			$rules        = wc_memberships()->get_rules_instance()->get_product_restriction_rules( $product_id );
+			$can_purchase = $this->user_has_product_purchase_access_from_rules( $user_id, $rules );
 		}
 
-		return (bool) $can_purchase;
+		return $can_purchase;
 	}
 
 
 	/**
-	 * Check if a post (post type or product) is accessible (viewable or purchasable)
+	 * Checks if a post (post type or product) is accessible (viewable or purchasable).
 	 *
 	 * TODO for now $target only supports 'post' => id or 'product' => id  {FN 2016-04-26}
-	 * having an array can be more future proof compatible if we decide to check for other content types
-	 * such as taxonomies, terms, etc.
+	 * Having an array can be more future proof compatible if we decide to check for other content types such as taxonomies, terms, etc.
 	 *
 	 * @since 1.4.0
-	 * @param int $user_id The user id to check for access
-	 * @param string|array $action Type of action(s): 'view', 'purchase' (products only)
-	 * @param array $content Associative array of content type and content id to access to
-	 * @param int|string $access_time UTC timestamp to compare for content access (optional, defaults to now)
+	 *
+	 * @param int $user_id the user ID to check for access
+	 * @param string|array $action type of action(s): 'view', 'purchase' (products only)
+	 * @param array $content associative array of content type and content id to access to
+	 * @param int|string $access_time UTC timestamp to compare for content access (optional, defaults to now time)
 	 * @return bool
 	 */
 	public function user_can( $user_id, $action, $content, $access_time = '' ) {
@@ -818,12 +969,13 @@ class WC_Memberships_Capabilities {
 
 		$user_can   = false;
 		$content_id = reset( $content );
+		$actions    = is_array( $action ) ? $action : null;
 
-		if ( is_array( $action ) ) {
+		if ( $actions ) {
 
 			$conditions = array();
 
-			foreach ( $action as $capability ) {
+			foreach ( $actions as $capability ) {
 
 				if ( 'view' === $capability ) {
 					$user_can = $this->user_can_view( $user_id, $content_id );
@@ -845,11 +997,10 @@ class WC_Memberships_Capabilities {
 			}
 
 			$user_start_time = $this->get_user_access_start_time_for_post( $user_id, $content_id, $action );
-
-			$user_can = null === $user_start_time || ! $user_can ? false : $access_time >= $user_start_time;
+			$user_can        = null === $user_start_time || ! $user_can ? false : $access_time >= $user_start_time;
 		}
 
-		return (bool) $user_can;
+		return $user_can;
 	}
 
 

@@ -18,17 +18,16 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Membership Ended Email
+ * Membership Ended Email.
  *
- * Membership ended emails are sent to plan members
- * once their membership has expired
+ * Membership ended emails are sent to plan members once their membership has expired.
  *
  * @since 1.7.0
  */
@@ -36,7 +35,7 @@ class WC_Memberships_User_Membership_Ended_Email extends WC_Memberships_User_Mem
 
 
 	/**
-	 * Constructor
+	 * Email constructor.
 	 *
 	 * @since 1.7.0
 	 */
@@ -63,10 +62,11 @@ class WC_Memberships_User_Membership_Ended_Email extends WC_Memberships_User_Mem
 
 
 	/**
-	 * Trigger the membership ended email
+	 * Triggers the Membership Ended email.
 	 *
 	 * @since 1.7.0
-	 * @param int $user_membership_id The id of the expired user membership
+	 *
+	 * @param int $user_membership_id the ID of the expired user membership
 	 */
 	public function trigger( $user_membership_id ) {
 
@@ -104,9 +104,9 @@ class WC_Memberships_User_Membership_Ended_Email extends WC_Memberships_User_Mem
 
 
 	/**
-	 * Email settings form fields
+	 * Filters the email settings form fields.
 	 *
-	 * Extends and overrides parent method
+	 * Extends and overrides parent method.
 	 *
 	 * @since 1.7.0
 	 */
@@ -148,9 +148,10 @@ class WC_Memberships_User_Membership_Ended_Email extends WC_Memberships_User_Mem
 
 
 	/**
-	 * Get the default body content
+	 * Returns the default body content.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return string
 	 */
 	public function get_default_body() {
@@ -163,10 +164,11 @@ class WC_Memberships_User_Membership_Ended_Email extends WC_Memberships_User_Mem
 
 
 	/**
-	 * Get email HTML content
+	 * Returns the email HTML content.
 	 *
 	 * @since 1.7.0
-	 * @return string HTML content
+	 *
+	 * @return string HTML
 	 */
 	public function get_content_html() {
 
@@ -185,10 +187,11 @@ class WC_Memberships_User_Membership_Ended_Email extends WC_Memberships_User_Mem
 
 
 	/**
-	 * Get email plain text content
+	 * Returns the email plain text content.
 	 *
 	 * @since 1.7.0
-	 * @return string Plain text content
+	 *
+	 * @return string plain text
 	 */
 	public function get_content_plain() {
 

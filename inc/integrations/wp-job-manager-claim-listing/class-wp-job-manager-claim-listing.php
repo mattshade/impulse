@@ -95,7 +95,7 @@ class Listify_WP_Job_Manager_Claim_Listing extends Listify_Integration {
 
 		$href = esc_url( wp_nonce_url( $href, 'claim_listing', 'claim_listing_nonce' ) );
 	?>
-		<a href="<?php echo esc_url( $href ); ?>" class="claim-listing"><i class="ion-thumbsup"></i> <?php _e( 'Claim Listing', 'listify' ); ?></a>
+		<a href="<?php echo esc_url( $href ); ?>" class="claim-listing button button-secondary"><i class="ion-thumbsup"></i> <?php _e( 'Claim Listing', 'listify' ); ?></a>
 	<?php
 	}
 

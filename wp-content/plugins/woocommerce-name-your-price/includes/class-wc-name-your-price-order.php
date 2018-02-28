@@ -22,8 +22,16 @@ class WC_Name_Your_Price_Order {
 	/* Order Filters */
 	/*-----------------------------------------------------------------------------------*/
 
-	/*
+	/**
 	 * Add cart session data from existing order.
+	 *
+	 * @param array $cart_item_data
+	 * @param WC_Order_Item_Product (supports array notation due to ArrayAccess)
+	 * @param WC_Order
+	 * @return array
+	 *
+	 * @todo Switch from array to object notation.
+	 * 
 	 * @since 2.4.0
 	 */
 	public function order_again_cart_item_data( $cart_item_data, $line_item, $order ) {
@@ -31,13 +39,13 @@ class WC_Name_Your_Price_Order {
 		$item_id = $line_item['variation_id'] ? $line_item['variation_id'] : $line_item['product_id'];
 
 		if( WC_Name_Your_Price_Helpers::is_nyp( $item_id ) ){
-			$cart_item_data['nyp'] = ( double ) WC_Name_Your_Price_Helpers::standardize_number( $line_item['line_subtotal'] );
+			$cart_item_data['nyp'] = ( double ) WC_Name_Your_Price_Helpers::standardize_number( $line_item['line_subtotal'] ) / $line_item['quantity'];
 		}
 
 		if ( WC_Name_Your_Price_Helpers::is_subscription( $item_id ) && WC_Name_Your_Price_Helpers::is_billing_period_variable( $item_id ) ) {
 			$subscription = $this->find_subscription( $line_item, $order );
 			if( $subscription ){
-				$cart_item_data['nyp_period'] = $subscription->billing_period;
+				$cart_item_data['nyp_period'] = $subscription->get_meta( '_billing_period', true );
 			}
 			
 		}
@@ -45,7 +53,7 @@ class WC_Name_Your_Price_Order {
 		return $cart_item_data;
 	}
 
-	/*
+	/**
 	 * Find the order item's related subscription.
 	 * Slightly hacky, matches product ID against product ID of subscription.
 	 * Will fail if multiple variable billing period subs exist in subscription.

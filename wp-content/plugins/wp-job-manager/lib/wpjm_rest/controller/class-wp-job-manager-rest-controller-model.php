@@ -18,9 +18,9 @@ class WP_Job_Manager_REST_Controller_Model extends WP_Job_Manager_REST_Controlle
 	/**
 	 * The Factory
 	 *
-	 * @var WP_Job_Manager_REST_Model_Factory
+	 * @var WP_Job_Manager_REST_Model
 	 */
-	protected $model_factory;
+	protected $model_prototype;
 
 	/**
 	 * The data Store
@@ -50,10 +50,10 @@ class WP_Job_Manager_REST_Controller_Model extends WP_Job_Manager_REST_Controlle
 	/**
 	 * Get our model factory
 	 *
-	 * @return WP_Job_Manager_REST_Model_Factory
+	 * @return WP_Job_Manager_REST_Model
 	 */
-	protected function get_model_factory() {
-		return $this->model_factory;
+	protected function get_model_prototype() {
+		return $this->model_prototype;
 	}
 
 	/**
@@ -67,8 +67,8 @@ class WP_Job_Manager_REST_Controller_Model extends WP_Job_Manager_REST_Controlle
 	 * @return bool|WP_Error true if valid otherwise error.
 	 */
 	public function register( $bundle, $environment ) {
-		$this->model_factory = $environment->model( $this->model_class_name );
-		$this->model_data_store = $this->model_factory->get_data_store();
+		$this->model_prototype = $environment->model( $this->model_class_name );
+		$this->model_data_store = $this->model_prototype->get_data_store();
 		return parent::register( $bundle, $environment );
 	}
 
@@ -82,7 +82,7 @@ class WP_Job_Manager_REST_Controller_Model extends WP_Job_Manager_REST_Controlle
 	 * @return array Item schema data.
 	 */
 	public function get_item_schema() {
-		$model_definition = $this->get_model_factory();
+		$model_definition = $this->get_model_prototype();
 		$fields = $model_definition->get_fields();
 		$properties = array();
 		$required = array();
@@ -101,7 +101,7 @@ class WP_Job_Manager_REST_Controller_Model extends WP_Job_Manager_REST_Controlle
 			'$schema' => 'http://json-schema.org/schema#',
 			'title' => $model_definition->get_name(),
 			'type' => 'object',
-			'properties' => (array) apply_filters( 'mixtape_rest_api_schema_properties', $properties, $this->get_model_factory() ),
+			'properties' => (array) $this->environment()->get_event_dispatcher()->apply_filters( 'rest_api_schema_properties', $properties, $this->get_model_prototype() ),
 		);
 
 		if ( ! empty( $required ) ) {
@@ -128,7 +128,7 @@ class WP_Job_Manager_REST_Controller_Model extends WP_Job_Manager_REST_Controlle
 	 * @return bool
 	 */
 	public function permissions_check( $request, $action = 'any' ) {
-		return $this->get_model_factory()->permissions_check( $request, $action );
+		return $this->get_model_prototype()->permissions_check( $request, $action );
 	}
 
 	/**

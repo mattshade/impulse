@@ -60,7 +60,7 @@ if ( ! comments_open() && '0' != get_comments_number() && post_type_supports( ge
 <?php
 	global $comments_widget_title, $comments_widget_icon, $comments_widget_before_title, $comments_widget_after_title;
 
-	$label_submit = ( is_singular( 'job_listing' ) && get_current_user_id() != get_post()->post_author ) ? __( 'Submit Your Review', 'listify' ) : __( 'Submit Reply', 'listify' );
+	$label_submit = ( is_singular( 'job_listing' ) && get_current_user_id() != get_post()->post_author ) ? __( 'Submit Your Impulse Score', 'listify' ) : __( 'Submit Reply', 'listify' );
 
 	$reply = isset( $_GET['replytocom'] ) ? (int) $_GET['replytocom'] : 0;
 

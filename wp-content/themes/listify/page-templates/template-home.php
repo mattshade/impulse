@@ -11,6 +11,7 @@ if ( ! listify_has_integration( 'wp-job-manager' ) ) {
 
 get_header(); ?>
 
+	
 	<?php while ( have_posts() ) : the_post(); ?>
 
 		<?php $style = get_post()->hero_style; ?>
@@ -26,14 +27,14 @@ get_header(); ?>
 							'Listify_Widget_Search_Listings',
 							apply_filters( 'listify_widget_search_listings_default', array(
 								'title' => get_the_title(),
-								'description' => strip_shortcodes( get_the_content() ),
+								'description' => strip_shortcodes( get_the_content() )
 							) ),
 							array(
 								'before_widget' => '<div class="listify_widget_search_listings">',
 								'after_widget'  => '</div>',
 								'before_title'  => '<div class="home-widget-section-title"><h1 class="home-widget-title">',
 								'after_title'   => '</h1></div>',
-								'widget_id'     => 'search-12391',
+								'widget_id'     => 'search-12391'
 							)
 						);
 					?>
@@ -42,9 +43,9 @@ get_header(); ?>
 				<?php if ( 'video' == $style && function_exists( 'the_custom_header_markup' ) ) : ?>
 					<div class="custom-header-video">
 						<div class="custom-header-media">
-							<?php
+							<?php 
 								add_filter( 'theme_mod_external_header_video', 'listify_header_video' );
-								the_custom_header_markup();
+								the_custom_header_markup(); 
 								remove_filter( 'theme_mod_external_header_video', 'listify_header_video' );
 							?>
 						</div>
@@ -59,9 +60,9 @@ get_header(); ?>
 					<?php
 						do_action( 'listify_output_map' );
 
-					if ( ! is_active_widget( false, false, 'listify_widget_map_listings', true ) ) {
-						do_action( 'listify_output_results' );
-					}
+						if ( ! is_active_widget( false, false, 'listify_widget_map_listings', true ) ) {
+							do_action( 'listify_output_results' );
+						}
 					?>
 				</div>
 
@@ -78,24 +79,24 @@ get_header(); ?>
 			<?php endif; ?>
 
 			<?php
-			if ( is_active_sidebar( 'widget-area-home' ) ) :
-				dynamic_sidebar( 'widget-area-home' );
+				if ( is_active_sidebar( 'widget-area-home' ) ) :
+					dynamic_sidebar( 'widget-area-home' );
 				else :
 					$defaults = array(
-						'before_widget'   => '<aside class="home-widget">',
-						'after_widget'    => '</aside>',
-						'before_title'    => '<div class="home-widget-section-title"><h3 class="home-widget-title">',
-						'after_title'     => '</h3></div>',
-						'widget_id'       => '',
+						'before_widget' => '<aside class="home-widget">',
+						'after_widget'  => '</aside>',
+						'before_title'  => '<div class="home-widget-section-title"><h3 class="home-widget-title">',
+						'after_title'   => '</h3></div>',
+						'widget_id'     => ''
 					);
 
 					the_Widget(
 						'Listify_Widget_Recent_Listings',
 						array(
-							'title'       => __( 'Recent  Listings', 'listify' ),
+							'title' => __( 'Recent  Listings', 'listify' ),
 							'description' => __( 'Take a look at what\'s been recently added.', 'listify' ),
-							'limit'       => 6,
-							'featured'    => 0,
+							'limit' => 6,
+							'featured' => 0
 						),
 						$defaults
 					);
@@ -105,5 +106,7 @@ get_header(); ?>
 		</div>
 
 	<?php endwhile; ?>
+	
+
 
 <?php get_footer(); ?>

@@ -29,7 +29,7 @@ class Advanced_Ads_Ad_Type_Plain extends Advanced_Ads_Ad_Type_Abstract{
 	 */
 	public function __construct() {
 		$this->title = __( 'Plain Text and Code', 'advanced-ads' );
-		$this->description = __( 'Simple text editor without any filters. You might use it to display unfiltered content, php code or javascript. Shortcodes and other WordPress content field magic does not work here.', 'advanced-ads' );
+		$this->description = __( 'Any ad network, Amazon, customized AdSense codes, shortcodes, and code like JavaScript, HTML or PHP.', 'advanced-ads' );
 		$this->parameters = array(
 			'content' => ''
 		);
@@ -54,6 +54,7 @@ class Advanced_Ads_Ad_Type_Plain extends Advanced_Ads_Ad_Type_Abstract{
 		<?php include ADVADS_BASE_PATH . 'admin/views/ad-info-after-textarea.php'; ?>
 	    <input type="hidden" name="advanced_ad[output][allow_php]" value="0"/>
 	    <?php $this->render_php_allow($ad);
+	    $this->render_shortcodes_allow( $ad );
 	}
 	
 	/**
@@ -92,6 +93,21 @@ class Advanced_Ads_Ad_Type_Plain extends Advanced_Ads_Ad_Type_Abstract{
 	}
 
 	/**
+	 * Render allow shortcodes field.
+	 *
+	 * @param $ad Advanced_Ads_Ad object
+	 */
+	public function render_shortcodes_allow( $ad ){
+		$allow_shortcodes = ! empty( $ad->output['allow_shortcodes'] );
+		?>
+		<label class="label" for="advads-parameters-shortcodes"><?php _e( 'Allow shortcodes', 'advanced-ads' ); ?></label>
+		<div>
+		<input id="advads-parameters-shortcodes" type="checkbox" name="advanced_ad[output][allow_shortcodes]" value="1" <?php
+		checked( 1, $allow_shortcodes ); ?>/><?php _e( 'Execute shortcodes', 'advanced-ads' );
+		?></div><hr/><?php
+	}
+
+	/**
 	 * prepare the ads frontend output
 	 *
 	 * @param obj $ad ad object
@@ -108,6 +124,11 @@ class Advanced_Ads_Ad_Type_Plain extends Advanced_Ads_Ad_Type_Abstract{
 		} else {
 			$content = $ad->content;
 		}
+
+		if ( ! empty( $ad->output['allow_shortcodes'] ) ) {
+			$content = $this->do_shortcode( $content, $ad );
+		}
+
 		return $content;
 	}
 

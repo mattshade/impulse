@@ -50,10 +50,12 @@ class Advanced_Ads_Import {
 	 * Manages stages of the XML import process
 	 */
 	public function dispatch() {
-		if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options') ) ) {
+		if ( ! isset( $_POST['_wpnonce'] ) 
+			|| ! wp_verify_nonce( $_POST['_wpnonce'], 'advads-import' )
+			|| ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options') ) ) {
 			return;
 		}
-
+		
 		if ( ! isset( $_POST['import_type'] ) ) {
 			return;
 		}
@@ -219,7 +221,7 @@ class Advanced_Ads_Import {
 							update_option( 'advads-ad-groups', $advads_ad_groups );
 						}
 
-						$ad_weight = isset( $_group['weight'] ) ? absint( $_group['weight'] ) : Advanced_Ads_Group::MAX_AD_GROUP_WEIGHT;
+						$ad_weight = isset( $_group['weight'] ) ? absint( $_group['weight'] ) : Advanced_Ads_Group::MAX_AD_GROUP_DEFAULT_WEIGHT;
 						$advads_ad_weights[ $group_id ][ $post_id ] = $ad_weight;
 					}
 

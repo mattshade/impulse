@@ -70,11 +70,19 @@ class WP_Job_Manager_REST_Environment {
 	private $type_registry;
 
 	/**
+	 * Events
+	 *
+	 * @var WP_Job_Manager_REST_Events
+	 */
+	private $event_dispatcher;
+
+	/**
 	 * Mixtape_Environment constructor.
 	 *
 	 * @param WP_Job_Manager_REST_Bootstrap $bootstrap The bootstrap.
 	 */
 	public function __construct( $bootstrap ) {
+		$this->event_dispatcher = new WP_Job_Manager_REST_Events();
 		$this->bootstrap = $bootstrap;
 		$this->has_started = false;
 		$this->rest_apis = array();
@@ -86,6 +94,15 @@ class WP_Job_Manager_REST_Environment {
 		$this->array_var( self::MODELS )
 			->array_var( self::REGISTRABLE )
 			->array_var( self::BUNDLES );
+	}
+
+	/**
+	 * Get Event Dispacher
+	 *
+	 * @return WP_Job_Manager_REST_Events
+	 */
+	public function get_event_dispatcher() {
+		return $this->event_dispatcher;
 	}
 
 	/**
@@ -106,10 +123,10 @@ class WP_Job_Manager_REST_Environment {
 	}
 
 	/**
-	 * Retrieve a previously defined Mixtape_Model_Definition
+	 * Retrieve a previously defined WP_Job_Manager_REST_Model
 	 *
 	 * @param string $class the class name.
-	 * @return WP_Job_Manager_REST_Model_Factory the definition.
+	 * @return WP_Job_Manager_REST_Model the definition.
 	 * @throws WP_Job_Manager_REST_Exception Throws in case the model is not registered.
 	 */
 	public function model( $class ) {
@@ -162,7 +179,7 @@ class WP_Job_Manager_REST_Environment {
 		}
 
 		if ( false === $this->has_started ) {
-			do_action( 'mt_environment_before_start', $this, get_class( $this ) );
+			$this->get_event_dispatcher()->do_action( 'environment_before_start', $this, get_class( $this ) );
 			$this->load_pending_builders( self::MODELS );
 			$this->load_pending_builders( self::BUNDLES );
 			$registrables = $this->get( self::REGISTRABLE ) ? $this->get( self::REGISTRABLE ) : array();
@@ -181,7 +198,7 @@ class WP_Job_Manager_REST_Environment {
 			 * @param array          $rest_apis The existing rest apis.
 			 * @param WP_Job_Manager_REST_Environment $this The Environment.
 			 */
-			$rest_apis = (array) apply_filters( 'mt_environment_get_rest_apis', $this->rest_apis, $this );
+			$rest_apis = (array) $this->get_event_dispatcher()->apply_filters( 'environment_get_rest_apis', $this->rest_apis, $this );
 
 			foreach ( $rest_apis as $k => $bundle ) {
 				/**
@@ -192,7 +209,7 @@ class WP_Job_Manager_REST_Environment {
 				$bundle->register( $this );
 			}
 			$this->has_started = true;
-			do_action( 'mt_environment_after_start', $this );
+			$this->get_event_dispatcher()->do_action( 'environment_after_start', $this );
 		}
 
 		return $this;
@@ -252,7 +269,7 @@ class WP_Job_Manager_REST_Environment {
 		 *
 		 * @return mixed
 		 */
-		return apply_filters( 'mt_variable_get', $value, $this, $name );
+		return $this->get_event_dispatcher()->apply_filters( 'variable_get', $value, $this, $name );
 	}
 
 	/**
@@ -373,12 +390,21 @@ class WP_Job_Manager_REST_Environment {
 	 *
 	 * @param string $declaration A Model class string.
 	 *
-	 * @return WP_Job_Manager_REST_Model_Factory
+	 * @return WP_Job_Manager_REST_Model
 	 */
 	function define_model( $declaration ) {
 		WP_Job_Manager_REST_Expect::that( class_exists( $declaration ), '$declaration string should be an existing class' );
 		WP_Job_Manager_REST_Expect::that( in_array( 'WP_Job_Manager_REST_Interfaces_Model', class_implements( $declaration ), true ), '$declaration does not implement WP_Job_Manager_REST_Interfaces_Model' );
-		$factory = new WP_Job_Manager_REST_Model_Factory( $this, $declaration, new WP_Job_Manager_REST_Data_Store_Nil() );
+
+		/**
+		 * Create an empty Model to act as our factory (I know this is weird, see php5.2)
+		 *
+		 * @var WP_Job_Manager_REST_Model $factory
+		 */
+		$factory = new $declaration();
+		$factory->with_environment( $this );
+		$factory->with_data_store( new WP_Job_Manager_REST_Data_Store_Nil() );
+		$factory->with_permissions_provider( new WP_Job_Manager_REST_Permissions_Any() );
 		$this->model_definitions[ $declaration ] = $factory;
 		return $factory;
 	}

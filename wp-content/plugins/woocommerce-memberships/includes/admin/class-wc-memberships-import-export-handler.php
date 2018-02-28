@@ -19,28 +19,28 @@
  * @package   WC-Memberships/Admin
  * @author    SkyVerge
  * @category  Admin
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Import / Export Handler class
+ * Import / Export Handler class.
  *
  * @since 1.6.0
  */
 class WC_Memberships_Admin_Import_Export_Handler {
 
 
-	/** @var string The location of this page */
-	private $url = '';
+	/** @var string the location of this page */
+	private $url;
 
-	/** @var array Sections of the Import / Export admin page */
-	private $sections = array();
+	/** @var array sections of the Import / Export admin page */
+	private $sections;
 
-	/** @var string The current section of the Import / Export admin page */
-	private $current_section = '';
+	/** @var string the current section of the Import / Export admin page */
+	private $current_section;
 
 	/** @var \WC_Memberships_CSV_Import_User_Memberships instance */
 	protected $csv_import_user_memberships;
@@ -50,7 +50,7 @@ class WC_Memberships_Admin_Import_Export_Handler {
 
 
 	/**
-	 * Constructor
+	 * Handler constructor.
 	 *
 	 * @since 1.6.0
 	 */
@@ -59,10 +59,11 @@ class WC_Memberships_Admin_Import_Export_Handler {
 		$this->url = admin_url( 'admin.php?page=wc_memberships_import_export' );
 
 		/**
-		 * Filter the Memberships Import / Export admin sections
+		 * Filter the Memberships Import / Export admin sections.
 		 *
 		 * @since 1.6.0
-		 * @param $sections array Associative array with section ids and labels
+		 *
+		 * @param $sections array associative array with section ids and labels
 		 */
 		$this->sections = apply_filters( 'wc_memberships_admin_import_export_sections', array(
 			'csv_export_user_memberships' => __( 'Export to CSV', 'woocommerce-memberships' ),
@@ -86,12 +87,12 @@ class WC_Memberships_Admin_Import_Export_Handler {
 
 
 	/**
-	 * Set the Memberships admin menu item as active
-	 * while viewing the Import / Export tab page
+	 * Sets the Memberships admin menu item as active while viewing the Import / Export tab page.
 	 *
 	 * @internal
 	 *
 	 * @since 1.6.2
+	 *
 	 * @param string $parent_file
 	 * @return string
 	 */
@@ -118,10 +119,11 @@ class WC_Memberships_Admin_Import_Export_Handler {
 
 
 	/**
-	 * Set the current action
+	 * Sets the current action.
 	 *
 	 * @since 1.6.0
-	 * @param string $action One valid section or will attempt to auto-determine
+	 *
+	 * @param string $action one valid section or will attempt to auto-determine
 	 */
 	public function set_action( $action = '' ) {
 
@@ -131,7 +133,7 @@ class WC_Memberships_Admin_Import_Export_Handler {
 
 
 	/**
-	 * Load section
+	 * Loads section.
 	 *
 	 * @since 1.6.0
 	 */
@@ -149,9 +151,10 @@ class WC_Memberships_Admin_Import_Export_Handler {
 
 
 	/**
-	 * Get the Import instance
+	 * Returns the Import instance.
 	 *
 	 * @since 1.6.0
+	 *
 	 * @return \WC_Memberships_CSV_Import_User_Memberships
 	 */
 	public function get_csv_import_user_memberships_instance() {
@@ -160,9 +163,10 @@ class WC_Memberships_Admin_Import_Export_Handler {
 
 
 	/**
-	 * Get the Export instance
+	 * Returns the Export instance.
 	 *
 	 * @since 1.6.0
+	 *
 	 * @return \WC_Memberships_CSV_Export_User_Memberships
 	 */
 	public function get_csv_export_user_memberships_instance() {
@@ -171,7 +175,7 @@ class WC_Memberships_Admin_Import_Export_Handler {
 
 
 	/**
-	 * Add bulk User Memberships export action
+	 * Adds bulk User Memberships export action.
 	 *
 	 * @internal
 	 *
@@ -197,7 +201,7 @@ class WC_Memberships_Admin_Import_Export_Handler {
 
 
 	/**
-	 * Process bulk User Memberships export action
+	 * Processes bulk User Memberships export action.
 	 *
 	 * @internal
 	 *
@@ -228,7 +232,7 @@ class WC_Memberships_Admin_Import_Export_Handler {
 
 
 	/**
-	 * Render the page within Memberships admin page tabs
+	 * Renders the page within Memberships admin page tabs.
 	 *
 	 * @internal
 	 *
@@ -246,10 +250,11 @@ class WC_Memberships_Admin_Import_Export_Handler {
 		echo '<br class="clear">';
 
 		/**
-		 * Render the current section in the Import / Export admin page
+		 * Renders the current section in the Import / Export admin page.
 		 *
 		 * @since 1.6.0
-		 * @param string $current_section The section that should be displayed
+		 *
+		 * @param string $current_section the section that should be displayed
 		 */
 		do_action( 'wc_memberships_render_import_export_page_section', $current_section );
 
@@ -258,11 +263,12 @@ class WC_Memberships_Admin_Import_Export_Handler {
 
 
 	/**
-	 * Get the import / export admin screen url
+	 * Returns the import / export admin screen URL.
 	 *
 	 * @since 1.6.0
-	 * @param string $section Optional, defaults to current section
-	 * @return string
+	 *
+	 * @param string $section optional, defaults to current section
+	 * @return string URL
 	 */
 	public function get_admin_page_url( $section = '' ) {
 
@@ -273,12 +279,13 @@ class WC_Memberships_Admin_Import_Export_Handler {
 
 
 	/**
-	 * Get the admin page sections
+	 * Returns the admin page sections.
 	 *
 	 * @since 1.6.0
 	 * @return array
 	 */
 	public function get_admin_page_sections() {
+
 		return $this->sections;
 	}
 
@@ -316,7 +323,9 @@ class WC_Memberships_Admin_Import_Export_Handler {
 	 */
 	private function render_admin_page_sections_navigation_links( $current_section = '' ) {
 
-		if ( ! empty ( $this->sections ) ) {
+		$sections = $this->sections;
+
+		if ( ! empty ( $sections ) ) {
 
 			if ( '' === $current_section ) {
 				$current_section = $this->get_admin_page_current_section();
@@ -324,7 +333,7 @@ class WC_Memberships_Admin_Import_Export_Handler {
 
 			$links = array();
 
-			foreach ( $this->sections as $id => $label ) {
+			foreach ( $sections as $id => $label ) {
 
 				$url   = add_query_arg( 'section', $id, $this->get_admin_page_url() );
 				$class = $id === $current_section ? 'class="current"' : '';

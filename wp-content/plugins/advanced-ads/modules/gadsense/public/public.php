@@ -19,12 +19,20 @@ class Advanced_Ads_AdSense_Public {
 	}
 
 	/**
-	 * inject page-level header code
-	 *
-	 * @since 1.6.9
+	 * Print data in the head tag on the front end.
 	 */
 	public function inject_header(){
 		$options = $this->data->get_options();
+
+		// Inject CSS to make AdSense background transparent.
+		if ( ! empty( $options['background'] ) ) {
+			echo '<style>ins.adsbygoogle { background-color: transparent; }</style>';
+		}
+		/**
+		 * inject page-level header code
+		 *
+		 * @since 1.6.9
+		 */
 		$pub_id = trim( $this->data->get_adsense_id() );
 
 		if( ! defined( 'ADVADS_ADS_DISABLED' ) && $pub_id && isset( $options['page-level-enabled'] ) && $options['page-level-enabled'] ){

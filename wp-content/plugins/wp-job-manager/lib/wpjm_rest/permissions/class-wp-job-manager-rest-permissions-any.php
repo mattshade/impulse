@@ -21,7 +21,7 @@ class WP_Job_Manager_REST_Permissions_Any implements WP_Job_Manager_REST_Interfa
 	 * @param string          $action The action (e.g. index, create update etc).
 	 * @return bool
 	 */
-	public static function permissions_check( $request, $action ) {
+	public function permissions_check( $request, $action ) {
 		return true;
 	}
 }

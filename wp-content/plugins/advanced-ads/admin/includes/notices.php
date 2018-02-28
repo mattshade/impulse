@@ -39,18 +39,20 @@ $advanced_ads_admin_notices = apply_filters( 'advanced-ads-notices', array(
     'license_invalid' => array(
 	'type' => 'plugin_error',
 	'text' => __( 'One or more license keys for <strong>Advanced Ads add-ons are invalid or missing</strong>.', 'advanced-ads' ) . ' ' . sprintf( __( 'Please add valid license keys <a href="%s">here</a>.', 'advanced-ads' ), get_admin_url( 1, 'admin.php?page=advanced-ads-settings#top#licenses' ) ),
-	'global' => true
-    ),
-    // license expired
-    'license_expired' => array(
-	'type' => 'plugin_error',
-	'text' => sprintf( __( '<strong>Advanced Ads</strong> license(s) expired. Support and updates are disabled. Please visit <a href="%s"> the license page</a> for more information.', 'advanced-ads' ), admin_url( 'admin.php?page=advanced-ads-settings#top#licenses' ) ),
-	'global' => true
     ),
     // please review
     'review' => array(
 	'type' => 'info',
-	'text' => sprintf( __( '<img src="%3$s" alt="Thomas" width="80" height="115" class="advads-review-image"/>You are using <strong>Advanced Ads</strong> for some time now. Thank you! If you need my help then please visit the <a href="%1$s" target="_blank">Support page</a> to get free help.</p><h3>Thanks for your Review</h3><p>If you share my passion and find Advanced Ads useful then please <a href="%2$s" target="_blank">leave a 5-star review on wordpress.org</a>.</p><p><em>Thomas</em>', 'advanced-ads' ), ADVADS_URL . 'support/#utm_source=advanced-ads&utm_medium=link&utm_campaign=notice-review', 'https://wordpress.org/support/plugin/advanced-ads/reviews/#postform', ADVADS_BASE_URL . 'admin/assets/img/thomas.png' ),
+	'text' => '<img src="' . ADVADS_BASE_URL . 'admin/assets/img/thomas.png" alt="Thomas" width="80" height="115" class="advads-review-image"/>'
+		. '<p>' . sprintf(__( 'You’ve successfully <strong>created %s ads using Advanced Ads</strong>.', 'advanced-ads' ), Advanced_Ads::get_number_of_ads() ) . '</p>'
+		. '<p>' . __( 'Do you find Advanced Ads useful and would like to keep us motivated? Please help us with a review.', 'advanced-ads' ) . '</p>'
+		. '<p><em>Thomas & Team</em></p>'
+		. '<p>' 
+			. '<span class="dashicons dashicons-external"></span>&nbsp;<strong><a href="https://wordpress.org/support/plugin/advanced-ads/reviews/?rate=5#new-post" target=_"blank">' . __( 'Sure, I’ll rate the plugin', 'advanced-ads' ) . '</a></strong>'
+			. ' &nbsp;&nbsp;<span class="dashicons dashicons-smiley"></span>&nbsp;<a href="javascript:void(0)" target=_"blank" class="advads-notice-dismiss">' . __( 'I already did', 'advanced-ads' ) . '</a>'
+			. ' &nbsp;&nbsp;<span class="dashicons dashicons-sos"></span>&nbsp;<a href="'. ADVADS_URL . 'support/#utm_source=advanced-ads&utm_medium=link&utm_campaign=notice-review" target=_"blank">' . __( 'I am not happy, please help', 'advanced-ads' ) . '</a>'
+			. '<br/><br/><span class="dashicons dashicons-clock"></span>&nbsp;<a href="javascript:void(0)" target=_"blank" class="advads-notice-hide">' . __( 'Ask me later', 'advanced-ads' ) . '</a>'
+		. '</p>',
 	'global' => false
     ),
     // adblocker assets expired

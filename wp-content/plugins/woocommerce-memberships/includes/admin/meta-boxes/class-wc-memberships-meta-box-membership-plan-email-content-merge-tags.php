@@ -19,14 +19,14 @@
  * @package   WC-Memberships/Admin/Meta-Boxes
  * @author    SkyVerge
  * @category  Admin
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Membership Plan Email Content Merge Tags Meta Box
+ * Membership Plan Email Content Merge Tags Meta Box.
  *
  * @since 1.7.0
  */
@@ -34,10 +34,11 @@ class WC_Memberships_Meta_Box_Membership_Plan_Email_Content_Merge_Tags extends W
 
 
 	/**
-	 * Constructor
+	 * Constructor.
+	 *
+	 * @see \WC_Memberships_Meta_Box::__construct()
 	 *
 	 * @since 1.7.0
-	 * @see WC_Memberships_Meta_Box::__construct()
 	 */
 	public function __construct() {
 
@@ -51,9 +52,10 @@ class WC_Memberships_Meta_Box_Membership_Plan_Email_Content_Merge_Tags extends W
 
 
 	/**
-	 * Get the meta box title
+	 * Returns the meta box title.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return string
 	 */
 	public function get_title() {
@@ -62,9 +64,10 @@ class WC_Memberships_Meta_Box_Membership_Plan_Email_Content_Merge_Tags extends W
 
 
 	/**
-	 * Display the membership data meta box
+	 * Displays the membership data meta box.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param \WP_Post $post
 	 */
 	public function output( WP_Post $post ) {

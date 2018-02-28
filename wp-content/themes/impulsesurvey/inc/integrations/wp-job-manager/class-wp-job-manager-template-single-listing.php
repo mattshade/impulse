@@ -31,10 +31,12 @@ class Listify_WP_Job_Manager_Template_Single_Listing {
 
 		add_action( 'single_job_listing_meta_start', array( __CLASS__, 'the_secondary_image' ), 7 );
 		add_action( 'single_job_listing_meta_start', 'listify_the_listing_title', 10 );
+		add_action( 'single_job_listing_meta_start', 'listify_the_listing_rating' );
 		add_action( 'single_job_listing_meta_start', 'listify_the_listing_location', 20 );
+		add_action( 'single_job_listing_meta_start', 'listify_the_listing_url', 20 );
 		add_action( 'single_job_listing_meta_start', 'listify_the_listing_category', 30 );
 
-		add_action( 'single_job_listing_meta_after', 'listify_the_listing_rating' );
+		// add_action( 'single_job_listing_meta_after', 'listify_the_listing_rating' );
 
 		add_action( 'listify_single_job_listing_actions', array( __CLASS__, 'the_actions' ) );
 		add_action( 'listify_single_job_listing_actions_after', array( __CLASS__, 'submit_review_link' ) );

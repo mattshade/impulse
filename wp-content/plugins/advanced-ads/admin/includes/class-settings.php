@@ -44,10 +44,34 @@ class Advanced_Ads_Admin_Settings {
 		// general settings section
 		add_settings_section(
 			'advanced_ads_setting_section',
-			__( 'General', 'advanced-ads' ),
+			'',//__( 'General', 'advanced-ads' ),
 			array($this, 'render_settings_section_callback'),
 			$hook
 		);
+		
+		// Pro pitch section
+		if( ! defined( 'AAP_VERSION' ) ){
+		    add_settings_section(
+			    'advanced_ads_settings_pro_pitch_section',
+			    '',
+			    array($this, 'render_settings_pro_pitch_section_callback'),
+			    'advanced-ads-settings-pro-pitch-page'
+		    );
+
+		    add_filter( 'advanced-ads-setting-tabs', array( $this, 'pro_pitch_tab') );
+		}		
+		
+		// Tracking pitch section
+		if( ! defined( 'AAT_VERSION' ) ){
+		    add_settings_section(
+			    'advanced_ads_settings_tracking_pitch_section',
+			    '',
+			    array($this, 'render_settings_tracking_pitch_section_callback'),
+			    'advanced-ads-settings-tracking-pitch-page'
+		    );
+
+		    add_filter( 'advanced-ads-setting-tabs', array( $this, 'tracking_pitch_tab') );
+		}		
 
 		// licenses section only for main blog
 		if( is_main_site( get_current_blog_id() ) ){
@@ -56,12 +80,19 @@ class Advanced_Ads_Admin_Settings {
 
 		    add_settings_section(
 			    'advanced_ads_settings_license_section',
-			    __( 'Licenses', 'advanced-ads' ),
+			    '', //__( 'Licenses', 'advanced-ads' ),
 			    array($this, 'render_settings_licenses_section_callback'),
 			    'advanced-ads-settings-license-page'
 		    );
 
 		    add_filter( 'advanced-ads-setting-tabs', array( $this, 'license_tab') );
+		    
+		    add_settings_section(
+			    'advanced_ads_settings_license_pitch_section',
+			    '', //__( 'Licenses', 'advanced-ads' ),
+			    array($this, 'render_settings_licenses_pitch_section_callback'),
+			    'advanced-ads-settings-license-page'
+		    );
 		}
 
 		// add setting fields to disable ads
@@ -210,6 +241,39 @@ class Advanced_Ads_Admin_Settings {
 
 		return $tabs;
 	}
+	
+	/**
+	 * add pro pitch tab
+	 *
+	 * arr $tabs setting tabs
+	 */
+	public function pro_pitch_tab( array $tabs ){
+
+		$tabs['pro_pitch'] = array(
+			'page' => 'advanced-ads-settings-pro-pitch-page',
+			//'group' => ADVADS_SLUG . '-pro-pitch',
+			'tabid' => 'pro-pitch',
+			'title' => __( 'Pro', 'advanced-ads' )
+		);
+
+		return $tabs;
+	}
+	
+	/**
+	 * add tracking pitch tab
+	 *
+	 * arr $tabs setting tabs
+	 */
+	public function tracking_pitch_tab( array $tabs ){
+
+		$tabs['tracking_pitch'] = array(
+			'page' => 'advanced-ads-settings-tracking-pitch-page',
+			'tabid' => 'tracking-pitch',
+			'title' => __( 'Tracking', 'advanced-ads' )
+		);
+
+		return $tabs;
+	}
 
 	/**
 	 * render settings section
@@ -230,6 +294,38 @@ class Advanced_Ads_Admin_Settings {
 		echo ' ' . sprintf( __( 'See also <a href="%s" target="_blank">Issues and questions about licenses</a>.', 'advanced-ads' ), ADVADS_URL . 'manual-category/purchase-licenses/#utm_source=advanced-ads&utm_medium=link&utm_campaign=settings-licenses') . '</p>';
 		// nonce field
 		echo '<input type="hidden" id="advads-licenses-ajax-referrer" value="' . wp_create_nonce( "advads_ajax_license_nonce" ) . '"/>';
+	}
+	
+	/**
+	 * render licenses pithces settings section
+	 *
+	 * @since 1.8.12
+	 */
+	public function render_settings_licenses_pitch_section_callback(){
+		
+		echo '<h3>' . __( 'Are you missing something?', 'advanced-ads' ) . '</h3>';
+	    
+		Advanced_Ads_Overview_Widgets_Callbacks::render_addons( $hide_activated = true );
+	}
+	
+	/**
+	 * render pro pitch settings section
+	 *
+	 * @since 1.8.12
+	 */
+	public function render_settings_pro_pitch_section_callback(){
+		echo '<br/>';
+		include ADVADS_BASE_PATH . 'admin/views/pitch-pro-tab.php';
+	}
+	
+	/**
+	 * render tracking pitch settings section
+	 *
+	 * @since 1.8.12
+	 */
+	public function render_settings_tracking_pitch_section_callback(){
+		echo '<br/>';
+		include ADVADS_BASE_PATH . 'admin/views/pitch-tracking.php';
 	}
 
 	/**
@@ -356,8 +452,11 @@ class Advanced_Ads_Admin_Settings {
 		$checked = ( ! empty($options['block-bots'])) ? 1 : 0;
 
 		echo '<input id="advanced-ads-block-bots" type="checkbox" value="1" name="'.ADVADS_SLUG.'[block-bots]" '.checked( $checked, 1, false ).'>';
-		echo '<p class="description">'. sprintf( __( 'Hide ads from crawlers, bots and empty user agents. Also prevents counting impressions for bots when using the <a href="%s" target="_blank">Tracking Add-On</a>.', 'advanced-ads' ), ADVADS_URL . 'add-ons/tracking/#utm_source=advanced-ads&utm_medium=link&utm_campaign=settings' ) .'<br/>'
-					. __( 'Disabling this option only makes sense if your ads contain content you want to display to bots (like search engines) or your site is cached and bots could create a cached version without the ads.', 'advanced-ads' ) . '</p>';
+		if( Advanced_Ads::get_instance()->is_bot() ){
+			echo '<span class="advads-error-message">' . __( 'You look like a bot', 'advanced-ads' ) . '</a>. </span>';
+		}
+		echo '<span class="description"><a href="'. ADVADS_URL . 'hide-ads-from-bots/#utm_source=advanced-ads&utm_medium=link&utm_campaign=settings" target="blank">'. __( 'Read this first', 'advanced-ads' ) . '</a></span>';
+		echo '<p class="description">'. __( 'Hide ads from crawlers, bots and empty user agents.', 'advanced-ads' ) .'</p>';
 	}
 
 	/**

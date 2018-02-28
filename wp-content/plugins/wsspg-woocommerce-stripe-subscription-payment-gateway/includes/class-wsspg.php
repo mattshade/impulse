@@ -432,20 +432,38 @@ class Wsspg {
 	/**
 	 * Static error and event logging.
 	 *
-	 * Usage: Wsspg::log( $message );
+	 * Usage: Wsspg::log( $message, $type );
 	 *
 	 * @since  1.0.0
 	 * @param  string
 	 */
-	public static function log( $message ) {
+	public static function log( $message, $type = null  ) {
 
-		if( WSSPG_PLUGIN_DEBUG ) {
+		$datetime = new DateTime();
+		$datetime = $datetime->format( 'Y-m-d H:i:s' );
+		$timezone = date_default_timezone_get();
+		$message = print_r( $message, true );
+
+		if( defined( 'WSSPG_PLUGIN_DEBUG' ) && WSSPG_PLUGIN_DEBUG ) {
 			if( empty( self::$log ) ) {
 				self::$log = new WC_Logger();
 			}
 			self::$log->add( 'wsspg-woocommerce-stripe-subscription-payment-gateway', $message );
 			if( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( $message );
+				if( defined( 'WSSPG_PLUGIN_DEV' ) && WSSPG_PLUGIN_DEV ) {
+					$type = preg_replace('/\s+/','',$type);
+					if( ! isset( $type ) || empty( $type ) || is_null( $type ) ) {
+						$type = 'error';
+					}
+					$filepath = WSSPG_PLUGIN_DIR_PATH."/log/$type.log";
+					error_log(
+						"[$datetime $timezone]\t$message\n",
+						3,
+						$filepath
+					);
+				} else {
+					error_log( $message );
+				}
 			}
 		}
 	}
@@ -453,42 +471,34 @@ class Wsspg {
 	/**
 	 * Returns true if $currency is zero decimal currency.
 	 *
-	 * With thanks to uganikov (https://github.com/uganikov)
-	 *
 	 * @since   1.0.5
 	 * @param   string
 	 * @return  boolean
 	 */
 	public static function is_zero_decimal( $currency ) {
 
-		$boolean = false;
-		switch( strtoupper( $currency ) ) {
-			// zero decimal currencies.
-			case 'BIF':
-			case 'CLP':
-			case 'DJF':
-			case 'GNF':
-			case 'JPY':
-			case 'KMF':
-			case 'KRW':
-			case 'MGA':
-			case 'PYG':
-			case 'RWF':
-			case 'VND':
-			case 'VUV':
-			case 'XAF':
-			case 'XOF':
-			case 'XPF':
-				$boolean = true;
-				break;
-		}
-		return $boolean;
+		$zdcs = array(
+			'BIF',
+			'CLP',
+			'DJF',
+			'GNF',
+			'JPY',
+			'KMF',
+			'KRW',
+			'MGA',
+			'PYG',
+			'RWF',
+			'VND',
+			'VUV',
+			'XAF',
+			'XOF',
+			'XPF',
+		);
+		return in_array( strtoupper( $currency ), $zdcs ) ? true : false;
 	}
 
 	/**
 	 * Returns the order total in the smallest currency unit.
-	 *
-	 * With thanks to uganikov (https://github.com/uganikov)
 	 *
 	 * @since   1.0.5
 	 * @param   float

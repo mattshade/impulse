@@ -27,6 +27,7 @@ class Advanced_Ads_Ad_Ajax_Callbacks {
 		add_action( 'wp_ajax_load_display_conditions_metabox', array( $this, 'load_display_condition' ) );
 		add_action( 'wp_ajax_advads-terms-search', array( $this, 'search_terms' ) );
 		add_action( 'wp_ajax_advads-close-notice', array( $this, 'close_notice' ) );
+		add_action( 'wp_ajax_advads-hide-notice', array( $this, 'hide_notice' ) );
 		add_action( 'wp_ajax_advads-subscribe-notice', array( $this, 'subscribe' ) );
 		add_action( 'wp_ajax_advads-activate-license', array( $this, 'activate_license' ) );
 		add_action( 'wp_ajax_advads-deactivate-license', array( $this, 'deactivate_license' ) );
@@ -34,6 +35,7 @@ class Advanced_Ads_Ad_Ajax_Callbacks {
 		add_action( 'wp_ajax_advads-post-search', array( $this, 'post_search' ) );
 		add_action( 'wp_ajax_advads-ad-injection-content', array( $this, 'inject_placement' ) );
 		add_action( 'wp_ajax_advads-save-hide-wizard-state', array( $this, 'save_wizard_state' ) );
+		add_action( 'wp_ajax_advads-adsense-enable-pla', array( $this, 'adsense_enable_pla' ) );
 
 	}
 
@@ -43,6 +45,9 @@ class Advanced_Ads_Ad_Ajax_Callbacks {
 	 * @since 1.0.0
 	 */
 	public function load_ad_parameters_metabox() {
+	    
+		check_ajax_referer('advanced-ads-admin-ajax-nonce', 'nonce');
+	    
 		if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads') ) ) {
 			return;
 		}
@@ -73,6 +78,9 @@ class Advanced_Ads_Ad_Ajax_Callbacks {
 	 * @since 1.5.4
 	 */
 	public function load_visitor_condition() {
+	    
+		check_ajax_referer('advanced-ads-admin-ajax-nonce', 'nonce');
+	    
 		if( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads') ) ) {
 		    return;
 		}
@@ -101,6 +109,9 @@ class Advanced_Ads_Ad_Ajax_Callbacks {
 	 * @since 1.7
 	 */
 	public function load_display_condition() {
+	    
+		check_ajax_referer('advanced-ads-admin-ajax-nonce', 'nonce');
+	    
 		if( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads') ) ) {
 		    return;
 		}
@@ -132,9 +143,12 @@ class Advanced_Ads_Ad_Ajax_Callbacks {
          * @sinc 1.4.7
          */
         public function search_terms(){
-			if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads') ) ) {
-				return;
-			}
+	    
+	    check_ajax_referer('advanced-ads-admin-ajax-nonce', 'nonce');
+	    
+	    if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads') ) ) {
+		    return;
+	    }
 
             $args = array();
             $taxonomy = $_POST['tax'];
@@ -143,7 +157,7 @@ class Advanced_Ads_Ad_Ajax_Callbacks {
             if ( !isset( $_POST['search'] ) || $_POST['search'] === '' ) { die(); }
 
             // if search is an id, search for the term id, else do a full text search
-            if(0 !== absint($_POST['search'])){
+            if( 0 !== absint($_POST['search'] ) && strlen( $_POST['search'] ) == strlen ( absint($_POST['search'] ) ) ){
                 $args['include'] = array(absint($_POST['search']));
             } else {
                 $args['search'] = $_POST['search'];
@@ -157,18 +171,40 @@ class Advanced_Ads_Ad_Ajax_Callbacks {
         }
 
         /**
-         * search terms belonging to a specific taxonomy
+         * close a notice for good
          *
          * @since 1.5.3
          */
         public function close_notice(){
-			if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options') ) ) {
-				return;
-			}
+	    
+	    check_ajax_referer('advanced-ads-admin-ajax-nonce', 'nonce');
+	    
+	    if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options') ) 
+		    || empty( $_POST['notice'] )
+		) {
+		    die();
+	    }
 
-            if ( !isset( $_POST['notice'] ) || $_POST['notice'] === '' ) { die(); }
+	    Advanced_Ads_Admin_Notices::get_instance()->remove_from_queue($_POST['notice']);
+            die();
+        }
+	
+        /**
+         * hide a notice for some time (7 days right now)
+         *
+         * @since 1.8.17
+         */
+        public function hide_notice(){
+	    
+	    check_ajax_referer('advanced-ads-admin-ajax-nonce', 'nonce');
+	    
+	    if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options') ) 
+		    || empty( $_POST['notice'] )
+		) {
+		    die();
+	    }
 
-			Advanced_Ads_Admin_Notices::get_instance()->remove_from_queue($_POST['notice']);
+	    Advanced_Ads_Admin_Notices::get_instance()->hide_notice( $_POST['notice'] );
             die();
         }
 
@@ -178,13 +214,16 @@ class Advanced_Ads_Ad_Ajax_Callbacks {
          * @since 1.5.3
          */
         public function subscribe(){
-			if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_see_interface') ) ) {
-				return;
-			}
+	    
+	    check_ajax_referer('advanced-ads-admin-ajax-nonce', 'nonce');
+	    
+	    if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_see_interface') ) 
+		    || empty( $_POST['notice'] )
+		) {
+		    die();
+	    }
 
-            if ( !isset( $_POST['notice'] ) || $_POST['notice'] === '' ) { die(); }
-
-			echo Advanced_Ads_Admin_Notices::get_instance()->subscribe($_POST['notice']);
+	    echo Advanced_Ads_Admin_Notices::get_instance()->subscribe($_POST['notice']);
             die();
         }
 
@@ -194,9 +233,9 @@ class Advanced_Ads_Ad_Ajax_Callbacks {
 	 * @since 1.5.7
 	 */
 	public function activate_license(){
-		if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options') ) ) {
-			return;
-		}
+	    if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options') ) ) {
+		    return;
+	    }
 
 	    // check nonce
 	    check_ajax_referer( 'advads_ajax_license_nonce', 'security' );
@@ -214,9 +253,9 @@ class Advanced_Ads_Ad_Ajax_Callbacks {
 	 * @since 1.6.11
 	 */
 	public function deactivate_license(){
-		if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options') ) ) {
-			return;
-		}
+	    if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options') ) ) {
+		    return;
+	    }
 
 	    // check nonce
 	    check_ajax_referer( 'advads_ajax_license_nonce', 'security' );
@@ -233,12 +272,15 @@ class Advanced_Ads_Ad_Ajax_Callbacks {
 	 *
 	 */
 	public function adblock_rebuild_assets(){
-		if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options') ) ) {
-			return;
-		}
+	    
+	    check_ajax_referer('advanced-ads-admin-ajax-nonce', 'nonce');
+	    
+	    if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options') ) ) {
+		    return;
+	    }
 
-		Advanced_Ads_Ad_Blocker_Admin::get_instance()->add_asset_rebuild_form();
-		die();
+	    Advanced_Ads_Ad_Blocker_Admin::get_instance()->add_asset_rebuild_form();
+	    die();
 	}
 
 	/**
@@ -246,6 +288,9 @@ class Advanced_Ads_Ad_Ajax_Callbacks {
 	 *
 	 */
 	public function post_search(){
+	    
+		check_ajax_referer('advanced-ads-admin-ajax-nonce', 'nonce');
+	    
 		if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads') ) ) {
 			return;
 		}
@@ -262,6 +307,9 @@ class Advanced_Ads_Ad_Ajax_Callbacks {
 	 * @since 1.7.3
 	 */
 	public function inject_placement(){
+	    
+		check_ajax_referer('advanced-ads-admin-ajax-nonce', 'nonce');
+	    
 		if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads') ) ) {
 			die();
 		}
@@ -346,6 +394,9 @@ class Advanced_Ads_Ad_Ajax_Callbacks {
 	 * @since 1.7.4
 	 */
 	public function save_wizard_state(){
+	    
+	    check_ajax_referer('advanced-ads-admin-ajax-nonce', 'nonce');
+	    
 	    if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads') ) ) {
 		    return;
 	    }
@@ -363,4 +414,20 @@ class Advanced_Ads_Ad_Ajax_Callbacks {
 	    die();
 	}
 
+	/**
+	 * Enable Adsense Page-level ads.
+	 */
+	public function adsense_enable_pla(){
+
+		check_ajax_referer( 'advanced-ads-admin-ajax-nonce', 'nonce' );
+
+		if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options') ) ) {
+			return;
+		}
+
+		$options = get_option( GADSENSE_OPT_NAME, array() );
+		$options['page-level-enabled'] = true;
+		update_option( GADSENSE_OPT_NAME, $options );
+	    die();
+	}
 }

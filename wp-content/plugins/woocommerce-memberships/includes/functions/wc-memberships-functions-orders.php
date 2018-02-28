@@ -18,7 +18,7 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
@@ -26,12 +26,12 @@ defined( 'ABSPATH' ) or exit;
 
 
 /**
- * Get memberships granted access from order
+ * Returns memberships granted access meta from order.
  *
  * @since 1.7.0
- * @param int|\WC_Order|\WC_Order_Refund $order Order object
- * @return false|array False if order didn't grant access to a membership
- *                     or associative array of membership ids and granting access details
+ *
+ * @param int|\WC_Order|\WC_Order_Refund $order order object
+ * @return false|array false if order didn't grant access to a membership or associative array of membership ids and granting access details
  */
 function wc_memberships_get_order_access_granted_memberships( $order ) {
 
@@ -46,7 +46,7 @@ function wc_memberships_get_order_access_granted_memberships( $order ) {
 
 
 /**
- * Check whether an order has granted access to a plan or a user membership.
+ * Checks whether an order has granted access to a plan or a user membership.
  *
  * @since 1.7.0
  *
@@ -104,7 +104,7 @@ function wc_memberships_has_order_granted_access( $order, $args ) {
 
 
 /**
- * Set memberships an order granted access to meta.
+ * Sets memberships an order granted access to meta.
  *
  * @since 1.7.0
  *
@@ -142,7 +142,7 @@ function wc_memberships_set_order_access_granted_membership( $order, $user_membe
 
 
 /**
- * Check if purchasing products that grant access to a membership in the same order allow to extend the length of the membership.
+ * Checks if purchasing products that grant access to a membership in the same order allow to extend the length of the membership.
  *
  * @since 1.6.0
  *
@@ -154,12 +154,13 @@ function wc_memberships_cumulative_granting_access_orders_allowed() {
 
 
 /**
- * Get order products that grant access to a membership plan
+ * Returns order products that grant access to a membership plan.
  *
  * @since 1.7.0
+ *
  * @param \WC_Memberships_Membership_Plan $plan Membership plan to check for access
- * @param int|\WC_Order|string $order WC_Order instance or id, can be empty string if $order_items are provided
- * @param array $order_items Array of order items, if empty will try to get those from $order
+ * @param int|\WC_Order|string $order WC_Order instance or ID, can be empty string if $order_items are provided
+ * @param array $order_items array of order items, if empty will try to get those from $order
  * @return array
  */
 function wc_memberships_get_order_access_granting_product_ids( $plan, $order, $order_items = array() ) {
@@ -249,57 +250,57 @@ function wc_memberships_get_order_access_granting_product_ids( $plan, $order, $o
  */
 function wc_memberships_get_order_thank_you_links( $order_id ) {
 
+	$message = '';
+
 	if ( $order_id instanceof WC_Order ) {
 		$order_id = SV_WC_Order_Compatibility::get_prop( $order_id, 'id' );
-	} elseif ( ! is_numeric( $order_id ) ) {
-		return '';
 	}
 
-	$message     = '';
-	$memberships = wc_memberships_get_order_access_granted_memberships( $order_id );
+	if ( is_numeric( $order_id ) ) {
 
-	if ( ! empty( $memberships ) ) {
+		$memberships = wc_memberships_get_order_access_granted_memberships( $order_id );
 
-		$memberships_with_members_area = array();
+		if ( ! empty( $memberships ) ) {
 
-		foreach( $memberships as $membership_id => $data ) {
+			$memberships_with_members_area = array();
 
-			if ( 'yes' === $data['already_granted'] ) {
+			foreach( $memberships as $membership_id => $data ) {
 
-				$user_membership       = wc_memberships_get_user_membership( (int) $membership_id );
-				$membership_plan       = $user_membership->get_plan();
-				$members_area_sections = $membership_plan ? $membership_plan->get_members_area_sections() : array();
+				if ( 'yes' === $data['already_granted'] ) {
 
-				if ( ! empty( $members_area_sections ) ) {
-					$memberships_with_members_area[ $user_membership->get_plan_id() ] = $user_membership->get_plan()->get_name();
+					$user_membership       = wc_memberships_get_user_membership( (int) $membership_id );
+					$membership_plan       = $user_membership ? $user_membership->get_plan() : null;
+					$members_area_sections = $membership_plan ? $membership_plan->get_members_area_sections() : array();
+
+					if ( ! empty( $members_area_sections ) ) {
+						$memberships_with_members_area[ $user_membership->get_plan_id() ] = $user_membership->get_plan()->get_name();
+					}
 				}
 			}
-		}
 
-		if ( ! empty( $memberships_with_members_area ) ) {
+			if ( ! empty( $memberships_with_members_area ) ) {
 
-			// start building!
-			$message = '<p>' . __( 'Thanks for purchasing a membership!', 'woocommerce-memberships' );
+				$message = '<p>' . __( 'Thanks for purchasing a membership!', 'woocommerce-memberships' );
 
-			if ( 1 === count( $memberships_with_members_area ) ) {
+				if ( 1 === count( $memberships_with_members_area ) ) {
 
-				/* translators: Placeholders: %1$s - <a> tag, %2$s - </a> tag */
-				$message .= ' ' . sprintf( __( 'You can view more details about your membership from %1$syour account%2$s.', 'woocommerce-memberships' ), '<a href="' . esc_url( wc_memberships_get_members_area_url( key( $memberships_with_members_area ) ) ) . '">', '</a>' );
+					/* translators: Placeholders: %1$s - <a> tag, %2$s - </a> tag */
+					$message .= ' ' . sprintf( __( 'You can view more details about your membership from %1$syour account%2$s.', 'woocommerce-memberships' ), '<a href="' . esc_url( wc_memberships_get_members_area_url( key( $memberships_with_members_area ) ) ) . '">', '</a>' );
 
-			} else {
+				} else {
 
-				$message .= ' ' . __( 'You can view details for each membership in your account:', 'woocommerce-memberships' );
-				$message .= '<ul>';
+					$message .= ' ' . __( 'You can view details for each membership in your account:', 'woocommerce-memberships' );
+					$message .= '<ul>';
 
-				foreach( $memberships_with_members_area as $plan_id => $plan_name ) {
-					$message .= '<li><a href="' . esc_url( wc_memberships_get_members_area_url( $plan_id ) ) . '">' . esc_html( $plan_name ) . '</a></li>';
+					foreach( $memberships_with_members_area as $plan_id => $plan_name ) {
+						$message .= '<li><a href="' . esc_url( wc_memberships_get_members_area_url( $plan_id ) ) . '">' . esc_html( $plan_name ) . '</a></li>';
+					}
+
+					$message .= '</ul>';
 				}
 
-				$message .= '</ul>';
+				$message .= '</p>';
 			}
-
-			// ship it!
-			$message .= '</p>';
 		}
 	}
 

@@ -1,8 +1,20 @@
 <?php
-$display_conditions = Advanced_Ads_Display_Conditions::get_instance()->conditions;
+$display_conditions = Advanced_Ads_Display_Conditions::get_instance()->get_conditions();
+
+// add mockup conditions if add-ons are missing
+$pro_conditions = array();
+if( ! defined( 'AAP_VERSION' ) ){
+	$pro_conditions[] = __( 'parent page', 'advanced-ads');
+	$pro_conditions[] = __( 'post meta', 'advanced-ads');
+	$pro_conditions[] = __( 'page template', 'advanced-ads');
+	$pro_conditions[] = __( 'url parameters', 'advanced-ads');
+}
+if( ! defined( 'AAR_VERSION') ){
+	$pro_conditions[] = __( 'accelerated mobile pages', 'advanced-ads');
+}
+asort( $pro_conditions );
+
 $options = $ad->options('conditions');
-// error_log(print_r($display_conditions, true));
-// error_log(print_r($options, true));
 $empty_options = ( !is_array( $options ) || !count( $options ) );
 if( $empty_options ) :
     ?><div class="advads-show-in-wizard">
@@ -83,8 +95,15 @@ endif;
 	    <option value=""><?php _e('-- choose a condition --', 'advanced-ads'); ?></option>
 	    <?php foreach ($display_conditions as $_condition_id => $_condition) : ?>
     	    <option value="<?php echo $_condition_id; ?>"><?php echo $_condition['label']; ?></option>
-	    <?php endforeach; ?>
-	</select>
+	    <?php endforeach;
+	    if( count( $pro_conditions ) ) :
+	    ?><optgroup label="<?php _e( 'Add-On features', 'advanced-ads' ); ?>"><?php
+		foreach ( $pro_conditions as $_pro_condition ) :
+		    ?><option disabled="disabled"><?php echo $_pro_condition; ?></option><?php
+		endforeach;
+	    ?></optgroup><?php
+	    endif; 
+	?></select>
 	<button type="button" class="button"><?php _e('add', 'advanced-ads'); ?></button>
 	<span class="advads-loader" style="display: none;"></span>
     </div>
@@ -106,7 +125,8 @@ endif;
 		data: {
 		    action: 'load_display_conditions_metabox',
 		    type: display_condition_type,
-		    index: display_condition_index
+		    index: display_condition_index,
+		    nonce: advadsglobal.ajax_nonce
 		},
 		success: function (r, textStatus, XMLHttpRequest) {
 		    // add

@@ -1,5 +1,5 @@
 /**
- * Check if an ad block is enabled.
+ * Check if an ad blocker is enabled.
  *
  * @param {function} callback A callback function that is executed after the check has been done.
  *                            The 'is_enabled' (bool) variable is passed as the callback's first argument.
@@ -22,14 +22,15 @@
 		var ad = document.createElement( 'div' );
 		ad.innerHTML = '&nbsp;';
 		ad.setAttribute( 'class', 'ad_unit ad-unit text-ad text_ad pub_300x250' );
-		ad.setAttribute( 'style', 'width: 1px !important; height: 1px !important; position: absolute !important; left: -1000px !important; top: -1000px !important;' );
+		ad.setAttribute( 'style', 'width: 1px !important; height: 1px !important; position: absolute !important; left: 0px !important; top: 0px !important; overflow: hidden !important;' );
 		document.body.appendChild( ad );
 
 		RAF( function() {
-			var styles = window.getComputedStyle( ad );
+			var styles = window.getComputedStyle && window.getComputedStyle( ad );
+			var moz_binding = styles && styles.getPropertyValue( '-moz-binding' );
 
-			is_enabled = styles.getPropertyValue( 'display' ) === 'none'
-			|| styles.getPropertyValue( '-moz-binding' ).indexOf( 'about:' ) !== -1;
+			is_enabled = ( styles && styles.getPropertyValue( 'display' ) === 'none' )
+			|| ( typeof moz_binding === 'string' && moz_binding.indexOf( 'about:' ) !== -1 );
 
 			// Call pending callbacks.
 			for ( var i = 0; i < pending_callbacks.length; i++ ) {

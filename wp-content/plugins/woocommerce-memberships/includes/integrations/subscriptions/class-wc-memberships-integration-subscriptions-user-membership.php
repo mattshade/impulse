@@ -18,7 +18,7 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
@@ -47,7 +47,7 @@ class WC_Memberships_Integration_Subscriptions_User_Membership extends WC_Member
 	 *
 	 * @since 1.7.0
 	 *
-	 * @param int|\WP_Post $user_membership id or post object.
+	 * @param int|\WP_Post $user_membership ID or post object
 	 */
 	public function __construct( $user_membership ) {
 
@@ -62,9 +62,10 @@ class WC_Memberships_Integration_Subscriptions_User_Membership extends WC_Member
 
 
 	/**
-	 * Get plan.
+	 * Returns the user membership's related plan.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return \WC_Memberships_Membership_Plan|\WC_Memberships_Integration_Subscriptions_Membership_Plan
 	 */
 	public function get_plan() {
@@ -73,24 +74,29 @@ class WC_Memberships_Integration_Subscriptions_User_Membership extends WC_Member
 
 
 	/**
-	 * Check whether the order that granted access contains a subscription.
+	 * Checks whether the order that granted access contains a subscription.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return bool
 	 */
 	private function order_contains_subscription() {
+
 		if ( ! $this->get_order() ) {
-			return false;
+			$contains_subscription = false;
 		} else {
-			return wcs_order_contains_subscription( $this->get_order_id() );
+			$contains_subscription = wcs_order_contains_subscription( $this->get_order_id() );
 		}
+
+		return $contains_subscription;
 	}
 
 
 	/**
-	 * Whether the subscription follows an installment plan option.
+	 * Checks whether the subscription follows an installment plan option.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return bool
 	 */
 	public function has_installment_plan() {
@@ -99,8 +105,7 @@ class WC_Memberships_Integration_Subscriptions_User_Membership extends WC_Member
 
 		if ( ! is_numeric( $has_installment_plan ) && $this->has_subscription() ) {
 
-			// Maybe set this membership to have an installment plan,
-			// if no previous record was found.
+			// maybe set this membership to have an installment plan, if no previous record was found
 			$has_installment_plan = $this->maybe_set_installment_plan();
 		}
 
@@ -109,9 +114,10 @@ class WC_Memberships_Integration_Subscriptions_User_Membership extends WC_Member
 
 
 	/**
-	 * Flag subscription tied membership to have an installment plan.
+	 * Flags the subscription tied membership to have an installment plan.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return bool
 	 */
 	private function maybe_set_installment_plan() {
@@ -125,7 +131,7 @@ class WC_Memberships_Integration_Subscriptions_User_Membership extends WC_Member
 
 		$plan = new WC_Memberships_Integration_Subscriptions_Membership_Plan( $plan->post );
 
-		// if this plan has a subscription and the subscription is in installment mode
+		// If this plan has a subscription and the subscription is in installment mode,
 		// save this condition in a post meta which will persist also after unlinking.
 		if ( $this->has_subscription() && $plan->has_installment_plan() ) {
 
@@ -137,9 +143,10 @@ class WC_Memberships_Integration_Subscriptions_User_Membership extends WC_Member
 
 
 	/**
-	 * Whether the membership is tied to a subscription.
+	 * Checks whether the membership is tied to a subscription.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return bool
 	 */
 	public function has_subscription() {
@@ -148,11 +155,11 @@ class WC_Memberships_Integration_Subscriptions_User_Membership extends WC_Member
 
 
 	/**
-	 * Set the linked Subscription ID.
+	 * Sets the linked Subscription ID.
 	 *
 	 * @since 1.7.0
 	 *
-	 * @param string|int $subscription_id The subscription ID.
+	 * @param string|int $subscription_id the subscription ID.
 	 */
 	public function set_subscription_id( $subscription_id ) {
 
@@ -168,9 +175,10 @@ class WC_Memberships_Integration_Subscriptions_User_Membership extends WC_Member
 			 * When a Membership is tied to a Subscription.
 			 *
 			 * @since 1.8.0
-			 * @param \WC_Memberships_Integration_Subscriptions_User_Membership $user_membership The User Membership linked to a Subscription.
-			 * @param int $subscription_id The Subscription ID linked to.
-			 * @param null|int $old_subscription_id The ID of the Subscription the membership may have been linked to previously.
+			 *
+			 * @param \WC_Memberships_Integration_Subscriptions_User_Membership $user_membership the User Membership linked to a Subscription
+			 * @param int $subscription_id the Subscription ID linked to
+			 * @param null|int $old_subscription_id the ID of the Subscription the membership may have been linked to previously
 			 */
 			do_action( 'wc_memberships_user_membership_linked_to_subscription', $this, $subscription_id, $old_subscription_id );
 		}
@@ -178,10 +186,11 @@ class WC_Memberships_Integration_Subscriptions_User_Membership extends WC_Member
 
 
 	/**
-	 * Get the linked Subscription ID.
+	 * Returns the linked Subscription ID.
 	 *
 	 * @since 1.7.0
-	 * @return int|null
+	 *
+	 * @return int|null Subscription ID or null if not linked/found
 	 */
 	public function get_subscription_id() {
 
@@ -192,9 +201,10 @@ class WC_Memberships_Integration_Subscriptions_User_Membership extends WC_Member
 
 
 	/**
-	 * Get the linked Subscription.
+	 * Returns the linked Subscription object.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return null|false|\WC_Subscription
 	 */
 	public function get_subscription() {
@@ -206,7 +216,7 @@ class WC_Memberships_Integration_Subscriptions_User_Membership extends WC_Member
 
 
 	/**
-	 * Remove the Subscription link.
+	 * Removes the Subscription link.
 	 *
 	 * @since 1.7.0
 	 */
@@ -216,8 +226,9 @@ class WC_Memberships_Integration_Subscriptions_User_Membership extends WC_Member
 		 * When a Membership is unlinked from a Subscription.
 		 *
 		 * @since 1.8.0
-		 * @param \WC_Memberships_Integration_Subscriptions_User_Membership $user_membership The User Membership linked to a Subscription.
-		 * @param null|int $subscription_id The Subscription ID being detached from the User Membership, if present.
+		 *
+		 * @param \WC_Memberships_Integration_Subscriptions_User_Membership $user_membership the User Membership linked to a Subscription
+		 * @param null|int $subscription_id the Subscription ID being detached from the User Membership, if present
 		 */
 		do_action( 'wc_memberships_user_membership_unlinked_from_subscription', $this, $this->get_subscription_id() );
 
@@ -226,25 +237,26 @@ class WC_Memberships_Integration_Subscriptions_User_Membership extends WC_Member
 
 
 	/**
-	 * Whether the user membership can be renewed by the user:
-	 * subscription-tied memberships can be renewed if the subscription has expired.
+	 * Checks Whether the user membership can be renewed by the user.
 	 *
+	 * Subscription-tied memberships can be renewed if the subscription has expired.
 	 * Note: does not check whether the user has capability to renew.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return bool
 	 */
 	public function can_be_renewed() {
 
 		$can_be_renewed = parent::can_be_renewed();
 
-		// Make sure that besides the subscription the membership has an order linked.
+		// make sure that besides the subscription the membership has an order linked
 		if ( $this->has_subscription() && $this->order_contains_subscription() && ( $subscription = $this->get_subscription() ) ) {
 
-			// Check if the subscription has a valid status to be resubscribed.
+			// check if the subscription has a valid status to be resubscribed
 			$can_be_renewed = $subscription->has_status( array( 'expired', 'cancelled', 'pending-cancel', 'on-hold' ) );
 
-			// Memberships on installment plans can be renewed only if not on fixed dates in the past
+			// memberships on installment plans can be renewed only if not on fixed dates in the past
 			if ( $can_be_renewed && $this->has_installment_plan() && $this->get_plan() && $this->plan->is_access_length_type( 'fixed' ) ) {
 
 				$fixed_end_date = $this->plan->get_access_end_date( 'timestamp' );
@@ -257,32 +269,34 @@ class WC_Memberships_Integration_Subscriptions_User_Membership extends WC_Member
 
 
 	/**
-	 * Check if the membership is in the free trial period.
+	 * Checks if the membership is in the free trial period.
 	 *
-	 * Note: this does not check the free trial User Membership status itself
+	 * Note: this does not check the free trial User Membership status itself.
 	 * @see \WC_Memberships_User_Membership::has_status()
 	 *
 	 * @since 1.7.1
+	 *
 	 * @return bool
 	 */
 	public function is_in_free_trial_period() {
 
+		$is_free_trial       = false;
 		$free_trial_end_date = $this->get_free_trial_end_date( 'timestamp' );
 
-		if ( $free_trial_end_date > 0 ) {
-
-			return current_time( 'timestamp', true ) < $free_trial_end_date;
+		if ( is_numeric( $free_trial_end_date ) && $free_trial_end_date !== 0 ) {
+			$is_free_trial = current_time( 'timestamp', true ) < $free_trial_end_date;
 		}
 
-		return false;
+		return $is_free_trial;
 	}
 
 
 	/**
-	 * Set the membership free trial end datetime.
+	 * Sets the membership free trial end datetime.
 	 *
 	 * @since 1.7.1
-	 * @param string $date Date in MySQL format.
+	 *
+	 * @param string $date date in MySQL format.
 	 */
 	public function set_free_trial_end_date( $date ) {
 
@@ -294,10 +308,11 @@ class WC_Memberships_Integration_Subscriptions_User_Membership extends WC_Member
 
 
 	/**
-	 * Get the membership free trial end date.
+	 * Returns the membership free trial end date.
 	 *
 	 * @since 1.7.1
-	 * @param string $format Either 'mysql' (default) or 'timestamp'.
+	 *
+	 * @param string $format either 'mysql' (default) or 'timestamp'
 	 * @return int|null|string
 	 */
 	public function get_free_trial_end_date( $format = 'mysql' ) {
@@ -309,24 +324,25 @@ class WC_Memberships_Integration_Subscriptions_User_Membership extends WC_Member
 
 
 	/**
-	 * Get the membership free trial end date localized datetime.
+	 * Returns the membership free trial end date localized datetime.
 	 *
 	 * @since 1.7.1
-	 * @param string $format Optional, defaults to 'mysql'.
-	 * @return null|int|string The localized free trial end date in the chosen format.
+	 *
+	 * @param string $format optional, defaults to 'mysql'
+	 * @return null|int|string the localized free trial end date in the chosen format
 	 */
 	public function get_local_trial_end_date( $format = 'mysql' ) {
 
-		// Get the date timestamp.
+		// get the date timestamp
 		$date = $this->get_free_trial_end_date( $format );
 
-		// Adjust the date to the site's local timezone.
+		// adjust the date to the site's local timezone
 		return ! empty( $date ) ? wc_memberships_adjust_date_by_timezone( $date, $format ) : null;
 	}
 
 
 	/**
-	 * Delete the free trial end date.
+	 * Deletes the free trial end date.
 	 *
 	 * @since 1.7.1
 	 */

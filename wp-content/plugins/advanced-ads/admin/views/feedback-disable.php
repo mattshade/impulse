@@ -9,7 +9,9 @@
 		<li><textarea name="advanced_ads_disable_text[]" placeholder="<?php _e('Please let us know how we can help', 'advanced-ads'); ?>"></textarea></li>
 		<?php if( $email ) : ?>
 		    <?php $mailinput = '<input type="email" name="advanced_ads_disable_reply_email" value="'. $email .'"/>'; ?>
-		    <li class="advanced_ads_disable_reply"><label><input type="checkbox" name="advanced_ads_disable_reply" value="1" checked="checked"/><?php printf(__('Send me free help to %s', 'advanced-ads'), $mailinput ); ?></label></li>
+		    <li class="advanced_ads_disable_reply"><label><?php printf(
+			    /* translators: %s is the email address of the current user */
+			    __('Send me free help to %s', 'advanced-ads'), $mailinput ); ?></label></li>
 		<?php endif; ?>
 		<li><label><input type="radio" name="advanced_ads_disable_reason" value="missing feature"/><?php _e('I miss a feature', 'advanced-ads'); ?></label></li>
 		<li><input type="text" name="advanced_ads_disable_text[]" value="" placeholder="<?php _e('Which one?', 'advanced-ads'); ?>"/></li>
@@ -24,6 +26,7 @@
 	    <?php endif; ?>
 	    <input class="advanced-ads-feedback-submit button button-primary" type="submit" name="advanced_ads_disable_submit" value="<?php _e('Submit & Deactivate', 'advanced-ads'); ?>"/>
 	    <input class="advanced-ads-feedback-not-deactivate advanced-ads-feedback-submit button" type="submit" name="advanced_ads_keep_submit" value="<?php _e('Keep it & get a reply within 12h', 'advanced-ads'); ?>">
+	    <?php wp_nonce_field( 'advanced_ads_disable_form', 'advanced_ads_disable_form_nonce' ); ?>
 	    <a class="advanced-ads-feedback-only-deactivate" href="#"><?php _e('Only Deactivate', 'advanced-ads'); ?></a>
 	</form>
     </div>

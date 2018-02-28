@@ -18,17 +18,17 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Membership Renewal Reminder Email
+ * Membership Renewal Reminder Email.
  *
- * Membership renewal reminder emails are sent to former plan members
- * after their membership has expired, inviting them to renew their membership
+ * Membership renewal reminder emails are sent to former plan members.
+ * The emails are sent after their membership has expired, inviting them to renew their membership.
  *
  * @since 1.7.0
  */
@@ -36,14 +36,13 @@ class WC_Memberships_User_Membership_Renewal_Reminder_Email extends WC_Membershi
 
 
 	/**
-	 * Constructor
+	 * Email Constructor.
 	 *
 	 * @since 1.7.0
 	 */
 	public function __construct() {
 
 		$this->id             = __CLASS__;
-
 		$this->title          = __( 'Membership renewal reminder', 'woocommerce-memberships' );
 
 		/* translators: Placeholders: %1$s - <strong> tag, %2$s - </strong> tag */
@@ -64,15 +63,16 @@ class WC_Memberships_User_Membership_Renewal_Reminder_Email extends WC_Membershi
 
 
 	/**
-	 * Trigger the membership renewal reminder email
+	 * Triggers the Membership Renewal Reminder email.
 	 *
-	 * @since 1.7.0
-	 * @param int $user_membership_id User Membership id
+	 *@since 1.7.0
+	 *
+	 * @param int $user_membership_id User Membership ID
 	 */
 	public function trigger( $user_membership_id ) {
 
-		// this email should be sent only to inactive plan members
-		// ie. they shouldn't have started a new membership for the same plan
+		// This email should be sent only to inactive plan members.
+		// Ie. they shouldn't have started a new membership for the same plan,
 		// after the old one expired, for which this email is meant for
 		$is_inactive_plan_member = false;
 
@@ -111,9 +111,9 @@ class WC_Memberships_User_Membership_Renewal_Reminder_Email extends WC_Membershi
 
 
 	/**
-	 * Email settings form fields
+	 * Filters the email settings form fields.
 	 *
-	 * Extends and overrides parent method
+	 * Extends and overrides parent method.
 	 *
 	 * @since 1.7.0
 	 */
@@ -173,10 +173,11 @@ class WC_Memberships_User_Membership_Renewal_Reminder_Email extends WC_Membershi
 
 
 	/**
-	 * Get the default body content
+	 * Returns the default body content.
 	 *
 	 * @since 1.7.0
-	 * @return string
+	 *
+	 * @return string HTML
 	 */
 	public function get_default_body() {
 
@@ -188,10 +189,11 @@ class WC_Memberships_User_Membership_Renewal_Reminder_Email extends WC_Membershi
 
 
 	/**
-	 * Get email HTML content
+	 * Returns the email HTML content.
 	 *
 	 * @since 1.7.0
-	 * @return string HTML content
+	 *
+	 * @return string HTML
 	 */
 	public function get_content_html() {
 
@@ -210,10 +212,11 @@ class WC_Memberships_User_Membership_Renewal_Reminder_Email extends WC_Membershi
 
 
 	/**
-	 * Get email plain text content
+	 * Returns the email plain text content.
 	 *
 	 * @since 1.7.0
-	 * @return string Plain text content
+	 *
+	 * @return string plain text
 	 */
 	public function get_content_plain() {
 

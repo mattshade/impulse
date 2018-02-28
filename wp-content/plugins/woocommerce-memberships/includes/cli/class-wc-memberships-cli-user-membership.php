@@ -18,12 +18,12 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 /**
- * Manage User Memberships
+ * Manage User Memberships from WP CLI.
  *
  * @since 1.7.0
  */
@@ -31,7 +31,7 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 
 
 	/**
-	 * Create a User Membership
+	 * Create a User Membership.
 	 *
 	 * ## OPTIONS
 	 *
@@ -62,6 +62,7 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 	 *
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param array $args
 	 * @param array $assoc_args
 	 */
@@ -70,10 +71,11 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 		try {
 
 			/**
-			 * Filter WP CLI data used to create a new user membership
+			 * Filter WP CLI data used to create a new user membership.
 			 *
 			 * @since 1.7.0
-			 * @param array $data Associative array
+			 *
+			 * @param array $data associative array
 			 */
 			$data = apply_filters( 'woocommerce_memberships_cli_create_user_membership_data', $this->unflatten_array( $assoc_args ) );
 
@@ -158,15 +160,15 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 				}
 			}
 
-			$user_membership = wc_memberships_create_user_membership( array(
-				'plan_id'    => (int) $membership_plan->get_id(),
-				'user_id'    => (int) $member->ID,
-				'product_id' => $product_id,
-				'order_id'   => $order_id,
-			), 'create' );
-
-			if ( is_wp_error( $user_membership ) ) {
-				throw new WC_CLI_Exception( 'woocommerce_memberships_cli_cannot_create_user_membership', $user_membership->get_error_message() );
+			try {
+				$user_membership = wc_memberships_create_user_membership( array(
+					'plan_id'    => (int) $membership_plan->get_id(),
+					'user_id'    => (int) $member->ID,
+					'product_id' => $product_id,
+					'order_id'   => $order_id,
+				), 'create' );
+			} catch ( SV_WC_Plugin_Exception $e ) {
+				throw new WC_CLI_Exception( 'woocommerce_memberships_cli_cannot_create_user_membership', $e->getMessage() );
 			}
 
 			if ( false !== $start_date ) {
@@ -182,9 +184,10 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 			}
 
 			/**
-			 * Upon creating a User Membership via CLI
+			 * Upon creating a User Membership via CLI.
 			 *
 			 * @since 1.7.0
+			 *
 			 * @param \WC_Memberships_User_Membership $user_membership
 			 * @param array $data
 			 */
@@ -200,7 +203,7 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 
 
 	/**
-	 * Update one or more User Memberships
+	 * Update one or more User Memberships.
 	 *
 	 * ## OPTIONS
 	 *
@@ -220,6 +223,7 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 	 *
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param array $args
 	 * @param array $assoc_args
 	 */
@@ -230,10 +234,11 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 			$id   = $args[0];
 
 			/**
-			 * Filter WP CLI data used to update a new user membership
+			 * Filter WP CLI data used to update a new user membership.
 			 *
 			 * @since 1.7.0
-			 * @param array $data Associative array
+			 *
+			 * @param array $data associative array
 			 */
 			$data = apply_filters( 'woocommerce_memberships_cli_update_user_membership_data', $this->unflatten_array( $assoc_args ) );
 
@@ -257,8 +262,12 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 						throw new WC_CLI_Exception( 'woocommerce_memberships_user_is_admin', sprintf( 'User "%s" is a Memberships administrator. Administrators and Shop Managers cannot have user memberships assigned to them.', $user->ID ) );
 					} elseif ( wc_memberships_is_user_member( $user->ID, $user_membership->get_plan() ) ) {
 						throw new WC_CLI_Exception( 'woocommerce_memberships_user_already_member', sprintf( 'User "%1$s" is already a member of the plan "%2$s (%3%s)".', $user->ID, $user_membership->get_plan()->get_name(), $user_membership->get_plan_id() ) );
-					} elseif ( ! $user_membership->transfer_ownership( $user->ID ) ) {
-						WP_CLI::warning( 'Membership transfer from user %1$s to user %2$s failed.' );
+					} else {
+						try {
+							$user_membership->transfer_ownership( $user->ID );
+						} catch ( SV_WC_Plugin_Exception $e ) {
+							WP_CLI::warning( sprintf( 'Membership transfer from user %1$s to user %2$s failed: %3$s.', $e->getMessage() ) );
+						}
 					}
 				}
 			}
@@ -341,9 +350,9 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 					'ID'          => (int) $user_membership->get_id(),
 					'post_type'   => 'wc_user_membership',
 					'post_parent' => $plan_id
-				) );
+				), true );
 
-				if ( is_wp_error( $updated ) ) {
+				if ( 0 === $updated || is_wp_error( $updated ) ) {
 					throw new WC_CLI_Exception( 'woocommerce_memberships_cli_cannot_update_user_membership', $updated->get_error_message() );
 				}
 			}
@@ -369,9 +378,10 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 			}
 
 			/**
-			 * Upon updating a User Membership via CLI
+			 * Upon updating a User Membership via CLI.
 			 *
 			 * @since 1.7.0
+			 *
 			 * @param \WC_Memberships_User_Membership $user_membership
 			 * @param array $data
 			 */
@@ -387,12 +397,12 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 
 
 	/**
-	 * Get a User Membership
+	 * Get a User Membership.
 	 *
 	 * ## OPTIONS
 	 *
 	 * <id>
-	 * : User Membership ID to look for
+	 * : User Membership ID to look for, can be also a combination of user ID and plan ID (colon separated)
 	 *
 	 * [--field=<field>]
 	 * : Instead of returning the whole User Membership fields, returns the value of a single fields
@@ -411,19 +421,35 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 	 *
 	 *     wp wc memberships membership get 123 --fields=id,status
 	 *
+	 *     wp wc memberships membership get 19:80
+	 *
 	 *
 	 * @since 1.7.0
-	 * @param int[] $args Only the first id will be used
-	 * @param array $assoc_args Formatting arguments
+	 *
+	 * @param int[] $args either only the user membership ID or a combination of user ID and plan ID, colon separated
+	 * @param array $assoc_args formatting arguments
 	 */
 	public function get( $args, $assoc_args ) {
 
 		try {
 
-			$user_membership = wc_memberships_get_user_membership( (int) $args[0] );
+			$args = array_filter( array_map( 'trim', explode( ':', $args[0] ) ) );
 
-			if ( ! $user_membership instanceof WC_Memberships_User_Membership ) {
-				throw new WC_CLI_Exception( 'woocommerce_memberships_cli_invalid_user_membership', sprintf( 'Invalid User Membership "%s".', $args[0] ) );
+			if ( isset( $args[0], $args[1] ) ) {
+
+				$user_membership = wc_memberships_get_user_membership( (int) $args[0], (int) $args[1] );
+
+				if ( ! $user_membership instanceof WC_Memberships_User_Membership ) {
+					throw new WC_CLI_Exception( 'woocommerce_memberships_cli_invalid_user_membership', sprintf( 'Invalid User Membership for user "%1$s" with plan "%2$s".', $args[0], $args[1] ) );
+				}
+
+			} else {
+
+				$user_membership = wc_memberships_get_user_membership( (int) $args[0] );
+
+				if ( ! $user_membership instanceof WC_Memberships_User_Membership ) {
+					throw new WC_CLI_Exception( 'woocommerce_memberships_cli_invalid_user_membership', sprintf( 'Invalid User Membership "%s".', $args[0] ) );
+				}
 			}
 
 			$user_membership_data = $this->get_user_membership_data( $user_membership );
@@ -439,9 +465,10 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 
 
 	/**
-	 * Get default format fields that will be used in `list` and `get` subcommands
+	 * Get default format fields that will be used in `list` and `get` subcommands.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @return string
 	 */
 	protected function get_default_format_fields() {
@@ -458,9 +485,10 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 		$default_fields[] = 'end_date';
 
 		/**
-		 * User Memberships default format fields used in WP CLI
+		 * User Memberships default format fields used in WP CLI.
 		 *
 		 * @since 1.7.0
+		 *
 		 * @param array $default_fields
 		 */
 		$default_fields = apply_filters( 'wc_memberships_cli_user_membership_default_fields', $default_fields );
@@ -470,9 +498,10 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 
 
 	/**
-	 * Get User Membership data
+	 * Get User Membership data.
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param \WC_Memberships_User_Membership $user_membership
 	 * @return array
 	 */
@@ -510,11 +539,12 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 		}
 
 		/**
-		 * Filter the user membership data for Memberships CLI
+		 * Filter the user membership data for Memberships CLI.
 		 *
 		 * @since 1.7.0
-		 * @param array $membership_plan_data The plan data passed to CLI
-		 * @param \WC_Memberships_User_Membership $membership_plan The user membership
+		 *
+		 * @param array $membership_plan_data the plan data passed to CLI
+		 * @param \WC_Memberships_User_Membership $membership_plan the user membership
 		 */
 		$user_membership_data = apply_filters( 'wc_memberships_cli_user_membership_data', $user_membership_data, $user_membership );
 
@@ -523,7 +553,7 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 
 
 	/**
-	 * List User Memberships
+	 * List User Memberships.
 	 *
 	 * ## OPTIONS
 	 *
@@ -576,6 +606,7 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 	 * @subcommand list
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param array $args
 	 * @param array $assoc_args
 	 */
@@ -595,18 +626,18 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 			$query = new WP_Query( $query_args );
 			$items = $this->format_posts_to_items( $query->posts );
 			$formatter->display_items( $items );
-
 		}
 	}
 
 
 	/**
-	 * Get query args for list subcommand
+	 * Get query args for list subcommand.
 	 *
 	 * @see WC_Memberships_CLI_User_Membership::list__()
 	 *
 	 * @since 1.7.0
-	 * @param array $args Args from command line
+	 *
+	 * @param array $args arguments from command line
 	 * @return array
 	 */
 	protected function get_list_query_args( $args ) {
@@ -731,11 +762,12 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 
 
 	/**
-	 * Format posts from WP_Query result to items
+	 * Format posts from WP_Query result to items.
 	 *
 	 * @since 1.7.0
-	 * @param \WP_Post[] $posts Array of post objects
-	 * @return array Items
+	 *
+	 * @param \WP_Post[] $posts array of post objects
+	 * @return array items
 	 */
 	protected function format_posts_to_items( $posts ) {
 
@@ -757,7 +789,7 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 
 
 	/**
-	 * Delete User Memberships
+	 * Delete User Memberships.
 	 *
 	 * ## OPTIONS
 	 *
@@ -772,12 +804,14 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 	 *
 	 *
 	 * @since 1.7.0
+	 *
 	 * @param int|int[] $args
 	 * @param array $assoc_args
 	 */
 	public function delete( $args, $assoc_args ) {
 
 		$exit_code = 0;
+		$args      = is_array( $args ) ? $args : (array) $args;
 
 		foreach ( $args as $user_membership_id ) {
 
@@ -789,9 +823,10 @@ class WC_Memberships_CLI_User_Membership extends WC_Memberships_CLI_Command {
 			}
 
 			/**
-			 * Upon deleting a User Membership via CLI
+			 * Upon deleting a User Membership via CLI.
 			 *
 			 * @since 1.7.0
+			 *
 			 * @param int $user_membership_id
 			 */
 			do_action( 'wc_memberships_cli_delete_user_membership', $user_membership_id );

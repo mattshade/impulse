@@ -13,7 +13,7 @@
  * @see     https://docs.woocommerce.com/document/template-structure/
  * @author  WooThemes
  * @package WooCommerce/Templates
- * @version 2.6.0
+ * @version 3.2.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -33,10 +33,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div class="u-column1 col-1">
 
 <?php endif; ?>
-
+<div class="col-md-8">
 		<h2><?php _e( 'Login', 'woocommerce' ); ?></h2>
 
-		<form class="woocomerce-form woocommerce-form-login login" method="post">
+		<form class="woocommerce-form woocommerce-form-login login" method="post">
 
 			<?php do_action( 'woocommerce_login_form_start' ); ?>
 
@@ -61,7 +61,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<p class="woocommerce-LostPassword lost_password">
 				<a href="<?php echo esc_url( wp_lostpassword_url() ); ?>"><?php _e( 'Lost your password?', 'woocommerce' ); ?></a>
 			</p>
-
+		</div>
+		<div class="col-md-4">
+			<p class="form-row">
+				<h3 class="text-center">Not a member yet?</h3>
+				<div class="choose-btn"><a href="/choose-a-plan/" type="submit" class="single_add_to_cart_button button alt">Choose A Plan</a></div>
+				<h3 class="text-center">or</h3>
+				<div class="choose-btn"><a href="/how-it-works/" type="submit" class="single_add_to_cart_button button alt">Learn More</a></div>
+			</p>
+</div>
 			<?php do_action( 'woocommerce_login_form_end' ); ?>
 
 		</form>
@@ -101,12 +109,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<?php endif; ?>
 
-			<!-- Spam Trap -->
-			<div style="<?php echo ( ( is_rtl() ) ? 'right' : 'left' ); ?>: -999em; position: absolute;"><label for="trap"><?php _e( 'Anti-spam', 'woocommerce' ); ?></label><input type="text" name="email_2" id="trap" tabindex="-1" autocomplete="off" /></div>
-
 			<?php do_action( 'woocommerce_register_form' ); ?>
 
-			<p class="woocomerce-FormRow form-row">
+			<p class="woocommerce-FormRow form-row">
 				<?php wp_nonce_field( 'woocommerce-register', 'woocommerce-register-nonce' ); ?>
 				<input type="submit" class="woocommerce-Button button" name="register" value="<?php esc_attr_e( 'Register', 'woocommerce' ); ?>" />
 			</p>

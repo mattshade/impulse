@@ -18,7 +18,7 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
@@ -33,7 +33,7 @@ class WC_Memberships_Integration_Subscriptions_Free_Trial {
 
 
 	/**
-	 * Enable Free Trial Memberships.
+	 * Enables Free Trial Memberships.
 	 *
 	 * @since 1.6.0
 	 */
@@ -49,12 +49,13 @@ class WC_Memberships_Integration_Subscriptions_Free_Trial {
 
 
 	/**
-	 * Add free trial status to membership statuses.
+	 * Adds free trial status to membership statuses.
 	 *
 	 * @internal
 	 *
 	 * @since 1.6.0
-	 * @param array $statuses Associative array of statuses and labels.
+	 *
+	 * @param array $statuses associative array of statuses and labels
 	 * @return array
 	 */
 	public function add_free_trial_status( $statuses ) {
@@ -71,12 +72,13 @@ class WC_Memberships_Integration_Subscriptions_Free_Trial {
 
 
 	/**
-	 * Add the free trial status to the list of statuses that have access.
+	 * Add sthe free trial status to the list of statuses that have access.
 	 *
 	 * @internal
 	 *
 	 * @since 1.7.0
-	 * @param string[] $statuses Array of statuses.
+	 *
+	 * @param string[] $statuses array of statuses
 	 * @return array
 	 */
 	public function mark_free_trial_for_active_access( $statuses ) {
@@ -88,12 +90,12 @@ class WC_Memberships_Integration_Subscriptions_Free_Trial {
 
 
 	/**
-	 * Add free trial status to valid statuses for membership cancellation.
+	 * Adds free trial status to valid statuses for membership cancellation.
 	 *
 	 * @internal
 	 *
 	 * @since 1.6.0
-	 * @param array $statuses Array of status slugs
+	 * @param array $statuses array of status slugs
 	 * @return array modified status slugs
 	 */
 	public function enable_cancel_for_free_trial( $statuses ) {
@@ -105,15 +107,17 @@ class WC_Memberships_Integration_Subscriptions_Free_Trial {
 
 
 	/**
-	 * Remove free trial status from status options,
-	 * unless the membership actually is on free trial.
+	 * Removes free trial status from status options.
+	 *
+	 * An exception is if the membership actually is on free trial.
 	 *
 	 * @internal
 	 *
 	 * @since 1.6.0
-	 * @param array $statuses Array of status options.
-	 * @param int $user_membership_id User Membership ID.
-	 * @return array Modified array of status options.
+	 *
+	 * @param array $statuses array of status options
+	 * @param int $user_membership_id User Membership ID
+	 * @return array modified array of status options
 	 */
 	public function edit_user_membership_screen_status_options( $statuses, $user_membership_id ) {
 
@@ -128,13 +132,13 @@ class WC_Memberships_Integration_Subscriptions_Free_Trial {
 
 
 	/**
-	 * Remove free trial from bulk edit status options.
+	 * Removes free trial from bulk edit status options.
 	 *
 	 * @internal
 	 *
 	 * @since 1.6.0
-	 * @param array $statuses Array of statuses.
-	 * @return array Modified array of statuses.
+	 * @param array $statuses array of statuses
+	 * @return array modified array of statuses
 	 */
 	public function remove_free_trial_from_bulk_edit( $statuses ) {
 

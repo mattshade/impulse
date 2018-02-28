@@ -4,14 +4,14 @@
  *
  * @package    Wsspg
  * @author     wsspg <wsspg@mail.com>
- * @version    1.0.5
+ * @version    1.0.6
  * @license    https://www.gnu.org/licenses/gpl-3.0.txt
  * @copyright  (c) 2016 https://github.com/wsspg
  *
  * @wordpress-plugin
  * Plugin Name:        WooCommerce Stripe Subscription Payment Gateway
  * Plugin URI:         https://github.com/wsspg/wsspg-woocommerce-stripe-subscription-payment-gateway
- * Version:            1.0.5
+ * Version:            1.0.6
  * Author:             Wsspg
  * Author URI:         https://github.com/wsspg
  * Description:        Accept <strong>Credit Cards</strong>, <strong>Bitcoin</strong>, <strong>Alipay</strong>, and connect your <strong>WooCommerce</strong> store to <strong>Stripe</strong>'s Subscription API.
@@ -19,7 +19,7 @@
  * Text Domain:        wsspg-woocommerce-stripe-subscription-payment-gateway
  * Domain Path:        /i18n/languages
  * Requires at least:  4.5.3
- * Tested up to:       4.7.3
+ * Tested up to:       4.9.1
  * License:            GNU General Public License, version 3 (GPL-3.0)
  * License URI:        https://www.gnu.org/licenses/gpl-3.0.txt
  *
@@ -147,6 +147,7 @@ function init_wsspg() {
 		$_settings  = get_option( "woocommerce_{$_id}_settings" );
 		$_mode      = $_settings['mode'] === 'test' || ! is_ssl() ? 'wsspg_test' : 'wsspg_live';
 		$_debug     = $_settings['debug'] === 'enabled' ? true : false;
+		$_dev       = SCRIPT_DEBUG;
 		$_api       = 'https://api.stripe.com/v1/';
 		defined( 'WSSPG_PLUGIN_VERSION' )    or define( 'WSSPG_PLUGIN_VERSION',    $_version );
 		defined( 'WSSPG_PLUGIN_ID' )         or define( 'WSSPG_PLUGIN_ID',         $_id );
@@ -158,6 +159,7 @@ function init_wsspg() {
 		defined( 'WSSPG_PLUGIN_BASENAME' )   or define( 'WSSPG_PLUGIN_BASENAME',   $_base );
 		defined( 'WSSPG_PLUGIN_MODE' )       or define( 'WSSPG_PLUGIN_MODE',       $_mode );
 		defined( 'WSSPG_PLUGIN_DEBUG' )      or define( 'WSSPG_PLUGIN_DEBUG',      $_debug );
+		defined( 'WSSPG_PLUGIN_DEV' )        or define( 'WSSPG_PLUGIN_DEV',        $_dev );
 		defined( 'WSSPG_PLUGIN_API' )        or define( 'WSSPG_PLUGIN_API',        $_api );
 		if( current_user_can( 'activate_plugins' ) ) {
 			register_activation_hook( $_plugin, 'activate_wsspg' );

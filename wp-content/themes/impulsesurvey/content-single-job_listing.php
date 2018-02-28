@@ -14,26 +14,27 @@ global $job_manager, $post;
 
 		<!-- <?php //do_action( 'listify_single_job_listing_cover_start' ); //?> -->
 
-        <div class="content-single-job_listing-hero-wrapper cover-wrapper container heyhey">
+        <!-- <div class="content-single-job_listing-hero-wrapper cover-wrapper container">
 
             <div class="content-single-job_listing-hero-inner row">
 
 	            <div class="content-single-job_listing-hero-company col-md-7 col-sm-12">
-	                <?php do_action( 'listify_single_job_listing_meta' ); ?>
+	                <?php //do_action( 'listify_single_job_listing_meta' ); ?>
+                  <?php //do_action( 'listify_single_job_listing_actions' ); ?>
 	            </div>
 
 	            <div class="content-single-job_listing-hero-actions col-md-5 col-sm-12">
-	                <?php do_action( 'listify_single_job_listing_actions' ); ?>
+
 	            </div>
 
             </div>
 
         </div>
 
-		<?php do_action( 'listify_single_job_listing_cover_end' ); ?>
+		<?php //do_action( 'listify_single_job_listing_cover_end' ); ?> -->
 
     </div>
-		
+
     <div id="primary" class="container">
         <div class="row content-area">
 
@@ -46,10 +47,19 @@ global $job_manager, $post;
             <?php if ( 'left' == esc_attr( listify_theme_mod( 'listing-single-sidebar-position', 'right' ) ) ) : ?>
                 <?php //get_sidebar( 'single-job_listing' ); ?>
             <?php endif; ?>
-			
+
             <main id="main" class="site-main col-xs-12 <?php if ( 'none' != esc_attr( listify_theme_mod( 'listing-single-sidebar-position', 'right' ) ) ) : ?>col-sm-7 col-md-8<?php endif; ?>" role="main">
-				
-                
+
+              <?php do_action( 'listify_single_job_listing_meta' ); ?>
+              <?php do_action( 'listify_single_job_listing_actions' ); ?>
+
+
+
+
+
+              <?php do_action( 'listify_single_job_listing_cover_end' ); ?>
+
+
 
                 <?php if ( listify_has_integration( 'woocommerce' ) ) : ?>
                     <?php wc_print_notices(); ?>
@@ -99,7 +109,7 @@ global $job_manager, $post;
                                 'icon'  => 'clipboard'
                             ),
                             wp_parse_args( array( 'before_widget' => '<aside class="widget widget-job_listing listify_widget_panel_listing_content">' ), $defaults )
-								
+
                         );
                         the_widget(
                             'Listify_Widget_Listing_Comments',
@@ -108,7 +118,7 @@ global $job_manager, $post;
                             ),
                             $defaults
                         );
-						
+
                     }
                 ?>
 

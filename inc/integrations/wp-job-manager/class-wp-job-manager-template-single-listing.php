@@ -31,10 +31,11 @@ class Listify_WP_Job_Manager_Template_Single_Listing {
 
 		add_action( 'single_job_listing_meta_start', array( __CLASS__, 'the_secondary_image' ), 7 );
 		add_action( 'single_job_listing_meta_start', 'listify_the_listing_title', 10 );
+		add_action( 'single_job_listing_meta_after', 'listify_the_listing_rating' );
 		add_action( 'single_job_listing_meta_start', 'listify_the_listing_location', 20 );
 		add_action( 'single_job_listing_meta_start', 'listify_the_listing_category', 30 );
 
-		add_action( 'single_job_listing_meta_after', 'listify_the_listing_rating' );
+
 
 		add_action( 'listify_single_job_listing_actions', array( __CLASS__, 'the_actions' ) );
 		add_action( 'listify_single_job_listing_actions_after', array( __CLASS__, 'submit_review_link' ) );
@@ -95,7 +96,7 @@ class Listify_WP_Job_Manager_Template_Single_Listing {
 
 		$listing = listify_get_listing( get_the_ID() );
 
-		$map_vars = apply_filters( 'listify_single_map_settings', array(
+		$vars = apply_filters( 'listify_single_map_settings', array(
 			'provider'      => 'googlemaps' === get_theme_mod( 'map-service-provider', 'googlemaps' ) ? 'googlemaps' : 'mapbox',
 			'lat'           => $listing->get_lat(),
 			'lng'           => $listing->get_lng(),
@@ -109,13 +110,8 @@ class Listify_WP_Job_Manager_Template_Single_Listing {
 			),
 		) );
 
-		$comments_var = array(
-			'defaultRating' => apply_filters( 'listify_ratings_default_rating', 3 ),
-		);
-
 		wp_enqueue_script( 'listify-app-listing', get_template_directory_uri() . '/inc/integrations/wp-job-manager/js/listing/app.min.js', array( 'jquery', 'listify', 'wp-util', 'listify-map' ), 20161114 );
-		wp_localize_script( 'listify-app-listing', 'listifySingleMap', $map_vars );
-		wp_localize_script( 'listify-app-listing', 'listifyListingComments', $comments_var );
+		wp_localize_script( 'listify-app-listing', 'listifySingleMap', $vars );
 
 		// Leaflet style.
 		if ( 'mapbox' === get_theme_mod( 'map-service-provider', 'googlemaps' ) ) {
@@ -196,15 +192,26 @@ class Listify_WP_Job_Manager_Template_Single_Listing {
 	public static function submit_review_link() {
 		global $post;
 
-		if ( ! comments_open( $post ) || ! ( is_active_widget( false, false, 'listify_widget_panel_listing_comments', true ) || !
+		if ( ! comments_open() || ! ( is_active_widget( false, false, 'listify_widget_panel_listing_comments', true ) || !
 		is_active_sidebar( 'single-job_listing-widget-area' ) ) || 'preview' == $post->post_type ) {
 			return;
+		}
+
+		if ( get_option( 'comment_registration' ) && ! is_user_logged_in() ) {
+			if ( listify_has_integration( 'woocommerce' ) ) {
+				$url = get_permalink( wc_get_page_id( 'myaccount' ) );
+				$nlclass = "triggerLogin";
+			} else {
+				$url = wp_login_url( get_permalink() );
+			}
+		} else {
+			$url = apply_filters( 'listify_submit_review_link_anchor', '#respond' );
 		}
 
 		ob_start();
 	?>
 
-<a href="<?php echo esc_url( listify_submit_review_url( $post ) ); ?>" class="single-job_listing-respond button button-secondary"><?php _e( 'Write a Review', 'listify' ); ?></a>
+<a href="<?php echo esc_url( $url ); ?>" class="single-job_listing-respond button button-secondary <?php echo $nlclass?>"><?php _e( 'Write a Review', 'listify' ); ?></a>
 
 	<?php
 		$link = apply_filters( 'listify_submit_review_markup', ob_get_clean() );

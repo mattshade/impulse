@@ -72,6 +72,17 @@ class Advanced_Ads_Utils {
 		return $result;
 	}
 
-
+	/**
+	 * Get inline asset.
+	 *
+	 * @param str $content
+	 * @return str $content
+	 */
+	public static function get_inline_asset( $content ) {
+		if ( Advanced_Ads_Checks::active_autoptimize() ) {
+			return '<!--noptimize-->' . $content . '<!--/noptimize-->';
+		}
+		return $content;
+	}
 }
 ?>

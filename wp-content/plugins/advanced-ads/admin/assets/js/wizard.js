@@ -13,6 +13,7 @@ var advads_wizard = {
     ],
     current_box: '#post-body-content, #ad-main-box', // current active box
     one_column: false, // whether the edit screen is in one-column mode
+    status: false, // what is the current status? true if running, else false
     init: function( status ){ // status can be "start" to start wizard or nothing to not start it
 	var _this = this;
 	jQuery('#advads-wizard-controls-next').click( function( ){ _this.next(); } );
@@ -38,7 +39,7 @@ var advads_wizard = {
     },
     start: function(){ // do stuff when wizard is started
 	// show page in 1-column stype
-	var _this = this;
+	this.status = true;
 	if( jQuery( '#post-body').hasClass('columns-1') ){
 	    this.one_column = true;
 	} else {
@@ -63,11 +64,14 @@ var advads_wizard = {
 	this.save_hide_wizard( false );
     },
     close: function(){ // close the wizard by showing all elements again
+	this.status = false;
 	jQuery('*').removeClass('advads-hide');
 	jQuery('#advads-stop-wizard, #advads-wizard-controls').addClass('hidden');
 	if( this.one_column !== true ){
 	    jQuery( '#post-body').addClass( 'columns-2' ).removeClass( 'columns-1' );
 	}
+	// reset current box
+	this.current_box = this.box_order[0];
 	jQuery('#advads-wizard-welcome').remove();// close wizard welcome message
 	// show all elements with 'advads-hide-for-wizard' class
 	jQuery( '.advads-hide-in-wizard').show();
@@ -94,6 +98,7 @@ var advads_wizard = {
 	}
     },
     next: function(){ // show next box
+	if( ! this.status ){ return }
 	// get index of current item in box-array
 	var i = this.box_order.indexOf( this.current_box );
 	// check if there is a next index
@@ -129,6 +134,7 @@ var advads_wizard = {
 		    data: {
 			    action: 'advads-save-hide-wizard-state',
 			    hide_wizard: hide_wizard,
+			    nonce: advadsglobal.ajax_nonce,
 		    },
 	    });
     },

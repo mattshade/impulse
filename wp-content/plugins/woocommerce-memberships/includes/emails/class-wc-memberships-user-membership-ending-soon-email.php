@@ -18,17 +18,16 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Membership Ending Soon Email
+ * Membership Ending Soon Email.
  *
- * Membership ending soon emails are sent to plan members
- * when their membership is about to expire
+ * Membership ending soon emails are sent to plan members when their membership is about to expire.
  *
  * @since 1.7.0
  */
@@ -36,7 +35,7 @@ class WC_Memberships_User_Membership_Ending_Soon_Email extends WC_Memberships_Us
 
 
 	/**
-	 * Constructor
+	 * Email constructor.
 	 *
 	 * @since 1.7.0
 	 */
@@ -63,10 +62,11 @@ class WC_Memberships_User_Membership_Ending_Soon_Email extends WC_Memberships_Us
 
 
 	/**
-	 * Trigger the membership ending soon email
+	 * Triggers the Membership Ending Soon email.
 	 *
 	 * @since 1.7.0
-	 * @param int $user_membership_id The id of the user membership about to expire
+	 *
+	 * @param int $user_membership_id the ID of the user membership about to expire
 	 */
 	public function trigger( $user_membership_id ) {
 
@@ -101,9 +101,9 @@ class WC_Memberships_User_Membership_Ending_Soon_Email extends WC_Memberships_Us
 
 
 	/**
-	 * Email settings form fields
+	 * Filters the email settings form fields.
 	 *
-	 * Extends and overrides parent method
+	 * Extends and overrides parent method.
 	 *
 	 * @since 1.7.0
 	 */
@@ -163,10 +163,11 @@ class WC_Memberships_User_Membership_Ending_Soon_Email extends WC_Memberships_Us
 
 
 	/**
-	 * Get the default body content
+	 * Returns the default body content.
 	 *
 	 * @since 1.7.0
-	 * @return string
+	 *
+	 * @return string HTML
 	 */
 	public function get_default_body() {
 
@@ -178,10 +179,11 @@ class WC_Memberships_User_Membership_Ending_Soon_Email extends WC_Memberships_Us
 
 
 	/**
-	 * Get email HTML content
+	 * Returns the email HTML content.
 	 *
 	 * @since 1.7.0
-	 * @return string HTML content
+	 *
+	 * @return string HTML
 	 */
 	public function get_content_html() {
 
@@ -200,10 +202,11 @@ class WC_Memberships_User_Membership_Ending_Soon_Email extends WC_Memberships_Us
 
 
 	/**
-	 * Get email plain text content
+	 * Returns email plain text content.
 	 *
 	 * @since 1.7.0
-	 * @return string Plain text content
+	 *
+	 * @return string plain text
 	 */
 	public function get_content_plain() {
 

@@ -18,17 +18,16 @@
  *
  * @package   WC-Memberships/Classes
  * @author    SkyVerge
- * @copyright Copyright (c) 2014-2017, SkyVerge, Inc.
+ * @copyright Copyright (c) 2014-2018, SkyVerge, Inc.
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Memberships Post Types class
+ * Memberships Post Types class.
  *
- * This class is responsible for registering the custom post types & taxonomy
- * required for Memberships.
+ * This class is responsible for registering the custom post types & taxonomy required for Memberships.
  *
  * @since 1.0.0
  */
@@ -36,7 +35,7 @@ class WC_Memberships_Post_Types {
 
 
 	/**
-	 * Initialize and register the Memberships post types
+	 * Initializes and registers the Memberships post types.
 	 *
 	 * @since 1.0.0
 	 */
@@ -55,7 +54,7 @@ class WC_Memberships_Post_Types {
 
 
 	/**
-	 * Init WooCommerce Memberships user roles
+	 * Init WooCommerce Memberships user roles.
 	 *
 	 * @since 1.0.0
 	 */
@@ -66,7 +65,7 @@ class WC_Memberships_Post_Types {
 			$wp_roles = new WP_Roles();
 		}
 
-		// Allow shop managers and admins to manage membership plans and user memberships
+		// allow shop managers and admins to manage membership plans and user memberships
 		if ( is_object( $wp_roles ) ) {
 
 			foreach ( array( 'membership_plan', 'user_membership' ) as $post_type ) {
@@ -93,7 +92,7 @@ class WC_Memberships_Post_Types {
 
 
 	/**
-	 * Init WooCommerce Memberships post types
+	 * Init WooCommerce Memberships post types.
 	 *
 	 * @since 1.0.0
 	 */
@@ -122,19 +121,16 @@ class WC_Memberships_Post_Types {
 						'not_found'          => __( 'No Membership Plans found', 'woocommerce-memberships' ),
 						'not_found_in_trash' => __( 'No Membership Plans found in trash', 'woocommerce-memberships' ),
 					),
-				'description'     => __( 'This is where you can add new Membership Plans.', 'woocommerce-memberships' ),
-				'public'          => false,
-				'show_ui'         => true,
-				'capability_type' => 'membership_plan',
+				'description'         => __( 'This is where you can add new Membership Plans.', 'woocommerce-memberships' ),
+				'public'              => false,
+				'show_ui'             => true,
+				'capability_type'     => 'membership_plan',
 				'map_meta_cap'        => true,
-				'publicly_queryable'  => false,
-				'exclude_from_search' => true,
 				'show_in_menu'        => $show_in_menu,
 				'hierarchical'        => false,
 				'rewrite'             => false,
 				'query_var'           => false,
 				'supports'            => array( 'title' ),
-				'show_in_nav_menus'   => false,
 			)
 		);
 
@@ -155,19 +151,16 @@ class WC_Memberships_Post_Types {
 						'not_found'          => __( 'No User Memberships found', 'woocommerce-memberships' ),
 						'not_found_in_trash' => __( 'No User Memberships found in trash', 'woocommerce-memberships' ),
 					),
-				'description'     => __( 'This is where you can add new User Memberships.', 'woocommerce-memberships' ),
-				'public'          => false,
-				'show_ui'         => true,
-				'capability_type' => 'user_membership',
+				'description'         => __( 'This is where you can add new User Memberships.', 'woocommerce-memberships' ),
+				'public'              => false,
+				'show_ui'             => true,
+				'capability_type'     => 'user_membership',
 				'map_meta_cap'        => true,
-				'publicly_queryable'  => false,
-				'exclude_from_search' => true,
 				'show_in_menu'        => $show_in_menu,
 				'hierarchical'        => false,
 				'rewrite'             => false,
 				'query_var'           => false,
 				'supports'            => array( null ),
-				'show_in_nav_menus'   => false,
 			)
 		);
 
@@ -175,7 +168,7 @@ class WC_Memberships_Post_Types {
 
 
 	/**
-	 * Init WooCommerce Memberships post statuses
+	 * Registers WooCommerce Memberships post statuses.
 	 *
 	 * @since 1.0.0
 	 */
@@ -183,57 +176,57 @@ class WC_Memberships_Post_Types {
 
 		$statuses = wc_memberships_get_user_membership_statuses();
 
-		foreach ( $statuses as $status => $labels ) {
+		foreach ( $statuses as $status => $args ) {
 
-			register_post_status( $status, array(
-				'label'                     => $labels['label'],
-				'public'                    => false,
-				'exclude_from_search'       => false,
-				'show_in_admin_all_list'    => true,
-				'show_in_admin_status_list' => true,
-				'label_count'               => $labels['label_count'],
+			$args = wp_parse_args( $args, array(
+				'label'     => ucfirst( $status ),
+				'public'    => false,
+				'protected' => true,
 			) );
+
+			register_post_status( $status, $args );
 		}
 	}
 
 
 	/**
-	 * Customize updated messages for custom post types
+	 * Customizes updated messages for custom post types.
 	 *
 	 * @internal
 	 *
 	 * @since 1.0.0
-	 * @param array $messages Original messages
-	 * @return array $messages Modified messages
+	 *
+	 * @param array $messages original messages
+	 * @return array $messages modified messages
 	 */
 	public static function updated_messages( $messages ) {
 
 		$messages['wc_membership_plan'] = array(
-			0  => '', // Unused. Messages start at index 1.
+			0  => '', // unused, messages start at index 1
 			1  => __( 'Membership Plan saved.', 'woocommerce-memberships' ),
 			2  => __( 'Custom field updated.', 'woocommerce-memberships' ),
 			3  => __( 'Custom field deleted.', 'woocommerce-memberships' ),
 			4  => __( 'Membership Plan saved.', 'woocommerce-memberships' ),
-			5  => '', // Unused for membership plans
-			6  => __( 'Membership Plan saved.', 'woocommerce-memberships' ), // Original: Post published
+			5  => '', // unused for membership plans
+			6  => __( 'Membership Plan saved.', 'woocommerce-memberships' ), // original: "Post published"
 			7  => __( 'Membership Plan saved.', 'woocommerce-memberships' ),
-			8  => '', // Unused for membership plans
-			9  => '', // Unused for membership plans
-			10 => __( 'Membership Plan draft updated.', 'woocommerce-memberships' ), // Original: Post draft updated
+			8  => '', // unused for membership plans
+			9  => '', // unused for membership plans
+			10 => __( 'Membership Plan draft updated.', 'woocommerce-memberships' ), // original: "Post draft updated"
 		);
 
 		$messages['wc_user_membership'] = array(
-			0  => '', // Unused. Messages start at index 1.
+			0  => '', // unused, messages start at index 1
 			1  => __( 'User Membership saved.', 'woocommerce-memberships' ),
 			2  => __( 'Custom field updated.', 'woocommerce-memberships' ),
 			3  => __( 'Custom field deleted.', 'woocommerce-memberships' ),
 			4  => __( 'User Membership saved.', 'woocommerce-memberships' ),
-			5  => '', // Unused for User Memberships
-			6  => __( 'User Membership saved.', 'woocommerce-memberships' ), // Original: Post published
+			5  => '', // unused for user memberships
+			6  => __( 'User Membership saved.', 'woocommerce-memberships' ), // original: "Post published"
 			7  => __( 'User Membership saved.', 'woocommerce-memberships' ),
-			8  => '', // Unused for User Memberships
-			9  => '', // Unused for User Memberships
-			10 => __( 'User Membership saved.', 'woocommerce-memberships' ), // Original: Post draft updated
+			8  => '', // unused for user memberships
+			9  => '', // unused for user memberships
+			10 => __( 'User Membership saved.', 'woocommerce-memberships' ), // original: "Post draft updated"
 		);
 
 		return $messages;
@@ -241,14 +234,15 @@ class WC_Memberships_Post_Types {
 
 
 	/**
-	 * Customize updated messages for custom post types
+	 * Customizes updated messages for custom post types.
 	 *
 	 * @internal
 	 *
 	 * @since 1.0.0
-	 * @param array $messages Original messages
-	 * @param array $bulk_counts
-	 * @return array $messages Modified messages
+	 *
+	 * @param array $messages original messages
+	 * @param array $bulk_counts counter
+	 * @return array $messages modified messages
 	 */
 	public static function bulk_updated_messages( $messages, $bulk_counts ) {
 
@@ -273,8 +267,9 @@ class WC_Memberships_Post_Types {
 
 
 	/**
-	 * Remove third party meta boxes from our CPT screens
-	 * unless they're on the whitelist
+	 * Removes third party meta boxes from Memberships Custom Post Type admin screens.
+	 *
+	 * Runs a filter whitelist to exclude meta boxes, like those added by Memberships itself.
 	 *
 	 * @internal
 	 *
@@ -283,22 +278,28 @@ class WC_Memberships_Post_Types {
 	 */
 	public static function maybe_remove_meta_boxes( $post_type ) {
 
-		if ( ! in_array( $post_type, array( 'wc_membership_plan', 'wc_user_membership' ), true ) ) {
-			return;
-		}
+		if ( in_array( $post_type, array( 'wc_membership_plan', 'wc_user_membership' ), true ) ) {
 
-		$allowed_meta_box_ids = apply_filters( 'wc_memberships_allowed_meta_box_ids', array_merge( array( 'submitdiv' ), wc_memberships()->get_admin_instance()->get_meta_box_ids() ) );
+			$screen = get_current_screen();
 
-		$screen = get_current_screen();
+			/**
+			 * Whitelist of allowed meta boxes to appear on Memberships custom post type admin screens.
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param string[] array of meta box IDs
+			 */
+			$allowed_meta_box_ids = apply_filters( 'wc_memberships_allowed_meta_box_ids', array_merge( array( 'submitdiv' ), wc_memberships()->get_admin_instance()->get_meta_box_ids() ) );
 
-		foreach ( $GLOBALS['wp_meta_boxes'][ $screen->id ] as $context => $meta_boxes_by_context ) {
+			foreach ( $GLOBALS['wp_meta_boxes'][ $screen->id ] as $context => $meta_boxes_by_context ) {
 
-			foreach ( $meta_boxes_by_context as $subcontext => $meta_boxes_by_subcontext ) {
+				foreach ( $meta_boxes_by_context as $subcontext => $meta_boxes_by_subcontext ) {
 
-				foreach ( $meta_boxes_by_subcontext as $meta_box_id => $meta_box ) {
+					foreach ( $meta_boxes_by_subcontext as $meta_box_id => $meta_box ) {
 
-					if ( ! in_array( $meta_box_id, $allowed_meta_box_ids, true ) ) {
-						remove_meta_box( $meta_box_id, $post_type, $context );
+						if ( ! in_array( $meta_box_id, $allowed_meta_box_ids, true ) ) {
+							remove_meta_box( $meta_box_id, $post_type, $context );
+						}
 					}
 				}
 			}

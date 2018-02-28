@@ -25,14 +25,14 @@ get_header(); ?>
 				<?php while ( have_posts() ) : the_post(); ?>
 
 					<?php get_template_part( 'content' ); ?>
-					
+
 					<?php if ( is_user_logged_in() ): ?>
 
 					<?php comments_template(); ?>
 					<?php endif; ?>
 
 				<?php endwhile; ?>
-hello
+
 			</main>
 
 			<?php if ( 'right' === esc_attr( get_theme_mod( 'content-sidebar-position', 'right' ) ) ) : ?>

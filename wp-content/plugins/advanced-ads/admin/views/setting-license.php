@@ -12,7 +12,7 @@ ob_start();
 	    name="advads_license_activate"><?php _e( 'Update expiry date', 'advanced-ads' ); ?></button><?php
 $update_button = ob_get_clean();
 
-$expired_error .= $expired_renew_link = ' ' . sprintf(__( 'Click on %2$s if you renewed it or have a subscription or <a href="%1$s" target="_blank">renew your license with a discount</a>.', 'advanced-ads' ), ADVADS_URL . 'checkout/?edd_license_key=' . esc_attr($license_key) . '#utm_source=advanced-ads&utm_medium=link&utm_campaign=settings-licenses', $update_button );
+$expired_error .= $expired_renew_link = ' ' . sprintf(__( 'Click on %2$s if you renewed it or have a subscription or <a href="%1$s" target="_blank">renew your license</a>.', 'advanced-ads' ), ADVADS_URL . 'checkout/?edd_license_key=' . esc_attr($license_key) . '#utm_source=advanced-ads&utm_medium=link&utm_campaign=settings-licenses', $update_button );
     if( 'lifetime' !== $expires ){
 	$expires_time = strtotime( $expires );
 	$days_left = ( $expires_time - time() ) / DAY_IN_SECONDS;

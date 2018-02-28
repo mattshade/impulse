@@ -12,6 +12,9 @@
  */
 class WC_Name_Your_Price_Admin {
 
+	/**
+	 * Deprecated 2.7.0, use WC_Name_Your_Price_Helpers::get_simple_supported_types()
+	 */
 	static $simple_supported_types = array( 'simple', 'subscription', 'bundle', 'composite', 'deposit', 'mix-and-match' );
 
 	/**
@@ -56,7 +59,7 @@ class WC_Name_Your_Price_Admin {
 	}
 
 
-	/*
+	/**
 	 * Javascript to handle the NYP metabox options
 	 *
 	 * @param string $hook
@@ -79,7 +82,7 @@ class WC_Name_Your_Price_Admin {
 		// Enqueue and localize.
 		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
-		wp_enqueue_script( 'woocommerce_nyp_metabox', WC_Name_Your_Price()->plugin_url() . '/includes/admin/js/nyp-metabox'. $suffix . '.js', array( 'jquery' ), WC_Name_Your_Price()->version, true );
+		wp_enqueue_script( 'woocommerce_nyp_metabox', WC_Name_Your_Price()->plugin_url() . '/assets/js/admin/nyp-metabox'. $suffix . '.js', array( 'jquery' ), WC_Name_Your_Price()->version, true );
 		
 		$strings = array ( 'enter_value' => __( 'Enter a value', 'wc_name_your_price' ),
 							'price_adjust' => __( 'Enter a value (fixed or %)', 'wc_name_your_price' ) );
@@ -88,7 +91,7 @@ class WC_Name_Your_Price_Admin {
 
 	}
 
-	/*
+	/**
 	 * Add help tab for product meta
 	 *
 	 * @return print html
@@ -145,7 +148,7 @@ class WC_Name_Your_Price_Admin {
 	/*-----------------------------------------------------------------------------------*/
 
 
-	/*
+	/**
 	 * Change price in edit screen to NYP
 	 *
 	 * @param string $price
@@ -165,7 +168,7 @@ class WC_Name_Your_Price_Admin {
 
 	}
 
-	/*
+	/**
 	 * Add NYP as option to product filters in admin 
 	 *
 	 * @param string $output
@@ -234,7 +237,7 @@ class WC_Name_Your_Price_Admin {
 	/* Quick Edit */
 	/*-----------------------------------------------------------------------------------*/
 
-	/*
+	/**
 	 * Display the column content
 	 *
 	 * @param string $column_name
@@ -275,7 +278,7 @@ class WC_Name_Your_Price_Admin {
 
 	}
 
-	/*
+	/**
 	 * Add quick edit fields
 	 *
 	 * @return print HTML
@@ -314,7 +317,7 @@ class WC_Name_Your_Price_Admin {
 	  <?php
 	}
 
-	/*
+	/**
 	 * Load the scripts for dealing with the quick edit
 	 *
 	 * @param string $hook
@@ -326,12 +329,12 @@ class WC_Name_Your_Price_Admin {
 
 		if ( $hook == 'edit.php' && $post_type == 'product' ){
 			$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
- 			wp_enqueue_script( 'nyp-quick-edit', WC_Name_Your_Price()->plugin_url() . '/includes/admin/js/nyp-quick-edit'. $suffix .'.js', array( 'jquery' ), WC_Name_Your_Price()->version, true );
+ 			wp_enqueue_script( 'nyp-quick-edit', WC_Name_Your_Price()->plugin_url() . '/assets/js/admin/nyp-quick-edit'. $suffix .'.js', array( 'jquery' ), WC_Name_Your_Price()->version, true );
 		}
 
 	}
 
-	/*
+	/**
 	 * Save quick edit changes
 	 *
 	 * @param WC_Product object $product
@@ -355,7 +358,7 @@ class WC_Name_Your_Price_Admin {
 	/* Admin Settings */
 	/*-----------------------------------------------------------------------------------*/
 
-	/*
+	/**
 	 * Include the settings page class
 	 * compatible with WooCommerce 2.1
 	 *
@@ -374,7 +377,7 @@ class WC_Name_Your_Price_Admin {
  	/* Deprecated Methods */
    	/*-----------------------------------------------------------------------------------*/
    
-   	/*
+   	/**
 	 * Save extra meta info for variable products
 	 *
 	 * @param int $post_id
