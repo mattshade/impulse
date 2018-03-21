@@ -507,7 +507,7 @@ class Advanced_Ads_Plugin {
 					$this->frontend_prefix = preg_match( '/[A-Za-z][A-Za-z0-9_]{4}/', $host, $result ) ? $result[0] . '-' : Advanced_Ads_Plugin::DEFAULT_FRONTEND_PREFIX;
 				}
 			} else {
-				$this->frontend_prefix = $options['front-prefix'];
+				$this->frontend_prefix = esc_attr( $options['front-prefix'] );
 			}
         }
 		return $this->frontend_prefix;

@@ -163,9 +163,6 @@ class Advanced_Ads_Checks {
 		if( class_exists( 'ITSEC_Core', false ) && defined ( 'AAP_VERSION' ) ){ // iThemes Security, but only if Pro is enabled
 			$conflicting_plugins[] = 'iThemes Security';
 		}
-		if( class_exists('q2w3_fixed_widget', false) ){ // Q2W3 Fixed Widget
-			$conflicting_plugins[] = 'Q2W3 Fixed Widget';
-		}
 
 		return $conflicting_plugins;
 	}

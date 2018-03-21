@@ -271,7 +271,7 @@
 	});
 
 	/**
-	 * Show a message depending on whether Page-Level ads are enabled.
+	 * Show a message depending on whether Auto ads are enabled.
 	 */
 	function showPageLevelAdMessage() {
 		var $msg = $( '<p class="advads-success-message" />' ).appendTo ( '#pastecode-msg' );

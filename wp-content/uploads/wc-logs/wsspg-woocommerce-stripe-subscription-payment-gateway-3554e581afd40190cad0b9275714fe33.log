@@ -1,0 +1,14 @@
+02-20-2018 @ 20:38:35 - [ error ][ charges ][ req_QQE4IrWGLyLCm9 ]: stdClass Object
+(
+    [type] => invalid_request_error
+    [message] => Amount must be at least 50 cents
+    [param] => amount
+)
+
+02-20-2018 @ 21:03:07 - [ error ][ charges ][ req_wmIOO4S5jk48Tf ]: stdClass Object
+(
+    [type] => invalid_request_error
+    [message] => Amount must be at least 50 cents
+    [param] => amount
+)
+

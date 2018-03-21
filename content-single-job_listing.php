@@ -41,7 +41,6 @@ $classes = array(
 						do_action( 'listify_single_job_listing_meta' );
 					?>
 				</div>
-<?php the_meta(); ?>
 				<div class="content-single-job_listing-hero-actions col-md-5 col-sm-12">
 					<?php
 						/**

@@ -140,3 +140,4 @@ $logvar = "loggedin";
 	<?php do_action( 'listify_content_before' ); ?>
 
 	<div id="content" class="site-content">
+		<span class="badge"><?php $key="badge"; echo get_post_meta($post->ID, $key, true); ?></span>

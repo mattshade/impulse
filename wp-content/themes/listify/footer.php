@@ -147,57 +147,57 @@ if($('.impul-wildcard#box-ad').length > 0 ){
 if($('legend:contains("Biography")').length > 0 ){
 	$('legend:contains("Biography")').parent().hide();
 }
+	
+if($('.badge').length > 0 ){
+	$('.job_listing-title').append($('.badge'));
+	$('.badge').fadeIn('fast');
+	if($('.badge').text() == ''){
+		$('.badge').hide();
+	}
+}
+	
 
-//console.log(ratingsArray);
+
+console.log("ratingsArray: " + ratingsArray);
 
 if(ratingsArray.length){
-  var count = 0;
-  var obj = {};
-  var total = 0;
-  var avg = 0;
-jQuery.each(ratingsArray, function( key, value ) {
-  var values = JSON.stringify(value);
-  var ratings = jQuery.parseJSON(values);
-  jQuery.each(ratings, function( key, value ) {
-    obj[key] = { count: count, total: total, avg: avg };
-    // console.log("the value: "+ value)
-    total += parseInt(value);
-    avg = total / count;
-    avg = Math.floor(avg);
-    // console.log("the count: " + count);
-    // console.log("the total: " + total);
-    count++;
-  });
-// console.log("the big total: " + total);
-});
-// console.log(obj);
+console.log("ratingsArray: " + ratingsArray);
+var filledStars = "<span class='listing-star listing-star--full'></span>";
+ var emptyStars = "<span class='listing-star listing-star--empty'></span>";
+ var ratingsMarkup = "<div class='sub-ratings'><ul>";
 
-var filledStars = "<span class='dashicons dashicons-star-filled'></span>";
-var emptyStars = "<span class='dashicons dashicons-star-empty'></span>";
-var starValue;
-var ratingsMarkup = "<div class='sub-ratings'><ul>";
-jQuery.each(obj, function( key, value ) {
-  console.log(key +"\n");
-  ratingsMarkup += "<li><span class='ratings-key'>" + key + "</span>";
-  jQuery.each(value, function( key, values ) {
-    console.log(value.avg)
-    starValue = 5 - value.avg;
-    console.log("starval: " + starValue);    
-  });
-  for (var i = 0; i < value.avg; i++) { 
-    ratingsMarkup += "<span class='dashicons dashicons-star-filled'></span>" + "\n";
+var avg = Array.from(ratingsArray.reduce(
+        (acc, obj) => Object.keys(obj).reduce(
+            (acc, key) => typeof obj[key] == "number"
+                ? acc.set(key, (acc.get(key) || []).concat(obj[key]))
+                : acc,
+        acc),
+    new Map()),
+        ([name, values]) =>
+            ({ name, average: values.reduce( (a,b) => a+b ) / values.length }),
+    );
+
+console.log(avg);
+
+
+$.each(avg, function (key, value) {
+  console.log(value.name + ":" + Math.round(value.average));
+  // $('.stars').append(value.name)
+  ratingsMarkup += "<li><span class='ratings-key'>" + value.name + "</span>";
+  var found = false;
+  for (i = 0; i < 5; i++) {
+    if(i < value.average){
+      ratingsMarkup += filledStars
+    }else{
+      ratingsMarkup += emptyStars
+    }    
   }
-  for (var j = 0; j < starValue; j++) { 
-    ratingsMarkup += "<span class='dashicons dashicons-star-empty'></span>";
-  }
-  ratingsMarkup += "</li>"
+	ratingsMarkup += "</li>"
 });
 ratingsMarkup += "</ul></div>";
 console.log(ratingsMarkup);
-jQuery('.job_listing-location').eq(0).prepend(ratingsMarkup);
+jQuery('.listing-rating--single').eq(0).append(ratingsMarkup);
 }
-
-
 });
 
 	</script>

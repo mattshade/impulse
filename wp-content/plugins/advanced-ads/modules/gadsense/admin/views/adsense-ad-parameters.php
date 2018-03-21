@@ -19,7 +19,11 @@ $sizing_array = $db->get_responsive_sizing();
 ?>
 <input type="hidden" id="advads-ad-content-adsense" name="advanced_ad[content]" value="<?php echo esc_attr( $json_content ); ?>" />
 <input type="hidden" name="unit_id" id="unit_id" value="<?php echo esc_attr( $unit_id ); ?>" />
-<?php if ( $use_paste_code ) : ?>
+<?php if( empty( $pub_id ) ) :
+    ?><p><a class="button button-primary" target="_blank" href="<?php echo Advanced_Ads_AdSense_Admin::ADSENSE_NEW_ACCOUNT_LINK; ?>"><?php _e( 'Get a free AdSense account', 'advanced-ads' ); 
+    ?></a></p><?php
+endif;
+if ( $use_paste_code ) : ?>
 <div class="advads-adsense-code" <?php if( !empty( $unit_code ) ): echo 'style="display: none;"'; endif; ?>>
 	<p class="description"><?php _e( 'Copy the ad code from your AdSense account, paste it into the area below and click on <em>Get details</em>.', 'advanced-ads' ); ?></p>
 	<textarea rows="10" cols="40" class="advads-adsense-content"></textarea>

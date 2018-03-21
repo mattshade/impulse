@@ -1,0 +1,24 @@
+[06-Feb-2018 15:16:50 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function language_attributes() in /home/impulsesurvey/public_html/wp-content/themes/listify/header.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/impulsesurvey/public_html/wp-content/themes/listify/header.php on line 10
+[06-Feb-2018 15:16:53 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function language_attributes() in /home/impulsesurvey/public_html/wp-content/themes/listify/header.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/impulsesurvey/public_html/wp-content/themes/listify/header.php on line 10
+[03-Mar-2018 19:09:24 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function get_header() in /home/impulsesurvey/public_html/wp-content/themes/listify/404.php:8
+Stack trace:
+#0 {main}
+  thrown in /home/impulsesurvey/public_html/wp-content/themes/listify/404.php on line 8
+[03-Mar-2018 19:09:25 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function get_header() in /home/impulsesurvey/public_html/wp-content/themes/listify/404.php:8
+Stack trace:
+#0 {main}
+  thrown in /home/impulsesurvey/public_html/wp-content/themes/listify/404.php on line 8
+[16-Mar-2018 10:00:42 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function get_header() in /home/impulsesurvey/public_html/wp-content/themes/listify/404.php:8
+Stack trace:
+#0 {main}
+  thrown in /home/impulsesurvey/public_html/wp-content/themes/listify/404.php on line 8
+[16-Mar-2018 10:00:42 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function get_header() in /home/impulsesurvey/public_html/wp-content/themes/listify/404.php:8
+Stack trace:
+#0 {main}
+  thrown in /home/impulsesurvey/public_html/wp-content/themes/listify/404.php on line 8

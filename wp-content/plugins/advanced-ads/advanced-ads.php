@@ -5,20 +5,20 @@
  * @package   Advanced_Ads
  * @author    Thomas Maier <thomas.maier@webgilde.com>
  * @license   GPL-2.0+
- * @link      http://webgilde.com
+ * @link      https://webgilde.com
  * @copyright 2013-2018 Thomas Maier, webgilde GmbH
  *
  * @wordpress-plugin
  * Plugin Name:       Advanced Ads
  * Plugin URI:        https://wpadvancedads.com
  * Description:       Manage and optimize your ads in WordPress
- * Version:           1.8.24
+ * Version:           1.8.26
  * Author:            Thomas Maier
  * Author URI:        https://wpadvancedads.com
  * Text Domain:       advanced-ads
  * Domain Path:       /languages
  * License:           GPL-2.0+
- * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.txt
  */
 
 // If this file is called directly, abort.
@@ -39,7 +39,7 @@ define( 'ADVADS_BASE_DIR', dirname( ADVADS_BASE ) ); // directory of the plugin 
 // general and global slug, e.g. to store options in WP, textdomain
 define( 'ADVADS_SLUG', 'advanced-ads' );
 define( 'ADVADS_URL', 'https://wpadvancedads.com/' );
-define( 'ADVADS_VERSION', '1.8.24' );
+define( 'ADVADS_VERSION', '1.8.26' );
 
 /*----------------------------------------------------------------------------*
  * Autoloading, modules and functions

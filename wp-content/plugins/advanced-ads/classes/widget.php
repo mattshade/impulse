@@ -24,6 +24,8 @@ class Advanced_Ads_Widget extends WP_Widget {
 		$base_id = Advanced_Ads_Widget::get_base_id();
 
 		parent::__construct( $base_id,'Advanced Ads', $widget_ops, $control_ops );
+
+		add_filter( 'q2w3-fixed-widgets', array( $this, 'q2w3_replace_frontend_id' ) );
 	}
 
 	function widget($args, $instance) {
@@ -38,6 +40,8 @@ class Advanced_Ads_Widget extends WP_Widget {
 		    return;
 		}
 
+		$before_widget = $this->maybe_replace_frontend_id( $before_widget, $instance );
+
 		echo $before_widget;
 		if ( ! empty( $title ) ) {
 			echo $before_title . $title . $after_title;
@@ -50,6 +54,12 @@ class Advanced_Ads_Widget extends WP_Widget {
 		$instance = $old_instance;
 		$instance['title'] = $new_instance['title'];
 		$instance['item_id'] = $new_instance['item_id'];
+
+		// Allow to remove/replace id for new widgets and if it was allowed earlier.
+		if ( $old_instance === array() || ! empty( $old_instance['remove-widget-id'] ) ) {
+			$instance['remove-widget-id'] = true;
+		}
+		return $instance;
 		return $instance;
 	}
 
@@ -174,6 +184,66 @@ class Advanced_Ads_Widget extends WP_Widget {
 		// deprecated to keep previously changed prefixed working
 		$prefix2 = ( isset( $options['id-prefix'] ) && $options['id-prefix'] !== '' ) ? $options['id-prefix'] : 'advads_ad_';
 		return $prefix2 . 'widget';
+	}
+
+	/**
+	 * Get frontend widget id.
+	 *
+	 * @param int $number Unique ID number of the current widget instance.
+	 * @return str
+	 */
+	private function get_frontend_id( $number ) {
+		$prefix = Advanced_Ads_Plugin::get_instance()->get_frontend_prefix();
+		return $prefix . 'widget-' . $number;
+	}
+
+	/**
+	 * Make it harder for ad blockers to block the widget.
+	 *
+	 * @param str $before_widget
+	 * @param array $instance Settings for the current widget instance.
+	 * @return str $before_widget
+	 */
+	private function maybe_replace_frontend_id( $before_widget, $instance ) {
+		if ( ! empty( $instance['remove-widget-id'] ) ) {
+			$pattern = '#\sid=("|\')[^"\']+["\']#';
+			if ( ( defined( 'ADVANCED_ADS_SHOW_WIDGET_ID' ) && ADVANCED_ADS_SHOW_WIDGET_ID )
+				|| ! empty( $instance['q2w3_fixed_widget'] )
+			) {
+				// Replace id.
+				$number = ! empty( $this->number ) ?  $this->number : '';
+				$before_widget = preg_replace( $pattern, ' id=$01' . $this->get_frontend_id( $number ) . '$01', $before_widget );
+			} else {
+				// Remove id.
+				$before_widget = preg_replace( $pattern, '', $before_widget );
+			}
+		}
+		return $before_widget;
+	}
+
+	/**
+	 * Provide the 'Q2W3 Fixed Widget' plugin with the new frontend widget id.
+	 *
+	 * @param array $sidebars_widgets
+	 * @return array $sidebars_widgets
+	 */
+	public function q2w3_replace_frontend_id( $sidebars_widgets ) {
+		foreach ( $sidebars_widgets as $sidebar => $widgets ) {
+			foreach ( $widgets as $k => $widget ) {
+				$pos = strrpos( $widget, '-' );
+				$option_name = substr( $widget, 0, $pos );
+				$number = substr( $widget, $pos + 1 );
+
+				if ( $option_name === self::get_base_id() ) {
+					$widget_options = get_option('widget_' . $option_name);
+					if ( ! empty( $widget_options[ $number ]['remove-widget-id'] ) ) {
+						$sidebars_widgets[ $sidebar ][ $k ] = $this->get_frontend_id( $number );
+					}
+				}
+
+			}
+		}
+		return $sidebars_widgets;
 	}
 
 }

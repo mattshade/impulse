@@ -1,0 +1,24 @@
+.wpjmr-gallery::after {
+	content:".";display:block;height:0;clear:both;visibility:hidden;
+}
+.wpjmr-gallery .gallery-item {
+	display: block;
+	float: left;
+	margin: 0;
+	padding: 5px;
+	width: 70px;
+}
+.wpjmr-gallery a {
+	display: block;
+	float: left;
+}
+.wpjmr-gallery img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+.wpjmr-gallery-edit .gallery-icon {
+	display: block;
+	float: left;
+	margin-bottom: 10px;
+}

@@ -415,7 +415,7 @@ class Advanced_Ads_Ad_Ajax_Callbacks {
 	}
 
 	/**
-	 * Enable Adsense Page-level ads.
+	 * Enable Adsense Auto ads, previously "Page-Level ads"
 	 */
 	public function adsense_enable_pla(){
 

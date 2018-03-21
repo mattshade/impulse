@@ -1,0 +1,268 @@
+2017-10-20T00:56:02+00:00 CRITICAL Uncaught Error: Call to undefined function listify_get_theme_menu_name() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/header.php:93
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template.php(688): require_once()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template.php(647): load_template('/nfs/c06/h01/mn...', true)
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/general-template.php(45): locate_template(Array, true)
+#3 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/single.php(8): get_header()
+#4 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include('/nfs/c06/h01/mn...')
+#5 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#6 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#7 {main}
+  thrown
+
+2017-10-20T00:56:07+00:00 CRITICAL Uncaught Error: Call to undefined function listify_theme_mod() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/index.php:18
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#3 {main}
+  thrown
+
+2017-10-20T00:56:10+00:00 CRITICAL Uncaught Error: Call to undefined function listify_theme_mod() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/index.php:18
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#3 {main}
+  thrown
+
+2017-10-20T00:56:27+00:00 CRITICAL Uncaught Error: Call to undefined function listify_get_theme_menu_name() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/header.php:93
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template.php(688): require_once()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template.php(647): load_template('/nfs/c06/h01/mn...', true)
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/general-template.php(45): locate_template(Array, true)
+#3 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/single.php(8): get_header()
+#4 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include('/nfs/c06/h01/mn...')
+#5 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#6 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#7 {main}
+  thrown
+
+2017-10-20T00:56:32+00:00 CRITICAL Uncaught Error: Call to undefined function listify_get_theme_menu_name() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/header.php:93
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template.php(688): require_once()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template.php(647): load_template('/nfs/c06/h01/mn...', true)
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/general-template.php(45): locate_template(Array, true)
+#3 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/page.php(8): get_header()
+#4 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include('/nfs/c06/h01/mn...')
+#5 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#6 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#7 {main}
+  thrown
+
+2017-10-20T00:56:36+00:00 CRITICAL Uncaught Error: Call to undefined function listify_theme_mod() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/index.php:18
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#3 {main}
+  thrown
+
+2017-10-20T00:56:40+00:00 CRITICAL Uncaught Error: Call to undefined function listify_theme_mod() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/index.php:18
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#3 {main}
+  thrown
+
+2017-10-20T00:57:11+00:00 CRITICAL Uncaught Error: Call to undefined function listify_get_theme_menu_name() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/header.php:93
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template.php(688): require_once()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template.php(647): load_template('/nfs/c06/h01/mn...', true)
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/general-template.php(45): locate_template(Array, true)
+#3 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/page.php(8): get_header()
+#4 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include('/nfs/c06/h01/mn...')
+#5 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#6 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#7 {main}
+  thrown
+
+2017-10-20T00:59:21+00:00 CRITICAL Uncaught Error: Call to undefined function listify_get_theme_menu_name() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/header.php:93
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template.php(688): require_once()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template.php(647): load_template('/nfs/c06/h01/mn...', true)
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/general-template.php(45): locate_template(Array, true)
+#3 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/page.php(8): get_header()
+#4 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include('/nfs/c06/h01/mn...')
+#5 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#6 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#7 {main}
+  thrown
+
+2017-10-20T01:00:49+00:00 CRITICAL Uncaught Error: Call to undefined function listify_get_theme_menu_name() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/header.php:93
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template.php(688): require_once()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template.php(647): load_template('/nfs/c06/h01/mn...', true)
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/general-template.php(45): locate_template(Array, true)
+#3 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/page.php(8): get_header()
+#4 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include('/nfs/c06/h01/mn...')
+#5 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#6 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#7 {main}
+  thrown
+
+2017-10-20T01:01:51+00:00 CRITICAL Uncaught Error: Call to undefined function listify_theme_mod() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/header.php:104
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template.php(688): require_once()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template.php(647): load_template('/nfs/c06/h01/mn...', true)
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/general-template.php(45): locate_template(Array, true)
+#3 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/page.php(8): get_header()
+#4 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include('/nfs/c06/h01/mn...')
+#5 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#6 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#7 {main}
+  thrown
+
+2017-10-20T01:02:35+00:00 CRITICAL Uncaught Error: Call to undefined function listify_has_integration() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/page.php:23
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#3 {main}
+  thrown
+
+2017-10-20T01:05:25+00:00 CRITICAL Uncaught Error: Call to undefined function listify_theme_mod() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/single.php:19
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#3 {main}
+  thrown
+
+2017-10-20T01:06:21+00:00 CRITICAL Uncaught Error: Call to undefined function listify_theme_mod() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/single.php:19
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#3 {main}
+  thrown
+
+2017-10-20T01:06:34+00:00 CRITICAL Uncaught Error: Call to undefined function listify_theme_mod() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/single.php:19
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#3 {main}
+  thrown
+
+2017-10-20T01:06:44+00:00 CRITICAL Uncaught Error: Call to undefined function listify_theme_mod() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/single.php:19
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#3 {main}
+  thrown
+
+2017-10-20T01:07:01+00:00 CRITICAL Uncaught Error: Call to undefined function listify_has_integration() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/page.php:23
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#3 {main}
+  thrown
+
+2017-10-20T01:08:01+00:00 CRITICAL Uncaught Error: Call to undefined function listify_theme_mod() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/index.php:18
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#3 {main}
+  thrown
+
+2017-10-20T01:08:47+00:00 CRITICAL Uncaught Error: Call to undefined function listify_theme_mod() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/index.php:18
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#3 {main}
+  thrown
+
+2017-10-20T01:11:27+00:00 CRITICAL Uncaught Error: Call to undefined function listify_theme_mod() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/index.php:18
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#3 {main}
+  thrown
+
+2017-10-20T01:11:42+00:00 CRITICAL Uncaught Error: Call to undefined function listify_theme_mod() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/index.php:18
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#3 {main}
+  thrown
+
+2017-10-20T01:19:01+00:00 CRITICAL Uncaught Error: Call to undefined function listify_theme_mod() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/index.php:18
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#3 {main}
+  thrown
+
+2017-10-20T01:21:31+00:00 CRITICAL Uncaught Error: Call to undefined function listify_theme_mod() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/index.php:18
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#3 {main}
+  thrown
+
+2017-10-20T01:21:57+00:00 CRITICAL Uncaught Error: Call to undefined function listify_theme_mod() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/index.php:18
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#3 {main}
+  thrown
+
+2017-10-20T01:21:58+00:00 CRITICAL Uncaught Error: Call to undefined function listify_theme_mod() in /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-content/themes/impulsesurvey/index.php:18
+Stack trace:
+#0 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-includes/template-loader.php(74): include()
+#1 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/wp-blog-header.php(19): require_once('/nfs/c06/h01/mn...')
+#2 /nfs/c06/h01/mnt/87685/domains/impulsesurvey.com/html/index.php(17): require('/nfs/c06/h01/mn...')
+#3 {main}
+  thrown
+
+2017-10-20T01:25:37+00:00 CRITICAL Call to undefined function listify_theme_mod()
+
+2017-10-20T01:28:24+00:00 CRITICAL Call to undefined function listify_theme_mod()
+
+2017-10-20T01:31:33+00:00 CRITICAL Call to undefined function listify_theme_mod()
+
+2017-10-20T01:32:05+00:00 CRITICAL Call to undefined function listify_theme_mod()
+
+2017-10-20T02:20:30+00:00 CRITICAL Call to undefined function listify_has_integration()
+
+2017-10-20T02:31:49+00:00 CRITICAL Call to undefined function listify_submit_review_url()
+
+2017-10-20T02:32:08+00:00 CRITICAL Call to undefined function listify_submit_review_url()
+
+2017-10-20T02:32:58+00:00 CRITICAL Call to undefined function listify_submit_review_url()
+
+2017-10-20T02:33:07+00:00 CRITICAL Call to undefined function listify_submit_review_url()
+
+2017-10-22T19:29:43+00:00 CRITICAL Call to undefined function listify_get_theme_menu_name()
+
+2017-10-22T19:58:09+00:00 CRITICAL Call to undefined function listify_get_theme_menu_name()
+
+2017-10-23T17:41:56+00:00 CRITICAL Out of memory (allocated 72876032) (tried to allocate 3200 bytes)
+
+2017-10-23T18:12:09+00:00 CRITICAL Out of memory (allocated 68157440) (tried to allocate 3072 bytes)
+
+2017-10-28T21:50:29+00:00 CRITICAL Call to undefined function write_log()
+
+2017-10-28T21:50:30+00:00 CRITICAL Call to undefined function write_log()
+
+2017-10-28T21:51:00+00:00 CRITICAL Call to undefined function write_log()
+
+2017-10-31T00:51:55+00:00 CRITICAL Using $this when not in object context
+
+2017-10-31T00:52:30+00:00 CRITICAL Using $this when not in object context
+
+2017-10-31T14:48:45+00:00 CRITICAL Out of memory (allocated 61603840) (tried to allocate 1280 bytes)
+
+2017-10-31T17:45:44+00:00 CRITICAL Out of memory (allocated 76808192) (tried to allocate 12288 bytes)
+

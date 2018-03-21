@@ -7,6 +7,8 @@ class Advanced_Ads_AdSense_Admin {
 	private static $instance = null;
 	protected $notice = null;
         private $settings_page_hook = 'advanced-ads-adsense-settings-page';
+	
+	const	ADSENSE_NEW_ACCOUNT_LINK = 'https://www.google.com/adsense/start/?utm_source=AdvancedAdsPlugIn&utm_medium=partnerships&utm_campaign=AdvancedAdsPartner';
 
 	private function __construct() {
 		$this->data = Advanced_Ads_AdSense_Data::get_instance();
@@ -121,9 +123,9 @@ class Advanced_Ads_AdSense_Admin {
 
                 // get settings page hook
 		$hook = $this->settings_page_hook;
-
+		
                 register_setting( ADVADS_SLUG . '-adsense', ADVADS_SLUG . '-adsense', array($this, 'sanitize_settings') );
-
+		
 		// add new section
 		add_settings_section(
                         'advanced_ads_adsense_setting_section',
@@ -139,7 +141,7 @@ class Advanced_Ads_AdSense_Admin {
 			array($this, 'render_settings_adsense_id'),
 			$hook,
 			'advanced_ads_adsense_setting_section'
-		);
+		);		
 
 		// add setting field for adsense limit
 		add_settings_field(
@@ -150,10 +152,10 @@ class Advanced_Ads_AdSense_Admin {
 			'advanced_ads_adsense_setting_section'
 		);
 
-		// activate page-level ads
+		// activate AdSense verification code and Auto ads (previously Page-Level ads)
 		add_settings_field(
 			'adsense-page-level',
-			__( 'Activate Page-Level ads', 'advanced-ads' ),
+			__( 'Verification code & Auto ads', 'advanced-ads' ),
 			array($this, 'render_settings_adsense_page_level'),
 			$hook,
 			'advanced_ads_adsense_setting_section'
@@ -187,12 +189,6 @@ class Advanced_Ads_AdSense_Admin {
 	 */
 	public function render_settings_section_callback(){
 		// for whatever purpose there might come
-		$adsense_id = $this->data->get_adsense_id();
-		if( ! $adsense_id ){
-		    ?><p class="advads-error-message"><?php
-		    printf(__( 'Please enter your Publisher ID in order to use AdSense on your page. See the <a href="%s" target="_blank">manual</a> for more information.', 'advanced-ads' ), ADVADS_URL . 'manual/ad-types/adsense-ads/#utm_source=advanced-ads&utm_medium=link&utm_campaign=edit-adsense' );
-		    ?></p><?php
-		}
 	}
 
 	/**
@@ -204,7 +200,16 @@ class Advanced_Ads_AdSense_Admin {
                 $adsense_id = $this->data->get_adsense_id();
 
                 ?><input type="text" name="<?php echo GADSENSE_OPT_NAME; ?>[adsense-id]" id="adsense-id" size="32" value="<?php echo $adsense_id; ?>" />
+		<?php if( empty( $adsense_id ) ) :
+		    ?><a class="button button-primary" target="_blank" href="<?php echo self::ADSENSE_NEW_ACCOUNT_LINK; ?>"><?php _e( 'Get a free AdSense account', 'advanced-ads' ); ?></a><?php
+		endif; ?>
                 <p class="description"><?php _e( 'Your AdSense Publisher ID <em>(pub-xxxxxxxxxxxxxx)</em>', 'advanced-ads' ) ?></p><?php
+		
+		if( ! $adsense_id ){
+		    ?><p class="advads-error-message"><?php
+		    printf(__( 'Please enter your Publisher ID in order to use AdSense on your page. See the <a href="%s" target="_blank">manual</a> for more information.', 'advanced-ads' ), ADVADS_URL . 'manual/ad-types/adsense-ads/#utm_source=advanced-ads&utm_medium=link&utm_campaign=edit-adsense' );
+		    ?></p><?php
+		}
 	}
 
 	/**
@@ -238,9 +243,8 @@ class Advanced_Ads_AdSense_Admin {
                 $page_level = $options['page-level-enabled'];
 
                 ?><label><input type="checkbox" name="<?php echo GADSENSE_OPT_NAME; ?>[page-level-enabled]" value="1" <?php checked( $page_level ); ?> />
-		<?php _e( 'Insert Page-Level ads code on all pages.', 'advanced-ads' ); ?></label>
-                <p class="description"><?php _e( 'You still need to enable Page-Level ads in your AdSense account. See <a href="https://support.google.com/adsense/answer/6245304" target="_blank">AdSense Help</a> (requires AdSense-login) for more information.', 'advanced-ads' ); ?></p>
-                <p class="description"><?php printf(__( 'Please notice that this code might also activate QuickStart ads. Please read <a href="%s" target="_blank">this article</a> if <strong>ads appear in random places</strong>.', 'advanced-ads' ), ADVADS_URL . 'adsense-in-random-positions-quickstart/#utm_source=advanced-ads&utm_medium=link&utm_campaign=backend-quickstart-ads' ); ?></p><?php
+		<?php _e( 'Insert the AdSense header code used for verification and the Auto Ads feature.', 'advanced-ads' ); ?></label>
+                <p class="description"><?php printf(__( 'This code might also activate Auto ads. Please read <a href="%s" target="_blank">this article</a> if <strong>ads appear in random places</strong>.', 'advanced-ads' ), ADVADS_URL . 'adsense-in-random-positions-auto-ads/#utm_source=advanced-ads&utm_medium=link&utm_campaign=backend-autoads-ads' ); ?></p><?php
 	}
 
 	/**
@@ -254,7 +258,7 @@ class Advanced_Ads_AdSense_Admin {
 
                 ?><label><input type="checkbox" name="<?php echo GADSENSE_OPT_NAME; ?>[violation-warnings-disable]" value="1" <?php checked( 1, $disable_violation_warnings ); ?> />
 		<?php _e( 'Disable warnings about potential violations of the AdSense terms.', 'advanced-ads' ); ?></label>
-		<p class="description"><?php printf(__( 'Our <a href="%s" target="_blank">Ad Health</a> feature monitors if AdSense is implemented correctly on your site. It also considers ads not managed with Advanced Ads. Enable this option to remove these checks', 'advanced-ads' ), ADVADS_URL . 'adsense-in-random-positions-quickstart/#utm_source=advanced-ads&utm_medium=link&utm_campaign=backend-quickstart-ads' ); ?></p><?php
+		<p class="description"><?php printf(__( 'Our <a href="%s" target="_blank">Ad Health</a> feature monitors if AdSense is implemented correctly on your site. It also considers ads not managed with Advanced Ads. Enable this option to remove these checks', 'advanced-ads' ), ADVADS_URL . 'manual/ad-health/#utm_source=advanced-ads&utm_medium=link&utm_campaign=backend-autoads-ads' ); ?></p><?php
 	}
 
 	/**

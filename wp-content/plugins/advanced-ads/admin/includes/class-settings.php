@@ -167,14 +167,6 @@ class Advanced_Ads_Admin_Settings {
 			$hook,
 			'advanced_ads_setting_section'
 		);
-		// remove id from widgets
-		add_settings_field(
-			'remove-widget-id',
-			__( 'Remove Widget ID', 'advanced-ads' ),
-			array($this, 'render_settings_remove_widget_id'),
-			$hook,
-			'advanced_ads_setting_section'
-		);
 		// allow editors to manage ads
 		add_settings_field(
 			'editors-manage-ads',
@@ -487,33 +479,6 @@ class Advanced_Ads_Admin_Settings {
 		// deprecated
 		echo '<input type="hidden" value="' .$old_prefix .'" name="'.ADVADS_SLUG.'[id-prefix]" />';
 		echo '<p class="description">'. __( 'Prefix of class or id attributes in the frontend. Change it if you don’t want <strong>ad blockers</strong> to mark these blocks as ads.<br/>You might need to <strong>rewrite css rules afterwards</strong>.', 'advanced-ads' ) .'</p>';
-	}
-
-	/**
-	* render setting to remove the id from advanced ads widgets
-	*
-	* @since 1.6.8.2
-	*/
-	public function render_settings_remove_widget_id(){
-		$options = Advanced_Ads::get_instance()->options();
-
-		// is true by default if no options where previously set
-		if( ! isset($options['remove-widget-id']) && $options !== array() ){
-		    $remove = false;
-		} elseif( $options === array() ){
-		    $remove = true;
-		} else {
-		    $remove = true;
-		}
-
-		echo '<input id="advanced-ads-remove-widget-id" type="checkbox" ' . checked( $remove, true, false ) . ' name="'.ADVADS_SLUG.'[remove-widget-id]" />';
-		echo '<p class="description">' . __( 'Remove the ID attribute from widgets in order to not make them an easy target of ad blockers.', 'advanced-ads' );
-
-		if ( class_exists( 'q2w3_fixed_widget', false ) ) {
-			echo '<br />' . __( 'If checked, the Advanced Ads Widget will not work with the fixed option of the <strong>Q2W3 Fixed Widget</strong> plugin.', 'advanced-ads' );
-		}
-
-		echo '</p>';
 	}
 
 	/**

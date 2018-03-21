@@ -3,7 +3,7 @@ Contributors: mmaunder
 Tags: security, firewall, malware scanner, web application firewall, antivirus, block hackers, country blocking, clean hacked site, blacklist, waf, login security
 Requires at least: 3.9
 Tested up to: 4.9.4
-Stable tag: 7.0.5
+Stable tag: 7.1.1
 
 Secure your website with the most comprehensive WordPress security plugin. Firewall, malware scan, blocking, live traffic, login security & more.
 
@@ -33,7 +33,6 @@ Wordfence includes an endpoint firewall and malware scanner that were built from
 #### SECURITY TOOLS
 * With Live Traffic, monitor visits and hack attempts not shown in other analytics packages in real time; including origin, their IP address, the time of day and time spent on your site.
 * [Premium] Stop brute force attacks permanently by using two factor authentication, one of the most secure forms of remote system authentication available.
-* [Premium] Password Audit ensures your passwords are strong by simulating a hack attempt using our password auditing GPU cluster.
 * The free version of Wordfence includes an excellent comment spam filter. [Premium] An advanced comment spam filter is automatically enabled for premium customers.
 * Block attackers by IP or build advanced rules based on IP Range, Hostname, User Agent and Referrer. [Premium] Country blocking available with Wordfence Premium.
 
@@ -69,7 +68,7 @@ The WordPress security plugin provides the best protection available for your we
 
 = What features does Wordfence Premium enable? =
 
-We offer a Premium API key that gives you real-time updates to the Threat Defense Feed which includes a real-time IP blacklist, firewall rules and malware signatures. Premium support, country blocking, more frequent scans, password auditing, two-factor authentication and spam and spamvertising checks are also included. [Click here to sign-up for Wordfence Premium now](http://www.wordfence.com/) or simply install Wordfence free and start protecting your website.
+We offer a Premium API key that gives you real-time updates to the Threat Defense Feed which includes a real-time IP blacklist, firewall rules and malware signatures. Premium support, country blocking, more frequent scans, two-factor authentication and spam and spamvertising checks are also included. [Click here to sign-up for Wordfence Premium now](http://www.wordfence.com/) or simply install Wordfence free and start protecting your website.
 
 = How does the Wordfence WordPress Firewall protect websites? =
 
@@ -164,10 +163,47 @@ Secure your website with Wordfence.
 6. Block attackers by IP, Country, IP range, Hostname, Browser or Referrer.
 7. The Wordfence Live Traffic view shows you real-time activity on your site including bot traffic and exploit attempts.
 8. Take login security to the next level with Two Factor Authentication.
-9. Audit the strength of your site passwords with our high performance GPU cluster.
 
 
 == Changelog ==
+
+= 7.1.1 =
+* Improvement: Added the ability to sort the blocks table.
+* Improvement: Added short-term caching of breach check results.
+* Improvement: The check for passwords leaked in breaches now allows a login if the user has previously logged in from the same IP successfully and displays an admin notice suggesting changing the password.
+* Improvement: Switched the bundled select2 library to use to prefixed version to work around other plugins including older versions on our pages.
+* Improvement: The scan page now displays when beta signatures are enabled since they can produce false positives.
+* Improvement: Improved positioning of the "Wordfence is Working" message.
+* Improvement: Added a character limit to the reason on blocks and forced wrapping to avoid the layout stretching too much.
+* Fix: Fixed an issue with some table prefixing where multisite installations with rare configurations could result in unknown table warnings.
+* Fix: Removed an older behavior with live traffic buttons that could allow them to open in a new tab and show nothing.
+* Fix: Added a check for sites with inaccurate disk space function results to avoid showing an issue.
+* Fix: Added a secondary check to the email summary cron to avoid repeated sending if the cron list is corrupted.
+* Fix: Fixed a typo on the Advanced Comment Spam Filter page.
+
+= 7.1.0 =
+* Improvement: Added a new feature to prevent attackers from successfully logging in to admin accounts whose passwords have been in data breaches.
+* Improvement: Added pagination support to the scan issues.
+* Improvement: Improved time zone handling for the WAF's learning mode.
+* Improvement: Improved messaging on file-related scan issues when the file is wp-config.php.
+* Improvement: Modified the appearance of the "How does Wordfence get IPs" option to be more clear.
+* Improvement: Better messaging about the scan options that need to be enabled for free installations to achieve 100%.
+* Improvement: The country blocking selection drawer behavior has been changed to now allow saving directly from it.
+* Improvement: Increased the textarea size for the advanced firewall options to make editing easier.
+* Improvement: The URL blacklist check now includes additional variants in some checks to more accurately match.
+* Change: Adjusted messaging when blocks are loading.
+* Change: Wording change for the option "Maximum execution time for each stage".
+* Change: Permanent blocks now display "Permanent" rather than "Indefinite" for the expiration for consistency.
+* Fix: Fixed the initial status code recorded for lockouts and blocks.
+* Fix: Fixed PHP notices that could occur when using the bulk delete/repair scan tools.
+* Fix: Improved the state updating for the scan bulk action buttons.
+* Fix: Usernames in live traffic now correctly link to the corresponding profile page.
+* Fix: Addressed a PHP warning that could occur if wordpress.org returned a certain format for the abandoned plugin check.
+* Fix: Fixed a possible PHP notice when syncing attack data records without metadata attached.
+* Fix: Modified the behavior of the disk space check to avoid a scan warning showing without an issue generated.
+* Fix: Fixed a CSS glitch where the top controls could have extra space at the top when sites have long navigation menus.
+* Fix: Updated some wording in the All Options search box.
+* Fix: Removed an old link for "See Recent Traffic" on Live Traffic that went nowhere.
 
 = 7.0.5 =
 * Change: Live Traffic records are no longer created for hits initiated by WP-CLI (e.g., manually running cron).

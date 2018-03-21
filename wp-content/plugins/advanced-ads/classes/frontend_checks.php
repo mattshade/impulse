@@ -69,14 +69,14 @@ class Advanced_Ads_Frontend_Checks {
 			)
 		) );*/
 		
-		// check if AdSense loads QuickStart ads
+		// check if AdSense loads Auto Ads ads
 		// Hidden, will be shown using js.
 		if( ! isset( $adsense_options['violation-warnings-disable'] ) ) {
 			$nodes[] = array( 'type' => 2, 'data' => array(
 				'parent' => 'advanced_ads_ad_health',
-				'id'    => 'advanced_ads_quickstart_displayed',
+				'id'    => 'advanced_ads_autoads_displayed',
 				'title' => __( 'Random AdSense ads', 'advanced-ads' ),
-				'href'  => ADVADS_URL . 'adsense-in-random-positions-quickstart/#utm_source=advancedads&utm_medium=link&utm_campaign=frontend-quickstart-ads',
+				'href'  => ADVADS_URL . 'adsense-in-random-positions-auto-ads/#utm_source=advancedads&utm_medium=link&utm_campaign=frontend-autoads-ads',
 				'meta'   => array(
 					'class' => 'hidden advanced_ads_ad_health_warning',
 					'target' => '_blank'
@@ -455,25 +455,25 @@ class Advanced_Ads_Frontend_Checks {
 						}
 					};
 
-					// highlight AdSense QuickStart ads 3 seconds after site loaded
+					// highlight AdSense Auto Ads ads 3 seconds after site loaded
 					setTimeout( function(){
-						advanced_ads_ready( advads_highlight_adsense_quickstart )
+						advanced_ads_ready( advads_highlight_adsense_autoads )
 					}, 3000 );
-					function advads_highlight_adsense_quickstart(){
+					function advads_highlight_adsense_autoads(){
 						if ( ! window.jQuery ) {
 							window.console && window.console.log( 'Advanced Ads: jQuery not found. Some Ad Health warnings will not be shown' );
 							return;
 						}
-						var quickstart_ads = jQuery(document).find('.google-auto-placed');
-						jQuery( '<p class="advads-quickstart-hint" style="background-color:#0085ba;color:#fff;font-size:0.8em;padding:5px;"><?php 
-							printf(__( 'This ad was automatically placed here by AdSense. <a href="%s" target="_blank" style="color:#fff;border-color:#fff;">Click here to learn more</a>.', 'advanced-ads' ), ADVADS_URL . 'adsense-in-random-positions/#utm_source=advanced-ads&utm_medium=link&utm_campaign=frontend-quickstart-ads' ); 
-							?></p>' ).prependTo( quickstart_ads );
-						// show quickstart warning in Adhealth Bar if relevant
-						if( quickstart_ads.length ){
-							var advads_quickstart_link = document.querySelector( '#wp-admin-bar-advanced_ads_quickstart_displayed.hidden' );
-							console.log( advads_quickstart_link );
-							if ( advads_quickstart_link ) {
-								advads_quickstart_link.className = advads_quickstart_link.className.replace( 'hidden', '' );
+						var autoads_ads = jQuery(document).find('.google-auto-placed');
+						jQuery( '<p class="advads-autoads-hint" style="background-color:#0085ba;color:#fff;font-size:0.8em;padding:5px;"><?php 
+							printf(__( 'This ad was automatically placed here by AdSense. <a href="%s" target="_blank" style="color:#fff;border-color:#fff;">Click here to learn more</a>.', 'advanced-ads' ), ADVADS_URL . 'adsense-in-random-positions-auto-ads/#utm_source=advanced-ads&utm_medium=link&utm_campaign=frontend-autoads-ads' ); 
+							?></p>' ).prependTo( autoads_ads );
+						// show Auto Ads warning in Adhealth Bar if relevant
+						if( autoads_ads.length ){
+							var advads_autoads_link = document.querySelector( '#wp-admin-bar-advanced_ads_autoads_displayed.hidden' );
+							console.log( advads_autoads_link );
+							if ( advads_autoads_link ) {
+								advads_autoads_link.className = advads_autoads_link.className.replace( 'hidden', '' );
 							}
 							advanced_ads_frontend_checks.showCount();
 						}

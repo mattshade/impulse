@@ -1,0 +1,24 @@
+[08-Jan-2018 01:39:34 UTC] PHP Fatal error:  Out of memory (allocated 35651584) (tried to allocate 524288 bytes) in /home/impulsesurvey/public_html/wp-content/wflogs/rules.php on line 826
+[08-Jan-2018 01:39:34 UTC] PHP Fatal error:  Out of memory (allocated 39845888) (tried to allocate 32768 bytes) in /home/impulsesurvey/public_html/wp-content/plugins/wordfence/lib/wfLog.php on line 1456
+[27-Jan-2018 02:21:48 UTC] PHP Warning:  fopen(): https:// wrapper is disabled in the server configuration by allow_url_fopen=0 in /home/impulsesurvey/public_html/wp-content/plugins/ninja-forms/includes/Helper.php on line 277
+[27-Jan-2018 02:21:48 UTC] PHP Warning:  fopen(https://ninjaforms.com/): failed to open stream: no suitable wrapper could be found in /home/impulsesurvey/public_html/wp-content/plugins/ninja-forms/includes/Helper.php on line 277
+[27-Jan-2018 02:21:48 UTC] PHP Warning:  stream_get_meta_data() expects parameter 1 to be resource, boolean given in /home/impulsesurvey/public_html/wp-content/plugins/ninja-forms/includes/Helper.php on line 277
+[11-Feb-2018 00:10:40 UTC] PHP Warning:  fopen(): https:// wrapper is disabled in the server configuration by allow_url_fopen=0 in /home/impulsesurvey/public_html/wp-content/plugins/ninja-forms/includes/Helper.php on line 277
+[11-Feb-2018 00:10:40 UTC] PHP Warning:  fopen(https://ninjaforms.com/): failed to open stream: no suitable wrapper could be found in /home/impulsesurvey/public_html/wp-content/plugins/ninja-forms/includes/Helper.php on line 277
+[11-Feb-2018 00:10:40 UTC] PHP Warning:  stream_get_meta_data() expects parameter 1 to be resource, boolean given in /home/impulsesurvey/public_html/wp-content/plugins/ninja-forms/includes/Helper.php on line 277
+[12-Feb-2018 02:46:11 UTC] The WC_Cart->fees function is deprecated since version 3.2. Replace with the fees API (WC_Cart::add_fee).
+[12-Feb-2018 02:46:25 UTC] The WC_Cart->fees function is deprecated since version 3.2. Replace with the fees API (WC_Cart::add_fee).
+[12-Feb-2018 03:00:05 UTC] The WC_Cart->fees function is deprecated since version 3.2. Replace with the fees API (WC_Cart::add_fee).
+[12-Feb-2018 03:00:05 UTC] The WC_Cart->fees function is deprecated since version 3.2. Replace with the fees API (WC_Cart::add_fee).
+[12-Feb-2018 03:09:02 UTC] The WC_Cart->fees function is deprecated since version 3.2. Replace with the fees API (WC_Cart::add_fee).
+[12-Feb-2018 03:09:08 UTC] The WC_Cart->fees function is deprecated since version 3.2. Replace with the fees API (WC_Cart::add_fee).
+[12-Feb-2018 03:09:20 UTC] The WC_Cart->fees function is deprecated since version 3.2. Replace with the fees API (WC_Cart::add_fee).
+[12-Feb-2018 17:05:34 UTC] PHP Fatal error:  Out of memory (allocated 54525952) (tried to allocate 20480 bytes) in /home/impulsesurvey/public_html/wp-content/themes/listify/inc/integrations/wp-job-manager/widgets/class-widget-home-term-lists.php on line 186
+[21-Feb-2018 09:25:44 UTC] PHP Fatal error:  Out of memory (allocated 56623104) (tried to allocate 20480 bytes) in /home/impulsesurvey/public_html/wp-content/themes/listify/inc/integrations/wp-job-manager/class-wp-job-manager-template.php on line 15
+[25-Feb-2018 19:02:04 UTC] PHP Fatal error:  Out of memory (allocated 54525952) (tried to allocate 20480 bytes) in /home/impulsesurvey/public_html/wp-content/plugins/wp-job-manager/includes/admin/class-wp-job-manager-writepanels.php on line 630
+[03-Mar-2018 22:46:57 UTC] PHP Fatal error:  Out of memory (allocated 18874368) (tried to allocate 20480 bytes) in /home/impulsesurvey/public_html/wp-includes/rest-api/endpoints/class-wp-rest-comments-controller.php on line 1619
+[07-Mar-2018 22:05:30 UTC] PHP Fatal error:  Out of memory (allocated 52428800) (tried to allocate 32768 bytes) in /home/impulsesurvey/public_html/wp-content/plugins/wp-job-manager-wc-paid-listings/includes/class-wc-paid-listings-package-product.php on line 1
+[21-Mar-2018 04:04:57 UTC] PHP Parse error:  syntax error, unexpected 'echo' (T_ECHO) in /home/impulsesurvey/public_html/wp-content/plugins/wp-job-manager-reviews/includes/functions.php on line 260
+[21-Mar-2018 04:05:03 UTC] PHP Parse error:  syntax error, unexpected 'echo' (T_ECHO) in /home/impulsesurvey/public_html/wp-content/plugins/wp-job-manager-reviews/includes/functions.php on line 260
+[21-Mar-2018 04:05:23 UTC] PHP Parse error:  syntax error, unexpected 'echo' (T_ECHO) in /home/impulsesurvey/public_html/wp-content/plugins/wp-job-manager-reviews/includes/functions.php on line 260
+[21-Mar-2018 04:05:25 UTC] PHP Parse error:  syntax error, unexpected 'echo' (T_ECHO) in /home/impulsesurvey/public_html/wp-content/plugins/wp-job-manager-reviews/includes/functions.php on line 260

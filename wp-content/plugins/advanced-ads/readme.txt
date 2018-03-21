@@ -5,7 +5,7 @@ Tags: ads, ad manager, ad widget, ad rotation, adsense, advertise, advertisement
 Requires at least: 4.6
 Tested up to: 4.9
 Requires PHP: 5.2
-Stable tag: 1.8.24
+Stable tag: 1.8.26
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -100,7 +100,7 @@ Placements to insert ads in pre-defined positions in your theme and content. [Li
 * change type and sizes of an ad without going into your AdSense account
 * optional limit to 3 AdSense banners
 * hide AdSense advertisements on 404 pages by default (to comply with AdSense terms)
-* insert AdSense verification and AdSense Page-Level ads
+* insert AdSense verification and AdSense Auto Ads (previously called Page-Level ads and QuickStart)
 * Ad Health integration and AdSense violation checks
 * option to make the AdSense background transparent
 * place AdSense In-feed ads using the also free [In-feed add-on](https://wordpress.org/plugins/advanced-ads-adsense-in-feed/)
@@ -232,6 +232,17 @@ Yes. Advanced Ads is based on WordPress standards and therefore easily customiza
 8. Track impressions and clicks (Tracking add-on).
 
 == Changelog ==
+
+= 1.8.26 =
+
+* fixed issue for new installations
+
+= 1.8.25 =
+
+* updated labels and links for AdSense Page-Level ads and QuickStart since both are now combined as "Auto Ads"
+* added link to create new AdSense account
+* removed "Remove Widget ID" option. No longer needed after fixing a compatibility issue with Q2W3 Fixed Widget plugin
+* prepared for Pro feature to repeat an ad multiple times by injecting it into the content
 
 = 1.8.24 =
 

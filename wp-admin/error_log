@@ -1,0 +1,75 @@
+[27-Jan-2018 02:21:46 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[27-Jan-2018 02:21:46 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[28-Jan-2018 06:33:13 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[28-Jan-2018 06:33:13 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[29-Jan-2018 08:02:22 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[29-Jan-2018 08:02:22 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[30-Jan-2018 08:35:12 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[30-Jan-2018 08:35:12 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[01-Feb-2018 06:46:49 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[01-Feb-2018 06:46:49 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[02-Feb-2018 08:36:12 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[02-Feb-2018 08:36:12 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[04-Feb-2018 06:12:00 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[04-Feb-2018 06:12:00 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[05-Feb-2018 08:34:53 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[05-Feb-2018 08:34:53 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[07-Feb-2018 06:36:49 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[07-Feb-2018 06:36:49 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[08-Feb-2018 09:06:52 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[08-Feb-2018 09:06:52 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[10-Feb-2018 06:23:31 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[10-Feb-2018 06:23:31 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[11-Feb-2018 08:29:38 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[11-Feb-2018 08:29:38 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[12-Feb-2018 02:39:10 UTC] The WC_Cart->fees function is deprecated since version 3.2. Replace with the fees API (WC_Cart::add_fee).
+[12-Feb-2018 02:39:10 UTC] The WC_Cart->fees function is deprecated since version 3.2. Replace with the fees API (WC_Cart::add_fee).
+[12-Feb-2018 02:39:11 UTC] The WC_Cart->fees function is deprecated since version 3.2. Replace with the fees API (WC_Cart::add_fee).
+[12-Feb-2018 02:39:11 UTC] The WC_Cart->fees function is deprecated since version 3.2. Replace with the fees API (WC_Cart::add_fee).
+[12-Feb-2018 02:39:11 UTC] The WC_Cart->fees function is deprecated since version 3.2. Replace with the fees API (WC_Cart::add_fee).
+[12-Feb-2018 02:39:11 UTC] The WC_Cart->fees function is deprecated since version 3.2. Replace with the fees API (WC_Cart::add_fee).
+[14-Feb-2018 02:19:34 UTC] The WC_Cart->fees function is deprecated since version 3.2. Replace with the fees API (WC_Cart::add_fee).
+[14-Feb-2018 02:19:34 UTC] The WC_Cart->fees function is deprecated since version 3.2. Replace with the fees API (WC_Cart::add_fee).
+[14-Feb-2018 02:19:42 UTC] The WC_Cart->fees function is deprecated since version 3.2. Replace with the fees API (WC_Cart::add_fee).
+[14-Feb-2018 02:19:42 UTC] The WC_Cart->fees function is deprecated since version 3.2. Replace with the fees API (WC_Cart::add_fee).
+[14-Feb-2018 02:19:50 UTC] The WC_Cart->fees function is deprecated since version 3.2. Replace with the fees API (WC_Cart::add_fee).
+[14-Feb-2018 02:19:50 UTC] The WC_Cart->fees function is deprecated since version 3.2. Replace with the fees API (WC_Cart::add_fee).
+[14-Feb-2018 03:00:30 UTC] PHP Fatal error:  Out of memory (allocated 37748736) (tried to allocate 32768 bytes) in /home/impulsesurvey/public_html/wp-content/plugins/wordfence/lib/wordfenceClass.php on line 1931
+[16-Feb-2018 02:27:59 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[16-Feb-2018 02:27:59 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[17-Feb-2018 02:59:30 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[17-Feb-2018 02:59:30 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[19-Feb-2018 02:26:32 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[19-Feb-2018 02:26:32 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[21-Feb-2018 01:28:50 UTC] PHP Fatal error:  Out of memory (allocated 33554432) (tried to allocate 32768 bytes) in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/class-wc-form-handler.php on line 132
+[21-Feb-2018 01:28:50 UTC] PHP Fatal error:  Out of memory (allocated 27262976) (tried to allocate 32768 bytes) in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/abstracts/abstract-wc-product.php on line 1913
+[23-Feb-2018 03:09:46 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[23-Feb-2018 03:09:46 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[24-Feb-2018 03:57:51 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[24-Feb-2018 03:57:51 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[26-Feb-2018 03:17:04 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[26-Feb-2018 03:17:04 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[01-Mar-2018 03:10:03 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[01-Mar-2018 03:10:03 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[02-Mar-2018 03:28:27 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[02-Mar-2018 03:28:27 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[04-Mar-2018 03:17:34 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[04-Mar-2018 03:17:34 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[07-Mar-2018 08:57:19 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[07-Mar-2018 08:57:19 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[09-Mar-2018 03:16:54 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[09-Mar-2018 03:16:54 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[10-Mar-2018 08:18:50 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[10-Mar-2018 08:18:50 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[12-Mar-2018 03:17:40 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[12-Mar-2018 03:17:40 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[13-Mar-2018 08:25:04 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[13-Mar-2018 08:25:04 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[15-Mar-2018 03:12:36 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[15-Mar-2018 03:12:36 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[16-Mar-2018 03:33:44 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[16-Mar-2018 03:33:44 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[18-Mar-2018 03:15:22 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[18-Mar-2018 03:15:22 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[19-Mar-2018 03:28:37 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
+[19-Mar-2018 03:28:37 UTC] PHP Notice:  Undefined index: thumbnail_url in /home/impulsesurvey/public_html/wp-content/themes/listify/vendor/astoundify/themeforest-updater/app/class-envato-market-api.php on line 289
