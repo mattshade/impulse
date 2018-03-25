@@ -1,1 +1,5 @@
 [14-Mar-2018 19:32:37 UTC] PHP Fatal error:  Class 'Walker' not found in /home/impulsesurvey/public_html/wp-includes/class-walker-nav-menu.php on line 17
+[23-Mar-2018 05:04:57 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function _deprecated_file() in /home/impulsesurvey/public_html/wp-includes/locale.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/impulsesurvey/public_html/wp-includes/locale.php on line 10

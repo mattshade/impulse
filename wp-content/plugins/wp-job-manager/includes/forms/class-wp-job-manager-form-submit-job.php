@@ -179,10 +179,10 @@ class WP_Job_Manager_Form_Submit_Job extends WP_Job_Manager_Form {
 					'priority'    => 2
 				),
 				'job_type' => array(
-					'label'       => __( 'Job type', 'wp-job-manager' ),
+					'label'       => __( 'Capabilities', 'wp-job-manager' ),
 					'type'        => $job_type,
 					'required'    => true,
-					'placeholder' => __( 'Choose job type&hellip;', 'wp-job-manager' ),
+					'placeholder' => __( 'Select Capabilities:  To choose multiple Hold CTRL or Command(&#8984;)', 'wp-job-manager' ),
 					'priority'    => 3,
 					'default'     => 'full-time',
 					'taxonomy'    => 'job_listing_type'

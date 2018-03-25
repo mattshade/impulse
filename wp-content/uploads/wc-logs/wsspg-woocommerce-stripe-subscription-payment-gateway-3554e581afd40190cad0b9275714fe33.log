@@ -12,3 +12,10 @@
     [param] => amount
 )
 
+03-25-2018 @ 03:48:41 - [ error ][ subscriptions ][ req_gxmdrF0zIaYtqc ]: stdClass Object
+(
+    [type] => invalid_request_error
+    [message] => You passed an empty string for 'customer'. We assume empty values are an attempt to unset a parameter; however 'customer' cannot be unset. You should remove 'customer' from your request or supply a non-empty value.
+    [param] => customer
+)
+

@@ -22,3 +22,211 @@
 [21-Mar-2018 04:05:03 UTC] PHP Parse error:  syntax error, unexpected 'echo' (T_ECHO) in /home/impulsesurvey/public_html/wp-content/plugins/wp-job-manager-reviews/includes/functions.php on line 260
 [21-Mar-2018 04:05:23 UTC] PHP Parse error:  syntax error, unexpected 'echo' (T_ECHO) in /home/impulsesurvey/public_html/wp-content/plugins/wp-job-manager-reviews/includes/functions.php on line 260
 [21-Mar-2018 04:05:25 UTC] PHP Parse error:  syntax error, unexpected 'echo' (T_ECHO) in /home/impulsesurvey/public_html/wp-content/plugins/wp-job-manager-reviews/includes/functions.php on line 260
+[25-Mar-2018 01:45:58 UTC] PHP Parse error:  syntax error, unexpected 'print_r' (T_STRING), expecting ',' or ';' in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 55
+[25-Mar-2018 01:46:06 UTC] PHP Parse error:  syntax error, unexpected 'print_r' (T_STRING), expecting ',' or ';' in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 55
+[25-Mar-2018 01:46:51 UTC] PHP Parse error:  syntax error, unexpected 'print_r' (T_STRING), expecting ',' or ';' in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 55
+[25-Mar-2018 01:46:55 UTC] PHP Parse error:  syntax error, unexpected 'print_r' (T_STRING), expecting ',' or ';' in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 55
+[25-Mar-2018 01:50:07 UTC] PHP Parse error:  syntax error, unexpected 'foreach' (T_FOREACH), expecting ',' or ';' in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 56
+[25-Mar-2018 01:50:26 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 56
+[25-Mar-2018 01:50:48 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 56
+[25-Mar-2018 01:52:46 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 56
+[25-Mar-2018 01:53:10 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 56
+[25-Mar-2018 01:54:49 UTC] PHP Fatal error:  Uncaught Error: Cannot use object of type WC_Memberships_User_Membership as array in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php:57
+Stack trace:
+#0 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-core-functions.php(211): include()
+#1 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/shortcodes/class-wc-shortcode-my-account.php(150): wc_get_template('myaccount/form-...', Array)
+#2 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.php(2585): WC_Shortcode_My_Account::edit_account()
+#3 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(286): woocommerce_account_edit_account('')
+#4 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(310): WP_Hook->apply_filters('', Array)
+#5 /home/impulsesurvey/public_html/wp-includes/plugin.php(453): WP_Hook->do_action(Array)
+#6 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-templ in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 57
+[25-Mar-2018 01:58:04 UTC] PHP Fatal error:  Uncaught Error: Cannot use object of type WC_Memberships_Membership_Plan as array in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php:57
+Stack trace:
+#0 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-core-functions.php(211): include()
+#1 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/shortcodes/class-wc-shortcode-my-account.php(150): wc_get_template('myaccount/form-...', Array)
+#2 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.php(2585): WC_Shortcode_My_Account::edit_account()
+#3 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(286): woocommerce_account_edit_account('')
+#4 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(310): WP_Hook->apply_filters('', Array)
+#5 /home/impulsesurvey/public_html/wp-includes/plugin.php(453): WP_Hook->do_action(Array)
+#6 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-templ in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 57
+[25-Mar-2018 02:00:14 UTC] PHP Fatal error:  Uncaught Error: Cannot use object of type WC_Memberships_User_Membership as array in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php:55
+Stack trace:
+#0 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-core-functions.php(211): include()
+#1 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/shortcodes/class-wc-shortcode-my-account.php(150): wc_get_template('myaccount/form-...', Array)
+#2 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.php(2585): WC_Shortcode_My_Account::edit_account()
+#3 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(286): woocommerce_account_edit_account('')
+#4 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(310): WP_Hook->apply_filters('', Array)
+#5 /home/impulsesurvey/public_html/wp-includes/plugin.php(453): WP_Hook->do_action(Array)
+#6 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-templ in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 55
+[25-Mar-2018 02:00:33 UTC] PHP Catchable fatal error:  Object of class WC_Memberships_User_Membership could not be converted to string in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 55
+[25-Mar-2018 02:02:27 UTC] PHP Fatal error:  Uncaught Error: Cannot use object of type WC_Memberships_User_Membership as array in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php:55
+Stack trace:
+#0 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-core-functions.php(211): include()
+#1 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/shortcodes/class-wc-shortcode-my-account.php(150): wc_get_template('myaccount/form-...', Array)
+#2 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.php(2585): WC_Shortcode_My_Account::edit_account()
+#3 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(286): woocommerce_account_edit_account('')
+#4 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(310): WP_Hook->apply_filters('', Array)
+#5 /home/impulsesurvey/public_html/wp-includes/plugin.php(453): WP_Hook->do_action(Array)
+#6 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-templ in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 55
+[25-Mar-2018 02:02:51 UTC] PHP Fatal error:  Uncaught Error: Cannot use object of type WC_Memberships_User_Membership as array in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php:55
+Stack trace:
+#0 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-core-functions.php(211): include()
+#1 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/shortcodes/class-wc-shortcode-my-account.php(150): wc_get_template('myaccount/form-...', Array)
+#2 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.php(2585): WC_Shortcode_My_Account::edit_account()
+#3 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(286): woocommerce_account_edit_account('')
+#4 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(310): WP_Hook->apply_filters('', Array)
+#5 /home/impulsesurvey/public_html/wp-includes/plugin.php(453): WP_Hook->do_action(Array)
+#6 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-templ in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 55
+[25-Mar-2018 02:02:54 UTC] PHP Fatal error:  Uncaught Error: Cannot use object of type WC_Memberships_User_Membership as array in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php:55
+Stack trace:
+#0 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-core-functions.php(211): include()
+#1 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/shortcodes/class-wc-shortcode-my-account.php(150): wc_get_template('myaccount/form-...', Array)
+#2 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.php(2585): WC_Shortcode_My_Account::edit_account()
+#3 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(286): woocommerce_account_edit_account('')
+#4 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(310): WP_Hook->apply_filters('', Array)
+#5 /home/impulsesurvey/public_html/wp-includes/plugin.php(453): WP_Hook->do_action(Array)
+#6 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-templ in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 55
+[25-Mar-2018 02:04:50 UTC] PHP Parse error:  syntax error, unexpected '=>' (T_DOUBLE_ARROW), expecting ',' or ')' in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 55
+[25-Mar-2018 02:08:41 UTC] PHP Warning:  Illegal string offset 'plan_id' in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 55
+[25-Mar-2018 02:11:23 UTC] PHP Warning:  Illegal string offset 'plan_id' in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 58
+[25-Mar-2018 02:11:23 UTC] PHP Warning:  Illegal string offset 'plan_id' in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 58
+[25-Mar-2018 02:11:23 UTC] PHP Warning:  Illegal string offset 'plan_id' in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 58
+[25-Mar-2018 02:11:23 UTC] PHP Warning:  Illegal string offset 'plan_id' in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 58
+[25-Mar-2018 02:11:23 UTC] PHP Warning:  Illegal string offset 'plan_id' in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 58
+[25-Mar-2018 02:11:23 UTC] PHP Warning:  Illegal string offset 'plan_id' in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 58
+[25-Mar-2018 02:12:33 UTC] PHP Catchable fatal error:  Object of class WC_Memberships_Membership_Plan could not be converted to string in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 58
+[25-Mar-2018 02:13:21 UTC] PHP Fatal error:  Uncaught Error: Cannot use object of type WC_Memberships_Membership_Plan as array in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php:58
+Stack trace:
+#0 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-core-functions.php(211): include()
+#1 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/shortcodes/class-wc-shortcode-my-account.php(150): wc_get_template('myaccount/form-...', Array)
+#2 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.php(2585): WC_Shortcode_My_Account::edit_account()
+#3 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(286): woocommerce_account_edit_account('')
+#4 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(310): WP_Hook->apply_filters('', Array)
+#5 /home/impulsesurvey/public_html/wp-includes/plugin.php(453): WP_Hook->do_action(Array)
+#6 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-templ in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 58
+[25-Mar-2018 02:14:57 UTC] PHP Fatal error:  Uncaught Error: Cannot use object of type WC_Memberships_Membership_Plan as array in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php:59
+Stack trace:
+#0 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-core-functions.php(211): include()
+#1 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/shortcodes/class-wc-shortcode-my-account.php(150): wc_get_template('myaccount/form-...', Array)
+#2 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.php(2585): WC_Shortcode_My_Account::edit_account()
+#3 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(286): woocommerce_account_edit_account('')
+#4 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(310): WP_Hook->apply_filters('', Array)
+#5 /home/impulsesurvey/public_html/wp-includes/plugin.php(453): WP_Hook->do_action(Array)
+#6 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-templ in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 59
+[25-Mar-2018 02:15:27 UTC] PHP Fatal error:  Uncaught Error: Cannot use object of type WC_Memberships_Membership_Plan as array in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php:59
+Stack trace:
+#0 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-core-functions.php(211): include()
+#1 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/shortcodes/class-wc-shortcode-my-account.php(150): wc_get_template('myaccount/form-...', Array)
+#2 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.php(2585): WC_Shortcode_My_Account::edit_account()
+#3 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(286): woocommerce_account_edit_account('')
+#4 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(310): WP_Hook->apply_filters('', Array)
+#5 /home/impulsesurvey/public_html/wp-includes/plugin.php(453): WP_Hook->do_action(Array)
+#6 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-templ in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 59
+[25-Mar-2018 02:15:52 UTC] PHP Parse error:  syntax error, unexpected '=>' (T_DOUBLE_ARROW), expecting ']' in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 59
+[25-Mar-2018 02:16:11 UTC] PHP Catchable fatal error:  Object of class WC_Memberships_Membership_Plan could not be converted to string in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 59
+[25-Mar-2018 02:16:55 UTC] PHP Warning:  array_keys() expects parameter 1 to be array, boolean given in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 57
+[25-Mar-2018 02:16:55 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 58
+[25-Mar-2018 02:17:19 UTC] PHP Warning:  array_keys() expects parameter 1 to be array, boolean given in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 57
+[25-Mar-2018 02:17:19 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 58
+[25-Mar-2018 02:17:44 UTC] PHP Catchable fatal error:  Object of class WC_Memberships_Membership_Plan could not be converted to string in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 59
+[25-Mar-2018 02:24:19 UTC] PHP Parse error:  syntax error, unexpected '}', expecting end of file in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 341
+[25-Mar-2018 02:25:32 UTC] PHP Parse error:  syntax error, unexpected '}', expecting end of file in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 367
+[25-Mar-2018 02:28:13 UTC] PHP Fatal error:  Uncaught Error: Call to a member function get_end_date() on array in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php:57
+Stack trace:
+#0 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-core-functions.php(211): include()
+#1 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/shortcodes/class-wc-shortcode-my-account.php(150): wc_get_template('myaccount/form-...', Array)
+#2 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.php(2585): WC_Shortcode_My_Account::edit_account()
+#3 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(286): woocommerce_account_edit_account('')
+#4 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(310): WP_Hook->apply_filters('', Array)
+#5 /home/impulsesurvey/public_html/wp-includes/plugin.php(453): WP_Hook->do_action(Array)
+#6 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.ph in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 57
+[25-Mar-2018 02:29:13 UTC] PHP Fatal error:  Uncaught Error: Call to a member function get_end_date() on null in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php:58
+Stack trace:
+#0 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-core-functions.php(211): include()
+#1 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/shortcodes/class-wc-shortcode-my-account.php(150): wc_get_template('myaccount/form-...', Array)
+#2 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.php(2585): WC_Shortcode_My_Account::edit_account()
+#3 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(286): woocommerce_account_edit_account('')
+#4 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(310): WP_Hook->apply_filters('', Array)
+#5 /home/impulsesurvey/public_html/wp-includes/plugin.php(453): WP_Hook->do_action(Array)
+#6 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.php in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 58
+[25-Mar-2018 02:32:56 UTC] PHP Catchable fatal error:  Object of class WC_Memberships_Membership_Plan could not be converted to string in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 60
+[25-Mar-2018 02:33:45 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 59
+[25-Mar-2018 02:34:30 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 59
+[25-Mar-2018 02:34:58 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 59
+[25-Mar-2018 02:35:17 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 59
+[25-Mar-2018 02:35:41 UTC] PHP Fatal error:  Uncaught Error: Cannot use object of type WC_Memberships_User_Membership as array in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php:60
+Stack trace:
+#0 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-core-functions.php(211): include()
+#1 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/shortcodes/class-wc-shortcode-my-account.php(150): wc_get_template('myaccount/form-...', Array)
+#2 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.php(2585): WC_Shortcode_My_Account::edit_account()
+#3 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(286): woocommerce_account_edit_account('')
+#4 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(310): WP_Hook->apply_filters('', Array)
+#5 /home/impulsesurvey/public_html/wp-includes/plugin.php(453): WP_Hook->do_action(Array)
+#6 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-templ in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 60
+[25-Mar-2018 02:36:10 UTC] PHP Fatal error:  Uncaught Error: Cannot use object of type WC_Memberships_User_Membership as array in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php:60
+Stack trace:
+#0 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-core-functions.php(211): include()
+#1 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/shortcodes/class-wc-shortcode-my-account.php(150): wc_get_template('myaccount/form-...', Array)
+#2 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.php(2585): WC_Shortcode_My_Account::edit_account()
+#3 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(286): woocommerce_account_edit_account('')
+#4 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(310): WP_Hook->apply_filters('', Array)
+#5 /home/impulsesurvey/public_html/wp-includes/plugin.php(453): WP_Hook->do_action(Array)
+#6 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-templ in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 60
+[25-Mar-2018 02:36:30 UTC] PHP Catchable fatal error:  Object of class WC_Memberships_User_Membership could not be converted to string in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 60
+[25-Mar-2018 02:37:33 UTC] PHP Fatal error:  Uncaught Error: Cannot use object of type WC_Memberships_User_Membership as array in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php:60
+Stack trace:
+#0 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-core-functions.php(211): include()
+#1 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/shortcodes/class-wc-shortcode-my-account.php(150): wc_get_template('myaccount/form-...', Array)
+#2 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.php(2585): WC_Shortcode_My_Account::edit_account()
+#3 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(286): woocommerce_account_edit_account('')
+#4 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(310): WP_Hook->apply_filters('', Array)
+#5 /home/impulsesurvey/public_html/wp-includes/plugin.php(453): WP_Hook->do_action(Array)
+#6 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-templ in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 60
+[25-Mar-2018 02:38:00 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 59
+[25-Mar-2018 02:38:44 UTC] PHP Fatal error:  Uncaught Error: Cannot use object of type WC_Memberships_User_Membership as array in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php:60
+Stack trace:
+#0 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-core-functions.php(211): include()
+#1 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/shortcodes/class-wc-shortcode-my-account.php(150): wc_get_template('myaccount/form-...', Array)
+#2 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.php(2585): WC_Shortcode_My_Account::edit_account()
+#3 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(286): woocommerce_account_edit_account('')
+#4 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(310): WP_Hook->apply_filters('', Array)
+#5 /home/impulsesurvey/public_html/wp-includes/plugin.php(453): WP_Hook->do_action(Array)
+#6 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-templ in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 60
+[25-Mar-2018 02:39:00 UTC] PHP Fatal error:  Uncaught Error: Cannot use object of type WC_Memberships_User_Membership as array in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php:60
+Stack trace:
+#0 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-core-functions.php(211): include()
+#1 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/shortcodes/class-wc-shortcode-my-account.php(150): wc_get_template('myaccount/form-...', Array)
+#2 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.php(2585): WC_Shortcode_My_Account::edit_account()
+#3 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(286): woocommerce_account_edit_account('')
+#4 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(310): WP_Hook->apply_filters('', Array)
+#5 /home/impulsesurvey/public_html/wp-includes/plugin.php(453): WP_Hook->do_action(Array)
+#6 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-templ in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 60
+[25-Mar-2018 02:39:21 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 59
+[25-Mar-2018 02:40:37 UTC] PHP Warning:  array_keys() expects parameter 1 to be array, object given in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 60
+[25-Mar-2018 02:41:44 UTC] PHP Fatal error:  Uncaught Error: Cannot use object of type WC_Memberships_User_Membership as array in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php:60
+Stack trace:
+#0 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-core-functions.php(211): include()
+#1 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/shortcodes/class-wc-shortcode-my-account.php(150): wc_get_template('myaccount/form-...', Array)
+#2 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.php(2585): WC_Shortcode_My_Account::edit_account()
+#3 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(286): woocommerce_account_edit_account('')
+#4 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(310): WP_Hook->apply_filters('', Array)
+#5 /home/impulsesurvey/public_html/wp-includes/plugin.php(453): WP_Hook->do_action(Array)
+#6 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-templ in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 60
+[25-Mar-2018 02:42:04 UTC] PHP Fatal error:  Uncaught Error: Cannot use object of type WC_Memberships_User_Membership as array in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php:60
+Stack trace:
+#0 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-core-functions.php(211): include()
+#1 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/shortcodes/class-wc-shortcode-my-account.php(150): wc_get_template('myaccount/form-...', Array)
+#2 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.php(2585): WC_Shortcode_My_Account::edit_account()
+#3 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(286): woocommerce_account_edit_account('')
+#4 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(310): WP_Hook->apply_filters('', Array)
+#5 /home/impulsesurvey/public_html/wp-includes/plugin.php(453): WP_Hook->do_action(Array)
+#6 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-templ in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 60
+[25-Mar-2018 02:42:07 UTC] PHP Fatal error:  Uncaught Error: Cannot use object of type WC_Memberships_User_Membership as array in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php:60
+Stack trace:
+#0 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-core-functions.php(211): include()
+#1 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/shortcodes/class-wc-shortcode-my-account.php(150): wc_get_template('myaccount/form-...', Array)
+#2 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-template-functions.php(2585): WC_Shortcode_My_Account::edit_account()
+#3 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(286): woocommerce_account_edit_account('')
+#4 /home/impulsesurvey/public_html/wp-includes/class-wp-hook.php(310): WP_Hook->apply_filters('', Array)
+#5 /home/impulsesurvey/public_html/wp-includes/plugin.php(453): WP_Hook->do_action(Array)
+#6 /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/includes/wc-templ in /home/impulsesurvey/public_html/wp-content/plugins/woocommerce/templates/myaccount/form-edit-account.php on line 60

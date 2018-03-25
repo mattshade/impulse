@@ -5,7 +5,7 @@ Tags: ads, ad manager, ad widget, ad rotation, adsense, advertise, advertisement
 Requires at least: 4.6
 Tested up to: 4.9
 Requires PHP: 5.2
-Stable tag: 1.8.26
+Stable tag: 1.8.27
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -105,6 +105,7 @@ Placements to insert ads in pre-defined positions in your theme and content. [Li
 * option to make the AdSense background transparent
 * place AdSense In-feed ads using the also free [In-feed add-on](https://wordpress.org/plugins/advanced-ads-adsense-in-feed/)
 * assistant for exact sizes of responsive ads with the [Responsive add-on](https://wpadvancedads.com/add-ons/responsive-ads/)
+* convert AdSense into AMP automatically with the [Responsive add-on](https://wpadvancedads.com/add-ons/responsive-ads/)
 
 = ad blocker =
 
@@ -122,7 +123,7 @@ Localizations: English, German, French, Spanish, Dutch, Italian, Portuguese, Vie
 > * [Selling Ads](https://wpadvancedads.com/add-ons/selling-ads/) - allows you to sell ads on your website fully automated, including payments and advertiser profiles.
 > * [Geo Targeting](https://wpadvancedads.com/add-ons/geo-targeting/) – display ads based on geo location of the visitor
 > * [Tracking](https://wpadvancedads.com/add-ons/tracking/) – ad tracking and statistics
-> * [Responsive Ads](https://wpadvancedads.com/add-ons/responsive-ads/) – create mobile ads or ads for specific browser sizes
+> * [Responsive Ads](https://wpadvancedads.com/add-ons/responsive-ads/) – create mobile ads or ads for specific browser sizes and ads on AMP
 > * [Sticky Ads](https://wpadvancedads.com/add-ons/sticky-ads/) – increase click rates with fixed, sticky, and anchor ads
 > * [PopUp and Layer Ads](https://wpadvancedads.com/add-ons/popup-and-layer-ads/) – display ads and other content in layers and popups
 > * [Slider](https://wpadvancedads.com/add-ons/slider/) – create a simple slider from your ads
@@ -230,8 +231,14 @@ Yes. Advanced Ads is based on WordPress standards and therefore easily customiza
 6. Choose where to display your ads using many conditions.
 7. Use various conditions to choose who should see ads (basic plugin and more in add-ons).
 8. Track impressions and clicks (Tracking add-on).
+9. Convert AdSense ads into AMP automatically (Responsive add-on)
 
 == Changelog ==
+
+= 1.8.27 =
+
+* prepared for repeating content ad injections in [Pro](https://wpadvancedads.com/add-ons/advanced-ads-pro/)
+* minor backend fixes
 
 = 1.8.26 =
 

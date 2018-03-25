@@ -22,3 +22,15 @@ Stack trace:
 Stack trace:
 #0 {main}
   thrown in /home/impulsesurvey/public_html/wp-content/themes/listify/404.php on line 8
+[24-Mar-2018 07:54:23 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function get_header() in /home/impulsesurvey/public_html/wp-content/themes/listify/archive.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/impulsesurvey/public_html/wp-content/themes/listify/archive.php on line 10
+[24-Mar-2018 07:54:23 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function get_header() in /home/impulsesurvey/public_html/wp-content/themes/listify/archive.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/impulsesurvey/public_html/wp-content/themes/listify/archive.php on line 10
+[25-Mar-2018 10:32:55 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function language_attributes() in /home/impulsesurvey/public_html/wp-content/themes/listify/header.php:10
+Stack trace:
+#0 {main}
+  thrown in /home/impulsesurvey/public_html/wp-content/themes/listify/header.php on line 10

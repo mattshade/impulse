@@ -43,6 +43,8 @@ do_action( 'woocommerce_before_edit_account_form' ); ?>
 
 	<fieldset>
 		<legend><?php esc_html_e( 'Password change', 'woocommerce' ); ?></legend>
+		<p><?php esc_html_e( 'Your password must have 6–20 characters, with at least 2 letters and 1 number. To help make your password stronger, you may use most special characters and a combination of uppercase and lowercase letters.', 'woocommerce' ); ?>
+			</p>
 
 		<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
 			<label for="password_current"><?php esc_html_e( 'Current password (leave blank to leave unchanged)', 'woocommerce' ); ?></label>

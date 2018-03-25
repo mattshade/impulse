@@ -1490,7 +1490,7 @@ function wp_nonce_field( $action = -1, $name = "_wpnonce", $referer = true , $ec
  * @return string Referer field HTML markup.
  */
 function wp_referer_field( $echo = true ) {
-	$referer_field = '<input type="hidden" name="_wp_http_referer" value="'. esc_attr( wp_unslash( $_SERVER['REQUEST_URI'] ) ) . '" />';
+	$referer_field = '<input type="hidden" name="_wp_http_referer" value="'. esc_attr( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) . '" />';
 
 	if ( $echo )
 		echo $referer_field;

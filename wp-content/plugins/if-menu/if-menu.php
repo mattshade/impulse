@@ -3,7 +3,7 @@
 Plugin Name: If Menu
 Plugin URI: https://wordpress.org/plugins/if-menu/
 Description: Display tailored menu items to each visitor with visibility rules
-Version: 0.8.2
+Version: 0.8.3
 Text Domain: if-menu
 Author: Layered
 Author URI: https://layered.studio
@@ -405,11 +405,11 @@ class If_Menu {
     global $wp_version;
 
     if (version_compare( $wp_version, '4.7.0', '>=')) {
-      require_once(plugin_dir_path(__FILE__) . 'if-menu-nav-menu-4.7.php');
+      require_once(plugin_dir_path(__FILE__) . 'src/if-menu-nav-menu-4.7.php');
     } elseif ( version_compare( $wp_version, '4.5.0', '>=' ) ){
-      require_once(plugin_dir_path(__FILE__) . 'if-menu-nav-menu-4.5.php');
+      require_once(plugin_dir_path(__FILE__) . 'src/if-menu-nav-menu-4.5.php');
     } else {
-      require_once(plugin_dir_path(__FILE__) . 'if-menu-nav-menu.php');
+      require_once(plugin_dir_path(__FILE__) . 'src/if-menu-nav-menu.php');
     }
 
     return 'If_Menu_Walker_Nav_Menu_Edit';
@@ -469,7 +469,7 @@ class If_Menu {
 			'callback'	=>	function() {
 				$action = isset($_REQUEST['action']) ? sanitize_key($_REQUEST['action']) : false;
 				$nonce = isset($_REQUEST['nonce']) ? sanitize_key($_REQUEST['nonce']) : false;
-				return ['valid' => $action && $nonce && $nonce === get_transient('if-menu-nonce-' . $action)];
+				return array('valid' => $action && $nonce && $nonce === get_transient('if-menu-nonce-' . $action));
 			}
 		) );
 	}

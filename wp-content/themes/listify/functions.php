@@ -642,3 +642,22 @@ foreach ( $integrations as $file => $dependancy ) {
 		require( get_template_directory() . sprintf( '/inc/integrations/%1$s/class-%1$s.php', $file ) );
 	}
 }
+
+add_action( 'set_comment_cookies', function( $comment, $user ) {
+    setcookie( 'ta_comment_wait_approval', '1' );
+}, 10, 2 );
+
+add_action( 'init', function() {
+    if( $_COOKIE['ta_comment_wait_approval'] === '1' ) {
+        setcookie( 'ta_comment_wait_approval', null, time() - 3600, '/' );
+        add_action( 'comment_form_before', function() {
+            echo "<p id='wait_approval'><strong>Thank you for your rating!</strong></p>";
+        });
+    }
+});
+
+add_filter( 'comment_post_redirect', function( $location, $comment ) {
+    $location = get_permalink( $comment->comment_post_ID ) . '#wait_approval';
+    return $location;
+}, 10, 2 );
+
