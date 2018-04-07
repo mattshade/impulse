@@ -486,7 +486,7 @@ class Submit_Claim_Form extends \WP_Job_Manager_Form {
 		$claim_data = wp_kses_post( $this->form_data['wpjmcl_claim_data'] );
 		?>
 		<fieldset class="fieldset-wpjmcl_claim_data">
-			<label><?php _e( 'Additional Information', 'wp-job-manager-claim-listing' ); ?></label>
+			<label><?php _e( 'Facility Information *required', 'wp-job-manager-claim-listing' ); ?></label>
 			<div class="field">
 				<?php
 				$name  = 'wpjmcl_claim_data';
@@ -511,7 +511,7 @@ class Submit_Claim_Form extends \WP_Job_Manager_Form {
 				) );
 				wp_editor( $claim_data, $name, $editor );
 				?>
-				<small class="description"><?php _e( 'Please explain in detail, so we can verify your claim.', 'wp-job-manager-claim-listing' ); ?></small>
+				<small class="description"><?php _e( 'Please provide details of your facility, so we can verify your claim.', 'wp-job-manager-claim-listing' ); ?></small>
 			</div>
 		</fieldset>
 		<?php

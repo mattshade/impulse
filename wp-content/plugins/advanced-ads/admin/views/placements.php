@@ -88,6 +88,7 @@
 						
 						    ob_start();
 						    include ADVADS_BASE_PATH . 'admin/views/placements-content-index.php';
+						    do_action( 'advanced-ads-placement-post-content-position', $_placement_slug, $_placement );
 						    $option_content = ob_get_clean();
 						
 						    Advanced_Ads_Admin_Options::render_option( 

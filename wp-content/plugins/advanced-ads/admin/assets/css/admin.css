@@ -379,3 +379,6 @@ tr:hover .on-hover { display: block; }
 .advads-pro-pitch { max-width: 500px; float: left; padding: 1em; margin-right: 1em; line-height: 2em; font-size: 14px; text-transform: capitalize; }
 .advads-pro-pitch .dashicons { line-height: 1.4em; }
 #advads-tracking-pitch .advads-pro-pitch { float: none; }
+
+/* manual link without underline (e.g., when icon is used )*/
+a.advads-manual-icon { text-decoration: none; }

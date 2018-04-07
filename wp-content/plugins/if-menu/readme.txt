@@ -1,6 +1,6 @@
 === If Menu ===
 Contributors: andrei.igna
-Tags: menu, if, menu, rules, conditional, statements, hide, show, dispaly, roles, nav menu
+Tags: menu, visibility, roles, rules, hide, if, nav menu
 Requires at least: 4
 Tested up to: 4.9
 Stable tag: trunk
@@ -94,6 +94,11 @@ Got the icons from here https://dribbble.com/shots/1045549-Light-Switches-PSD, s
 2. Example of visibility rules
 
 == Changelog ==
+
+= 0.8.3 =
+*Release Date - 22 February 2018*
+
+* Fixed - Support for PHP <= 5.3, fixes error
 
 = 0.8.2 =
 *Release Date - 20 February 2018*

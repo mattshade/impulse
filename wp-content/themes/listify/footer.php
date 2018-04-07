@@ -133,7 +133,8 @@ if($('.claim-listing').length > 0 ){
 }
 
 if($('.fieldset-job_type').length > 0 ){
-$('.fieldset-job_type').text('Capabilities');
+	//setTimeout(function(){ $('.fieldset-job_type').text('Capabilities'); }, 2000);
+//$('.fieldset-job_type').text('Capabilities');
 }
 
 if($('.no-impulse-score').length > 0 ){
@@ -156,7 +157,29 @@ if($('.badge').length > 0 ){
 	}
 }
 	
+if($('#wait_approval').length > 0 ){
+   jQuery('.listing-rating').append(jQuery('#wait_approval'));
+}
+	
+if($('input#account_password').length > 0 ){	
+	jQuery('input#account_password').parent().find('label').append('<p>Your password must have 6–20 characters, with at least 2 letters and 1 number. To help make your password stronger, you may use most special characters and a combination of uppercase and lowercase letters.</p>');
+}
 
+if($('.page-title.cover-wrapper').length > 0){
+	$('.page-title.cover-wrapper').fadeIn('fast');
+}
+	
+if($('.page-title.cover-wrapper').length > 0 && $('.page-title.cover-wrapper').text() == "Memberships" ){
+	$('.page-title.cover-wrapper').text("Subscriptions");
+}
+if($('.form-row.place-order').length > 0){
+	//console.log("place is here");
+	jQuery('#order_review').append('<p style="text-align:center;padding-top:10px;">Click Place Order to Enter Card Details and Complete The Transaction.</p>');
+}
+if($('#wp-wpjmcl_claim_data-editor-container .wp-editor-area').length > 0){
+	jQuery('#wp-wpjmcl_claim_data-editor-container .wp-editor-area').prop('required',true);
+}
+	
 
 console.log("ratingsArray: " + ratingsArray);
 
@@ -165,6 +188,7 @@ console.log("ratingsArray: " + ratingsArray);
 var filledStars = "<span class='listing-star listing-star--full'></span>";
  var emptyStars = "<span class='listing-star listing-star--empty'></span>";
  var ratingsMarkup = "<div class='sub-ratings'><ul>";
+ var averageArray = [];
 
 var avg = Array.from(ratingsArray.reduce(
         (acc, obj) => Object.keys(obj).reduce(
@@ -181,8 +205,9 @@ console.log(avg);
 
 
 $.each(avg, function (key, value) {
-  console.log(value.name + ":" + Math.round(value.average));
+  console.log(value.name + ":" + value.average);
   // $('.stars').append(value.name)
+  averageArray.push(value.average);
   ratingsMarkup += "<li><span class='ratings-key'>" + value.name + "</span>";
   var found = false;
   for (i = 0; i < 5; i++) {
@@ -195,9 +220,34 @@ $.each(avg, function (key, value) {
 	ratingsMarkup += "</li>"
 });
 ratingsMarkup += "</ul></div>";
+console.log(averageArray);
+
+var meanOfMeans = 0;
+var starRating;
+var impulseScoreMarkup= "";  
+for(var i = 0; i < averageArray.length; i++) {
+    meanOfMeans += averageArray[i];
+}
+starRating = meanOfMeans / averageArray.length;
+console.log(starRating);
+for (i = 0; i < 5; i++) {
+  if(i < starRating){
+    impulseScoreMarkup += filledStars
+  }else{
+    impulseScoreMarkup += emptyStars
+  }  
+}
+console.log(impulseScoreMarkup)
+  
+
+
 console.log(ratingsMarkup);
 jQuery('.listing-rating--single').eq(0).append(ratingsMarkup);
-}
+
+
+jQuery('.listing-rating .listing-stars').eq(0).html(impulseScoreMarkup);
+jQuery('.listing-rating').fadeIn('fast');
+} 
 });
 
 	</script>
