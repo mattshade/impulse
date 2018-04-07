@@ -667,13 +667,13 @@ function wp_allow_comment( $commentdata, $avoid_die = false ) {
 		 */
 		do_action( 'comment_duplicate_trigger', $commentdata );
 		if ( true === $avoid_die ) {
-			return new WP_Error( 'comment_duplicate', __( 'Duplicate comment detected; it looks as though you&#8217;ve already said that!' ), 409 );
+			return new WP_Error( 'comment_duplicate', __( 'You may only rate each facility one time.' ), 409 );
 		} else {
 			if ( wp_doing_ajax() ) {
-				die( __('Duplicate comment detected; it looks as though you&#8217;ve already said that!') );
+				die( __('You may only rate each facility one time.') );
 			}
 
-			wp_die( __( 'Duplicate comment detected; it looks as though you&#8217;ve already said that!' ), 409 );
+			wp_die( __( 'You may only rate each facility one time.' ), 409 );
 		}
 	}
 
@@ -3047,7 +3047,7 @@ function wp_handle_comment_submission( $comment_data ) {
 		 * @param int $comment_post_ID Post ID.
 		 */
 		do_action( 'comment_on_draft', $comment_post_ID );
-		
+
 		if ( current_user_can( 'read_post', $comment_post_ID ) ) {
 			return new WP_Error( 'comment_on_draft', __( 'Sorry, comments are not allowed for this item.' ), 403 );
 		} else {

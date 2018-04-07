@@ -1490,7 +1490,7 @@ function wp_nonce_field( $action = -1, $name = "_wpnonce", $referer = true , $ec
  * @return string Referer field HTML markup.
  */
 function wp_referer_field( $echo = true ) {
-	$referer_field = '<input type="hidden" name="_wp_http_referer" value="'. esc_attr( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) . '" />';
+	$referer_field = '<input type="hidden" name="_wp_http_referer" value="'. esc_attr( wp_unslash( $_SERVER['REQUEST_URI'] ) ) . '" />';
 
 	if ( $echo )
 		echo $referer_field;
@@ -1615,7 +1615,7 @@ function wp_mkdir_p( $target ) {
 
 	// We need to find the permissions of the parent folder that exists and inherit that.
 	$target_parent = dirname( $target );
-	while ( '.' != $target_parent && ! is_dir( $target_parent ) ) {
+	while ( '.' != $target_parent && ! is_dir( $target_parent ) && dirname( $target_parent ) !== $target_parent ) {
 		$target_parent = dirname( $target_parent );
 	}
 
@@ -2604,7 +2604,7 @@ function wp_nonce_ays( $action ) {
 			wp_logout_url( $redirect_to )
 		);
 	} else {
-		$html = __( 'Are you sure you want to do this?' );
+		$html = __( 'The link you followed has expired.' );
 		if ( wp_get_referer() ) {
 			$html .= '</p><p>';
 			$html .= sprintf( '<a href="%s">%s</a>',
@@ -2614,7 +2614,7 @@ function wp_nonce_ays( $action ) {
 		}
 	}
 
-	wp_die( $html, __( 'WordPress Failure Notice' ), 403 );
+	wp_die( $html, __( 'Something went wrong.' ), 403 );
 }
 
 /**

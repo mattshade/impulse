@@ -176,7 +176,9 @@ if($('.form-row.place-order').length > 0){
 	//console.log("place is here");
 	jQuery('#order_review').append('<p style="text-align:center;padding-top:10px;">Click Place Order to Enter Card Details and Complete The Transaction.</p>');
 }
-
+if($('#wp-wpjmcl_claim_data-editor-container .wp-editor-area').length > 0){
+	jQuery('#wp-wpjmcl_claim_data-editor-container .wp-editor-area').prop('required',true);
+}
 	
 
 console.log("ratingsArray: " + ratingsArray);
